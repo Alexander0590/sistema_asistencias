@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencia</title>
+
+</head>
+<body>
+
+ <div class="container-fluid" id="Asistencia2">
+    <!-- detalle de la asistencia del personal -->
+    <div class="container" id="detalleasis">
+      <div class="card text-center" style="width: 15.5rem;">
+          <div class="card-header  text-white" >
+              Detalle de la Asistencia del Día de Hoy
+          </div>
+          <div class="card-body">
+              <h5 class="card-title" ></h5>
+              <p class="card-text"><strong>Fecha:</strong><span id="fecha2"> No registrado</span></p>
+              <p class="card-text"><strong>Hora de Entrada (Mañana):</strong> <span id="entradamd">No registrado</span></p>
+              <p class="card-text"><strong>Hora de Entrada (Tarde):</strong> <span id="entradatd">No registrado</span></p>
+              <p class="card-text"><strong>Hora de Salida:</strong> <span id="salidad">No registrado</span></p>
+          </div>
+      </div>
+  </div>
+    <div id="centeredFormWrapper" class="d-flex justify-content-center align-items-center mt-5">
+      <div class="row gx-0 justify-content-center align-items-center w-100">
+        <div class="col-md-8 col-lg-8 " id="formColumn">
+          <div class="card shadow" id="formCard">
+            <div class="card-header text-center" id="cardHeader">
+              <b><i class="bi bi-calendar-check"></i> REGISTRO DE ASISTENCIA</b>
+            </div>
+            <div class="card-body" id="formCardBody">
+              <form class="row g-3" id="attendanceForm">
+                <!-- Lector de Código -->
+                <div class="col-md-3" id="codigoContainer">
+                  <label for="acodigo" class="form-label">
+                    <i class="bi bi-upc-scan"></i> DNI
+                  </label>
+                  <input type="number" class="form-control" id="acodigo" min="0" max="99999999" oninput="validarLongitud(this)" required>
+                </div>
+                <!-- Datos -->
+                <div class="col-md-6" id="datosContainer">
+                  <label for="adatos" class="form-label">
+                    <i class="bi bi-calendar"></i> Datos del Personal
+                  </label>
+                  <input type="text" class="form-control" id="adatos">
+                </div>
+                <!-- Fecha -->
+                <div class="col-md-3" id="fechaContainerRegistro">
+                  <label for="fecha" class="form-label">
+                    <i class="bi bi-calendar"></i> Fecha de Registro
+                  </label>
+                  <input type="date" class="form-control" id="fecha">
+                </div>
+                <!-- Estado -->
+                <div class="col-md-4">
+                  <label for="estado" class="form-label">
+                    <i class="bi bi-file-text"></i> Estado
+                  </label>
+                  <select class="form-select" id="estado" required>
+                    <option value="">Seleccione</option>
+                    <option value="1">Trabajo en Campo</option>
+                    <option value="2">Tardanza</option>
+                    <option value="3">Salida</option>
+                  </select>
+                </div>
+                <!-- Horas -->
+                <div class="col-md-4">
+                  <label for="hentradam" class="form-label">
+                    <i class="bi bi-clock"></i> Hora de Entrada (Mañana)
+                  </label>
+                  <input type="time" class="form-control" id="hentradam">
+                </div>
+                <div class="col-md-4">
+                  <label for="henntradat" class="form-label">
+                    <i class="bi bi-clock"></i> Hora de Entrada (Tarde)
+                  </label>
+                  <input type="time" class="form-control" id="henntradat">
+                </div>
+                <div class="col-md-4">
+                  <label for="hsalida" class="form-label">
+                    <i class="bi bi-clock"></i> Hora de Salida
+                  </label>
+                  <input type="time" class="form-control" id="hsalida">
+                </div>
+                <!-- Descuento -->
+                <div class="col-md-4">
+                  <label for="mdes" class="form-label">
+                    <i class="bi bi-clock-history"></i> Minutos de Descuento
+                  </label>
+                  <input type="number" class="form-control" id="mdes" required>
+                </div>
+                <!-- Justificación -->
+                <div class="col-md-4 mt-4">
+                  <label class="form-label">
+                    <i class="bi bi-file-earmark"></i> Justificado
+                  </label>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="justificado" id="justsi" value="si">
+                      <label class="form-check-label" for="justsi">Sí</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="justificado" id="justno" value="no">
+                      <label class="form-check-label" for="justno">No</label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Comentarios -->
+                <div class="col-md-12">
+                  <label for="comen" class="form-label">
+                    <i class="bi bi-chat-left"></i> Comentarios
+                  </label>
+                  <textarea class="form-control" id="comen" rows="4" placeholder="Escribe aquí..."></textarea>
+                </div>
+                <!-- Botones -->
+                <div class="col-12 text-center ">
+                  <button type="button" class="btn btn-success" id="btnRegistrarEntrada" onclick="registrarEntrada()">
+                    <i class="bi bi-check-circle"></i> Registrar 
+                  </button>
+                  <button type="reset" class="btn btn-secondary" id="btnLimpiar">
+                    <i class="bi bi-arrow-repeat"></i> Limpiar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

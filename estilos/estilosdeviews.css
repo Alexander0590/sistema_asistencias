@@ -1,0 +1,111 @@
+
+/* Vista de los formularios*/
+
+#formCard {
+  background-color: #0c0c24;
+  border-color: #a69bdf;
+  color: #fff;
+  position: relative;  
+  left: 80px; 
+}
+
+#btnCustom {
+  background-color: #a69bdf;
+  border-color: #a69bdf;
+  color: #060614;
+}
+#btnCustom:hover {
+  background-color: #8f84c9;
+  border-color: #8f84c9;
+}
+#formControlFocus, #formSelectFocus {
+  border-color: #a69bdf;
+  box-shadow: 0 0 0 0.25rem rgba(166, 155, 223, 0.25);
+}
+#sideBox {
+  background-color: #a69bdf;
+  color: #060614;
+  height: 100%;
+  padding: 20px;
+  border-radius: 5px;
+}
+#card {
+  background-color: #0c0c24;
+  border-color: #a69bdf;
+  color: #fff;
+}
+#cardHeader {
+  background-color: #a69bdf;
+  color: #ffffff;
+  font-weight: bold;
+  padding: auto;
+}
+
+
+/* vista previa de usuario */
+#imagenvistausu{
+  width: 200px; 
+  height: 200px;
+}
+#imgdeinicio{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 22rem;
+}
+.card-header{
+background-color: #0c0c24;
+
+}
+.modal-bodyper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container{
+  position: relative;
+  left: 70px;
+  top: -20px;
+}
+.tablas-x{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+/* formulario de asistencia manual */
+#Asistencia2{
+  display: flex;
+  position: relative;
+  top:  -3rem;
+  left: -9.3rem;
+
+}
+#detalleasis{
+
+  position: absolute;
+  top: 6rem;
+  left: 75.5rem;
+
+  width: 20%; 
+
+  padding: 20px;
+  z-index: 10; 
+
+ 
+}
+
+#detalleasis .card {
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+
+  transition: transform 0.3s;
+}
+#detalleasis .card:hover {
+  transform: scale(1.05);
+}
+#detalleasis .card-header {
+  font-size: 1rem;
+  font-weight: bold;
+}
