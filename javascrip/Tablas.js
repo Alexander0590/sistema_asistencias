@@ -27,6 +27,32 @@ $('#tusu').DataTable({
     
 });
 
+$('#tasis').DataTable({
+    "paging": true,
+    "searching": true,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "lengthMenu": [5, 10, 15, 20],  
+    "scrollX": true, 
+    "responsive": true,
+    "language": {
+        "search": "Buscar:",
+        "lengthMenu": "Mostrar _MENU_ registros por página",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    
+    
+    
+});
+
+
 
 //iniciar tabla personal
 $('#tper').DataTable({
@@ -161,10 +187,57 @@ function obtenerUsuarios() {
         });
     }
 
+    // listarasistencia
+    function obtenerasistencia() {
+    
+        $.ajax({
+            url: 'proceso/asistenciaman.php?action=read',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#tasis').DataTable().clear().draw();
+
+                data.forEach(function (asistencia, index) {
+                    let minutosdes;
+                   if (asistencia.minutos_descut==="0") {
+                    minutosdes="No hay descuento"
+                   } else {
+                    minutosdes = asistencia.minutos_descut
+                   }
+                    $('#tasis').DataTable().row.add([
+                        index + 1,
+                        asistencia.dni,
+                        asistencia.fecha,
+                        asistencia.dia,
+                        asistencia.horaim + " "+"AM",
+                        asistencia.horasm,
+                        asistencia.estadom,
+                        asistencia.horait + " "+"PM",
+                        asistencia.horast + " "+"PM",
+                        asistencia.estadom,
+                        minutosdes,
+                        asistencia.comentario,
+                        `
+                        <button  class="btn btn-primary asiEditar" data-id="${asistencia.idasis}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button  class="btn btn-danger asiEliminar" data-id="${asistencia.idasis}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        `
+                    ]).draw(false);
+                });
+            },
+            error: function (error) {
+                console.error('Error al obtener los usuarios:', error);
+            }
+        });
+    }
+
     obtenerUsuarios();
     obtenerpersonal();
 
-
+    obtenerasistencia();
   
 
 

@@ -198,7 +198,8 @@ $(document).on('click', '.perEditar', function () {
                         }
 
                         $('#btreper').hide();  
-                        $('#btnLimper').hide();  
+                        $('#btnLimper').hide(); 
+                        $('#ocfoto').hide();  
                         $('#btacuper').show();
                         $('#pcargo').val(data.cargo); 
                         $('#pfechanaci').val(data.fecha_nacimiento); 

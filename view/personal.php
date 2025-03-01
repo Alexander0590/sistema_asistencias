@@ -87,7 +87,7 @@
                   <input type="date" class="form-control" id="pfechanaci" max="2006-02-16" required>
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-md-5" id="ocfoto">
                 <label for="foto" class="form-label">
                   <i class="bi bi-camera"></i> Foto
                 </label>

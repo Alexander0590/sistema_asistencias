@@ -76,6 +76,10 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/asistencia_diaria.php"); 
     });
+    $("#ver_asistenciat").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/listado_asistencia.php"); 
+    });
 
     $("#cerrarsesion").click(function(){
       Swal.fire({

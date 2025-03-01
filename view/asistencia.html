@@ -32,7 +32,7 @@
               <b><i class="bi bi-calendar-check"></i> REGISTRO DE ASISTENCIA</b>
             </div>
             <div class="card-body" id="formCardBody">
-              <form class="row g-3" id="attendanceForm">
+              <form class="row g-3" id="asistenciaform">
                 <!-- Lector de Código -->
                 <div class="col-md-3" id="codigoContainer">
                   <label for="acodigo" class="form-label">
@@ -45,7 +45,7 @@
                   <label for="adatos" class="form-label">
                     <i class="bi bi-calendar"></i> Datos del Personal
                   </label>
-                  <input type="text" class="form-control" id="adatos">
+                  <input type="text" class="form-control" id="adatos" disabled>
                 </div>
                 <!-- Fecha -->
                 <div class="col-md-3" id="fechaContainerRegistro">
@@ -63,7 +63,19 @@
                     <option value="">Seleccione</option>
                     <option value="1">Trabajo en Campo</option>
                     <option value="2">Tardanza</option>
-                    <option value="3">Salida</option>
+                    <option value="3">Puntual</option>
+                    
+                  </select>
+                </div>
+                <!-- turno -->
+                <div class="col-md-4">
+                  <label for="estado" class="form-label">
+                    <i class="bi bi-brightness-alt-high"></i> Turno
+                  </label>
+                  <select class="form-select" id="estado" required>
+                    <option value="">Seleccione</option>
+                    <option value="1">Diurno</option>
+                    <option value="2">Tarde</option>                    
                   </select>
                 </div>
                 <!-- Horas -->
@@ -71,13 +83,13 @@
                   <label for="hentradam" class="form-label">
                     <i class="bi bi-clock"></i> Hora de Entrada (Mañana)
                   </label>
-                  <input type="time" class="form-control" id="hentradam">
+                  <input type="time" class="form-control" id="hentradam" min="7:00" max="13:00">
                 </div>
                 <div class="col-md-4">
                   <label for="henntradat" class="form-label">
                     <i class="bi bi-clock"></i> Hora de Entrada (Tarde)
                   </label>
-                  <input type="time" class="form-control" id="henntradat">
+                  <input type="time" class="form-control" id="henntradat" min="13:45" max="18:00">
                 </div>
                 <div class="col-md-4">
                   <label for="hsalida" class="form-label">
@@ -86,14 +98,14 @@
                   <input type="time" class="form-control" id="hsalida">
                 </div>
                 <!-- Descuento -->
-                <div class="col-md-4">
+                <div class="col-md-4" style="display: none;">
                   <label for="mdes" class="form-label">
                     <i class="bi bi-clock-history"></i> Minutos de Descuento
                   </label>
                   <input type="number" class="form-control" id="mdes" required>
                 </div>
                 <!-- Justificación -->
-                <div class="col-md-4 mt-4">
+                <div class="col-md-4 mt-4" style="display: none;">
                   <label class="form-label">
                     <i class="bi bi-file-earmark"></i> Justificado
                   </label>
@@ -109,7 +121,7 @@
                   </div>
                 </div>
                 <!-- Comentarios -->
-                <div class="col-md-12">
+                <div class="col-md-12" style="display: none;">
                   <label for="comen" class="form-label">
                     <i class="bi bi-chat-left"></i> Comentarios
                   </label>
@@ -117,7 +129,7 @@
                 </div>
                 <!-- Botones -->
                 <div class="col-12 text-center ">
-                  <button type="button" class="btn btn-success" id="btnRegistrarEntrada" onclick="registrarEntrada()">
+                  <button type="submit" class="btn btn-success" id="btnregistraras" >
                     <i class="bi bi-check-circle"></i> Registrar 
                   </button>
                   <button type="reset" class="btn btn-secondary" id="btnLimpiar">

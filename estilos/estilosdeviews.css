@@ -96,6 +96,43 @@ background-color: #0c0c24;
  
 }
 
+
+@media (min-width: 768px) {
+  #detalleasis{
+
+    position: absolute;
+    top: 6rem;
+    left: 75.5rem;
+  
+    width: 20%; 
+  
+    padding: 20px;
+    z-index: 10; 
+  
+   
+  }
+}
+
+
+ /* Para pantallas grandes */
+ @media (min-width: 1500px) {
+  
+  #detalleasis{
+
+    position: absolute;
+    top: 6rem;
+    left: 83.5rem;
+  
+    width: 20%; 
+  
+    padding: 20px;
+    z-index: 10; 
+  
+   
+  }
+  }
+
+
 #detalleasis .card {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;

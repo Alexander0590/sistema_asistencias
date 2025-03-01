@@ -206,6 +206,8 @@ $('#formulario-asistencia').on('submit', function(e) {
                 icono = 'error';
             } else if (response.includes('no ha registrado su ingreso')) {
                 icono = 'error';
+            } else if (response.includes('Sistema fuera de servicio')) {
+                icono = 'error';
             }
             Swal.fire({
                 title: response,

@@ -43,7 +43,10 @@ if($respuesta_buscar=="no_registrado" and $turno=="Salida"){
     echo "Usted no ha registrado su ingreso...!";
     return;
 }
-
+if ( $turno == ""){
+    echo "Sistema fuera de servicio";
+    return;
+}
 
 if($turno=="Mañana" and $respuesta_buscar=="no_registrado"){
     $toleranciam=new DateTime('08:15:59');
