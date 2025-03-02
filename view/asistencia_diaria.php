@@ -46,7 +46,7 @@
                         <th>DNI</th>
                         <th>Apellido</th>
                         <th>Nombre</th>
-                        <th></th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo_tabla_ad">

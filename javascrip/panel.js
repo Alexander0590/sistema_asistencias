@@ -76,9 +76,9 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/asistencia_diaria.php"); 
     });
-    $("#ver_asistenciat").click(function (e) {
+    $("#reporteas").click(function (e) {
       e.preventDefault(); 
-      $("#vistas").load("view/listado_asistencia.php"); 
+      $("#vistas").load("view/reporte_de_asistencia.php"); 
     });
 
     $("#cerrarsesion").click(function(){

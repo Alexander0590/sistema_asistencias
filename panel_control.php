@@ -85,7 +85,7 @@ if($_SESSION['rol']==="1"){
             <a href="#" id="x2">Registrar Manual</a>
             <a href="#" id="ver_asistenciat">Ver asistencia</a>
             <a href="#" id="ver_asistencia">Ver asistencia actual</a>
-            <a href="#">Reportes de asistencia</a>
+            <a href="#" id="reporteas">Reportes de asistencia</a>
         </div>
     </div>
     <div class="menu-item">
@@ -145,6 +145,8 @@ if($_SESSION['rol']==="1"){
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
 <script src="javascrip/usuariosmante.js"></script>
 <script src="javascrip/personalmante.js"></script>
+<script src="javascrip/asistencia_diaria.js"></script>
+
 </body>
 </html>
 

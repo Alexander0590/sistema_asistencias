@@ -101,7 +101,7 @@ background-color: #0c0c24;
   #detalleasis{
 
     position: absolute;
-    top: 6rem;
+    top: 4rem;
     left: 75.5rem;
   
     width: 20%; 
@@ -120,7 +120,7 @@ background-color: #0c0c24;
   #detalleasis{
 
     position: absolute;
-    top: 6rem;
+    top: 3rem;
     left: 83.5rem;
   
     width: 20%; 
@@ -145,4 +145,51 @@ background-color: #0c0c24;
 #detalleasis .card-header {
   font-size: 1rem;
   font-weight: bold;
+}
+
+
+/* Estilos para las filas de la tabla de faltas  */
+.fila-falta {
+  background-color: #ffcccc; 
+}
+
+/* Estilos para las filas de la tabla de asistencia  */
+.fila-asistencia {
+  background-color: #ccffcc; /
+}
+
+/* Estilos para los botones */
+.btn-danger {
+  background-color: #dc3545; 
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333; 
+}
+
+.btn-success {
+  background-color: #28a745; 
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838; 
+}
+
+/* Estilos para las celdas */
+.text-center {
+  text-align: center;
+}
+
+.align-middle {
+  vertical-align: middle;
 }

@@ -28,17 +28,15 @@ $('#tusu').DataTable({
 });
 
 $('#tasis').DataTable({
-    "paging": true,
-    "searching": true,
-    "ordering": true,
-    "info": true,
-    "autoWidth": false,
-    "lengthMenu": [5, 10, 15, 20],  
-    "scrollX": true, 
-    "responsive": true,
+    "paging": false, // Deshabilitar paginación (muestra todos los registros)
+    "searching": true, // Habilitar búsqueda
+    "ordering": false, // Deshabilitar ordenamiento
+    "info": true, // Mostrar información de registros
+    "autoWidth": false, // Deshabilitar ajuste automático de ancho
+    "scrollX": true, // Habilitar desplazamiento horizontal
+    "responsive": true, // Habilitar responsividad
     "language": {
         "search": "Buscar:",
-        "lengthMenu": "Mostrar _MENU_ registros por página",
         "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
         "infoEmpty": "No hay registros disponibles",
         "zeroRecords": "No se encontraron registros",
@@ -47,13 +45,31 @@ $('#tasis').DataTable({
             "previous": "Anterior"
         }
     },
-    
-    
-    
+    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + // Botones a la izquierda, búsqueda a la derecha
+           '<"row"<"col-sm-12"tr>>' + // Tabla
+           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', // Información y paginación
+    "buttons": [
+        {
+            extend: 'excelHtml5', // Botón para exportar a Excel
+            text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+            className: 'btn btn-success',
+            title: 'Reporte_de_Asistencia' // Título del archivo Excel
+        },
+        {
+            extend: 'pdfHtml5', // Botón para exportar a PDF
+            text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
+            className: 'btn btn-danger',
+            title: 'reporte_de_Asistencia', // Título del archivo PDF
+            customize: function (doc) {
+                // Personalización del PDF
+                doc.defaultStyle.fontSize = 10;
+                doc.styles.tableHeader.fontSize = 10;
+                doc.styles.title.fontSize = 14;
+                doc.pageOrientation = 'landscape';  
+            }
+        }
+    ]
 });
-
-
-
 //iniciar tabla personal
 $('#tper').DataTable({
     "paging": true,
@@ -187,58 +203,58 @@ function obtenerUsuarios() {
         });
     }
 
-    // listarasistencia
-    function obtenerasistencia() {
     
-        $.ajax({
-            url: 'proceso/asistenciaman.php?action=read',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                $('#tasis').DataTable().clear().draw();
-
-                data.forEach(function (asistencia, index) {
-                    let minutosdes;
-                   if (asistencia.minutos_descut==="0") {
-                    minutosdes="No hay descuento"
-                   } else {
-                    minutosdes = asistencia.minutos_descut
-                   }
-                    $('#tasis').DataTable().row.add([
-                        index + 1,
-                        asistencia.dni,
-                        asistencia.fecha,
-                        asistencia.dia,
-                        asistencia.horaim + " "+"AM",
-                        asistencia.horasm,
-                        asistencia.estadom,
-                        asistencia.horait + " "+"PM",
-                        asistencia.horast + " "+"PM",
-                        asistencia.estadom,
-                        minutosdes,
-                        asistencia.comentario,
-                        `
-                        <button  class="btn btn-primary asiEditar" data-id="${asistencia.idasis}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button  class="btn btn-danger asiEliminar" data-id="${asistencia.idasis}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        `
-                    ]).draw(false);
-                });
-            },
-            error: function (error) {
-                console.error('Error al obtener los usuarios:', error);
-            }
-        });
-    }
 
     obtenerUsuarios();
     obtenerpersonal();
-
-    obtenerasistencia();
   
 
 
+});
+
+// reporte asistencia
+$('#filtroForm').on('submit', function (e) {
+    e.preventDefault();
+    var fechai = $('#fechain').val();
+    var fechaf = $('#fechafi').val();
+    $.ajax({
+        url: 'proceso/asistenciaman.php?action=read',
+        type: 'Post',
+        dataType: 'json',
+        success: function (data) {
+            $('#tasis').DataTable().clear().draw();
+
+            data.forEach(function (asistencia, index) {
+                let minutosdes;
+               if (asistencia.minutos_descut==="0" ) {
+                minutosdes="No hay descuento"
+               } else {
+                minutosdes = asistencia.minutos_descut+ asistencia.minutos_descum
+               }
+               let estado;
+               if(asistencia.estadot==="" ){
+                estado="No hay registro"
+               }else{
+                estado=asistencia.estadot;
+               }
+                $('#tasis').DataTable().row.add([
+                    index + 1,
+                    asistencia.dni,
+                    asistencia.fecha,
+                    asistencia.dia,
+                    asistencia.horaim + " "+"AM",
+                    asistencia.horasm,
+                    asistencia.estadom,
+                    asistencia.horait + " "+"PM",
+                    asistencia.horast + " "+"PM",
+                    estado,
+                    minutosdes,
+                    asistencia.comentario
+                ]).draw(false);
+            });
+        },
+        error: function (error) {
+            console.error('Error al obtener los usuarios:', error);
+        }
+    });
 });
