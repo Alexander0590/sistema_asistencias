@@ -204,57 +204,60 @@ function obtenerUsuarios() {
     }
 
     
+    function obtenerlistadoasis() {
+    
+        $.ajax({
+            url: 'proceso/asistenciaman.php?action=read',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Limpiar la tabla de usuarios
+                $('#tasis').DataTable().clear().draw();
 
+                data.forEach(function (asistencia, index) {
+                    let minutosTarde = parseInt(asistencia.minutos_descut) || 0;
+                    let minutosManana = parseInt(asistencia.minutos_descum) || 0;
+                    let totalMinutos = minutosTarde + minutosManana;
+    
+                    let minutosdes = totalMinutos === 0 
+                        ? "No hay descuento" 
+                        : `${totalMinutos} minutos ( ${minutosTarde} Tarde + ${minutosManana} Mañana)`;
+    
+                    let estado = asistencia.estadot || "No hay registro";
+                    $('#tasis').DataTable().row.add([
+                        index + 1,
+                        asistencia.dni,
+                        asistencia.fecha,
+                        asistencia.dia,
+                        asistencia.horaim ? `${asistencia.horaim} AM` : "No hay registro",
+                        asistencia.horasm ? `${asistencia.horasm} AM` : "No hay registro",
+                        asistencia.estadom || "No hay registro",
+                        asistencia.horait ? `${asistencia.horait} PM` : "No hay registro",
+                        asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
+                        estado,
+                        minutosdes,
+                        asistencia.comentario || "Sin comentarios"
+                    ]).draw(false);
+                });
+            },
+            error: function (error) {
+                console.error('Error al obtener los usuarios:', error);
+            }
+        });
+    }
+
+
+    
+    $(document).on('click', '#limpiarfil', function (e) {
+        setTimeout(() => {
+            obtenerlistadoasis(); 
+        }, 100); 
+    });
     obtenerUsuarios();
     obtenerpersonal();
-  
+    obtenerlistadoasis();
 
 
 });
 
-// reporte asistencia
-$('#filtroForm').on('submit', function (e) {
-    e.preventDefault();
-    var fechai = $('#fechain').val();
-    var fechaf = $('#fechafi').val();
-    $.ajax({
-        url: 'proceso/asistenciaman.php?action=read',
-        type: 'Post',
-        dataType: 'json',
-        success: function (data) {
-            $('#tasis').DataTable().clear().draw();
 
-            data.forEach(function (asistencia, index) {
-                let minutosdes;
-               if (asistencia.minutos_descut==="0" ) {
-                minutosdes="No hay descuento"
-               } else {
-                minutosdes = asistencia.minutos_descut+ asistencia.minutos_descum
-               }
-               let estado;
-               if(asistencia.estadot==="" ){
-                estado="No hay registro"
-               }else{
-                estado=asistencia.estadot;
-               }
-                $('#tasis').DataTable().row.add([
-                    index + 1,
-                    asistencia.dni,
-                    asistencia.fecha,
-                    asistencia.dia,
-                    asistencia.horaim + " "+"AM",
-                    asistencia.horasm,
-                    asistencia.estadom,
-                    asistencia.horait + " "+"PM",
-                    asistencia.horast + " "+"PM",
-                    estado,
-                    minutosdes,
-                    asistencia.comentario
-                ]).draw(false);
-            });
-        },
-        error: function (error) {
-            console.error('Error al obtener los usuarios:', error);
-        }
-    });
-});

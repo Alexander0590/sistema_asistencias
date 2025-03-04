@@ -83,7 +83,6 @@ if($_SESSION['rol']==="1"){
         <a href="#"><i class="bi bi-calendar-check"></i><span>Asistencia</span></a>
         <div class="submenu">
             <a href="#" id="x2">Registrar Manual</a>
-            <a href="#" id="ver_asistenciat">Ver asistencia</a>
             <a href="#" id="ver_asistencia">Ver asistencia actual</a>
             <a href="#" id="reporteas">Reportes de asistencia</a>
         </div>
@@ -145,7 +144,6 @@ if($_SESSION['rol']==="1"){
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
 <script src="javascrip/usuariosmante.js"></script>
 <script src="javascrip/personalmante.js"></script>
-<script src="javascrip/asistencia_diaria.js"></script>
 
 </body>
 </html>

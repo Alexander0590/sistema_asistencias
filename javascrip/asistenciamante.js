@@ -1,93 +1,4 @@
 
-//formulario dinamico
-$(document).on('change', '#estado', function () {
-    if ($(this).val() === "2") {
-        $("#divturno").show();
-        $("#divsalida").hide();
-        $("#btnregistraras").hide();
-        $("#btnregistrartds").show();
-        $("#diventradam").hide();
-        $("#diventrat").hide();
-        $("#divjustificado").show();
-        $("#divturno2").hide();
-    }else if($(this).val() === "3") {
-        $("#divturno").hide();
-        $("#divturno2").show();
-        $("#divjustificado").hide();
-        $("#btnregistraras").show();
-        $("#btnregistrartds").hide();
-        $("#diventradam").show();
-        $("#divmdes").hide();
-        $("#divcomen").hide();
-    }else if($(this).val() === "1"){
-    
-    }else{
-        $("#turno").val('');
-        $("#turno2").val('');
-        $("#divturno").hide();
-        $("#divsalida").show();
-        $("#btnregistraras").show();
-        $("#btnregistrartds").hide();
-        $("#divjustificado").hide();
-        $("#diventradam").show();
-        $("#diventrat").show();
-        $("#justsi, #justno").prop('checked', false);
-        $("#divmdes").hide();
-        $("#divcomen").hide();
-        $("#divturno2").hide();
-    }
-   
-});
-$(document).on('change', '#turno', function () {
-    if ($(this).val() === "1") {
-        $("#diventradam").show();
-        $("#diventrat").hide();
-
-    }else if($(this).val() === "2"){
-        $("#diventrat").show();
-        $("#diventradam").hide();
-    }else{
-        $("#diventrat").hide();
-        $("#diventradam").hide();
-        $("#justsi, #justno").prop('checked', false);
-        $("#divmdes").hide();
-        $("#divcomen").hide();
-    }
-});
-$(document).on('change', '#turno2', function () {
-    if ($(this).val() === "1") {
-        $("#diventradam").show();
-        $("#diventrat").hide();
-        $("#divsalida").hide();
-    }else if($(this).val() === "2"){
-        $("#diventrat").show();
-        $("#diventradam").hide();
-        $("#divsalida").show();
-    }else if($(this).val() === "3"){
-        $("#diventradam").show();
-        $("#diventrat").show();
-        $("#divsalida").show();
-    }else{
-        $("#diventrat").hide();
-        $("#diventradam").hide();
-        $("#justsi, #justno").prop('checked', false);
-        $("#divmdes").hide();
-        $("#divcomen").hide();
-    }
-});
-
-$(document).on('change', 'input[name=justificado]', function () {
-    if ($(this).val() === "si") {
-        $("#divmdes").hide();
-        $("#divcomen").show();
-    }else if($(this).val() === "no"){
-        $("#divmdes").show();
-        $("#divcomen").hide();
-    }else{
-        $("#divmdes").hide();
-        $("#divcomen").hide();
-    }
-});
 //busqueda de asistencia en la tarjeta
 $(document).on('input', '#acodigo', function () {
     let codigo = $(this).val();
@@ -122,7 +33,7 @@ $(document).on('input', '#acodigo', function () {
     }
 });
 
-//busqueda de la persona
+// //busqueda de la persona
 $(document).on('input', '#acodigo', function () {
     let codigo = $(this).val();
     
@@ -145,407 +56,68 @@ $(document).on('input', '#acodigo', function () {
         $("#adatos").val(""); 
     }
 });
-//registrar asistencia
-$(document).on('click', '#btnregistraras', function (e) {
+
+
+
+
+//filtrar reportes de asistencia
+$(document).on('click', '#filtraras', function (e) {
     e.preventDefault();
 
-    let estado = $('#estado').val();
-    //verficar segun el estado
-    if (estado === "") {
-        Swal.fire({
-            title: "¡Error!",
-            text: "Por favor, seleccione una opción.",
-            icon: "error",
-            confirmButtonText: "OK"
-        });
-    } else if (estado === "1") {
+    var fechai = $('#fechain').val();
+    var fechaf = $('#fechafi').val();
+    var dnire = $('#dnire').val();
 
-   /*      let dni = $('#acodigo').val();
-        let fecha = $('#fecha').val();
-        let horaim = $('#hentradam').val();
-        let horait = $('#henntradat').val();
-        let horast = $('#hsalida').val();
-
-        if (!dni || !fecha ||!horaim || !horait || !horast) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "Por favor, completa todos los campos del formulario ",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return; 
-        }
-        if (!/^\d{8}$/.test(dni)) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "El DNI debe contener exactamente 8 dígitos.",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return;
-        }
-        $.ajax({
-                url: 'proceso/asistenciaman.php?action=createtc',
-                    type: 'POST',
-                    data: {
-                        dni:dni,
-                        fecha: fecha,
-                        horaim: horaim,
-                        horait: horait,
-                        horast: horast,
-                        estado: estado
-                    },
-                    dataType: 'json', 
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: "¡Registro exitoso!",
-                                text: "Tu registro ha sido creada correctamente.",
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                $('#asistenciaform')[0].reset(); 
-                            });
-                        } else {
-                            alert('Error: ' + response.message);
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error en la solicitud AJAX:', error);
-                        alert('Error al registrar usuario. Por favor, inténtalo de nuevo.');
-                    }
-                }); */
-        
-    } else if (estado === "3") {
-        
-     let turno=$('#turno2').val();
-      
-     if(turno=="1"){
-        let dni = $('#acodigo').val();
-        let fecha = $('#fecha').val();
-        let horaim = $('#hentradam').val();
-        if (!dni || !fecha ||!horaim ) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "Por favor, completa todos los campos del formulario ",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return; 
-        }
-        if (!/^\d{8}$/.test(dni)) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "El DNI debe contener exactamente 8 dígitos.",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return;
-        }
-        $.ajax({
-                url: 'proceso/asistenciaman.php?action=createpu',
-                    type: 'POST',
-                    data: {
-                        dni:dni,
-                        fecha: fecha,
-                        estado:estado,
-                        turno:turno,
-                        horaim: horaim
-                    },
-                    dataType: 'json', 
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: "¡Registro exitoso!",
-                                text: "Tu registro ha sido creada correctamente.",
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                $('#asistenciaform')[0].reset(); 
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message,
-                                confirmButtonText: 'Aceptar'
-                            });
-                            $('#asistenciaform')[0].reset(); 
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error en la solicitud AJAX:', error);
-                        alert('Error al registrar usuario. Por favor, inténtalo de nuevo.');
-                    }
+    $.ajax({
+        url: 'proceso/asistenciaman.php?action=readfil',
+        type: 'POST',
+        dataType: 'json',  
+        data: { fechai: fechai, fechaf: fechaf,dnire },
+        success: function (data) {
+            if (data.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error,
+                    confirmButtonText: 'Aceptar'
                 });
-     }else if(turno=="2"){
-        let dni = $('#acodigo').val();
-        let fecha = $('#fecha').val();
-        let horait = $('#henntradat').val();
-        let horast = $('#hsalida').val();
-        if (!dni || !fecha ||!horait ) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "Por favor, completa todos los campos del formulario ",
-                icon: "error",
-                confirmButtonText: "OK"
+                return;
+            }
+
+            let table = $('#tasis').DataTable();
+            table.clear();
+            data.forEach(function (asistencia, index) {
+                let minutosTarde = parseInt(asistencia.minutos_descut) || 0;
+                let minutosManana = parseInt(asistencia.minutos_descum) || 0;
+                let totalMinutos = minutosTarde + minutosManana;
+
+                let minutosdes = totalMinutos === 0 
+                    ? "No hay descuento" 
+                    : `${totalMinutos} minutos ( ${minutosTarde} Tarde + ${minutosManana} Mañana)`;
+
+                let estado = asistencia.estadot || "No hay registro";
+
+                table.row.add([
+                    index + 1,
+                    asistencia.dni,
+                    asistencia.fecha,
+                    asistencia.dia,
+                    asistencia.horaim ? `${asistencia.horaim} AM` : "No hay registro",
+                    asistencia.horasm ? `${asistencia.horasm} AM` : "No hay registro",
+                    asistencia.estadom || "No hay registro",
+                    asistencia.horait ? `${asistencia.horait} PM` : "No hay registro",
+                    asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
+                    estado,
+                    minutosdes,
+                    asistencia.comentario || "Sin comentarios"
+                ]);
             });
-            return; 
+
+            table.draw(false);
+        },
+        error: function () {
+         
         }
-        if (!/^\d{8}$/.test(dni)) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "El DNI debe contener exactamente 8 dígitos.",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return;
-        }
-        $.ajax({
-                url: 'proceso/asistenciaman.php?action=createpu',
-                    type: 'POST',
-                    data: {
-                        dni:dni,
-                        fecha: fecha,
-                        turno:turno,
-                        estado:estado,
-                        horast: horast,
-                        horait: horait
-                    },
-                    dataType: 'json', 
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: "¡Registro exitoso!",
-                                text: "Tu registro ha sido creada correctamente.",
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                $('#asistenciaform')[0].reset(); 
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message,
-                                confirmButtonText: 'Aceptar'
-                            });
-                            $('#asistenciaform')[0].reset(); 
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error en la solicitud AJAX:', error);
-                        alert('Error al registrar usuario. Por favor, inténtalo de nuevo.');
-                    }
-                });
-     }else if(turno=="3"){
-        let dni = $('#acodigo').val();
-        let fecha = $('#fecha').val();
-        let horaim = $('#hentradam').val();
-        let horait = $('#henntradat').val();
-        let horast = $('#hsalida').val();
-
-        if (!dni || !fecha ||!horaim || !horait || !horast) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "Por favor, completa todos los campos del formulario ",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return; 
-        }
-        if (!/^\d{8}$/.test(dni)) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "El DNI debe contener exactamente 8 dígitos.",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return;
-        }
-        $.ajax({
-                url: 'proceso/asistenciaman.php?action=createpu',
-                    type: 'POST',
-                    data: {
-                        dni:dni,
-                        fecha: fecha,
-                        turno:turno,
-                        horaim: horaim,
-                        horait: horait,
-                        horast: horast,
-                        estado: estado
-                    },
-                    dataType: 'json', 
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: "¡Registro exitoso!",
-                                text: "Tu registro ha sido creada correctamente.",
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                $('#asistenciaform')[0].reset(); 
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message,
-                                confirmButtonText: 'Aceptar'
-                            });
-                            $('#asistenciaform')[0].reset(); 
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error en la solicitud AJAX:', error);
-                        alert('Error al registrar usuario. Por favor, inténtalo de nuevo.');
-                    }
-                });
-     }else{
-
-     }
-
-
-
-      
-        
-    }
-
+    });
 });
-$(document).on('click', '#btnregistrartds', function (e) {
 
-    let turno=$('#turno').val();
-    if(turno==="1"){
-        let dni = $('#acodigo').val();
-        let estado = $('#estado').val();
-        let fecha = $('#fecha').val();
-        let horaim = $('#hentradam').val();
-        let comentario=$('#comen').val();
-
-        if (!dni || !fecha ||!horaim || !comentario) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "Por favor, completa todos los campos del formulario ",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return; 
-        }
-        if (!/^\d{8}$/.test(dni)) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "El DNI debe contener exactamente 8 dígitos.",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return;
-        }
-        $.ajax({
-                url: 'proceso/asistenciaman.php?action=createtar',
-                    type: 'POST',
-                    data: {
-                        dni:dni,
-                        fecha: fecha,
-                        turno:turno,
-                        horaim: horaim,
-                        estado: estado,
-                        comentario:comentario
-                    },
-                    dataType: 'json', 
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: "¡Registro exitoso!",
-                                text: "Tu registro ha sido creada correctamente.",
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                $('#asistenciaform')[0].reset(); 
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message,
-                                confirmButtonText: 'Aceptar'
-                            });
-                            $('#asistenciaform')[0].reset(); 
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error en la solicitud AJAX:', error);
-                        alert('Error al registrar usuario. Por favor, inténtalo de nuevo.');
-                    }
-                });
-        
-
-       
-
-    }else if(turno==="2"){
-        let dni = $('#acodigo').val();
-        let estado = $('#estado').val();
-        let fecha = $('#fecha').val();
-        let horait = $('#henntradat').val();
-        let comentario=$('#comen').val();
-
-        if (!dni || !fecha ||!horait || !comentario) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "Por favor, completa todos los campos del formulario ",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return; 
-        }
-        if (!/^\d{8}$/.test(dni)) {
-            Swal.fire({
-                title: "¡Error!",
-                text: "El DNI debe contener exactamente 8 dígitos.",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
-            return;
-        }
-        $.ajax({
-                url: 'proceso/asistenciaman.php?action=createtar',
-                    type: 'POST',
-                    data: {
-                        dni:dni,
-                        fecha: fecha,
-                        turno:turno,
-                        horait: horait,
-                        estado: estado,
-                        comentario:comentario
-                    },
-                    dataType: 'json', 
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: "¡Registro exitoso!",
-                                text: "Tu registro ha sido creada correctamente.",
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                $('#asistenciaform')[0].reset(); 
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message,
-                                confirmButtonText: 'Aceptar'
-                            });
-                            $('#asistenciaform')[0].reset(); 
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error en la solicitud AJAX:', error);
-                        alert('Error al registrar usuario. Por favor, inténtalo de nuevo.');
-                    }
-                });
-        
-
-       
-    }
-
-});

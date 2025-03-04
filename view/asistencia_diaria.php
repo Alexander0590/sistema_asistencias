@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="lib/datatables2/jquery.dataTables.min.css">
 </head>
 <body>
+<?php  date_default_timezone_set("America/Lima"); ?>
 <div class="container mt-5 ">
     <div class="card shadow-lg">
         <div class="card-header  text-white tablas-x ">

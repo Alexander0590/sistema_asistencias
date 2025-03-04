@@ -9,36 +9,46 @@
 </head>
 <body>
 <div class="container mt-5">
-    <!-- Formulario de filtro -->
-    <div class="card shadow-lg mb-4">
-        <div class="card-header text-white d-flex justify-content-center align-items-center">
-            <h4 class="mb-0"><i class="bi bi-filter"></i> Filtro de Asistencia</h4>
-        </div>
-        <div class="card-body">
-            <form id="filtroForm" class="row g-3">
-                <div class="col-md-6">
-                    <label for="fechaInicio" class="form-label">
-                        <i class="bi bi-calendar"></i> Fecha de Inicio
-                    </label>
-                    <input type="date" class="form-control" id="fechaInicio" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="fechaFin" class="form-label">
-                        <i class="bi bi-calendar-check"></i> Fecha de Fin
-                    </label>
-                    <input type="date" class="form-control" id="fechaFin" required>
-                </div>
-                <div class="col-12 text-center">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i> Filtrar
-                    </button>
-                    <button type="reset" class="btn btn-secondary">
-                        <i class="bi bi-arrow-repeat"></i> Limpiar
-                    </button>
-                </div>
-            </form>
-        </div>
+   <!-- Formulario de filtro -->
+<div class="card shadow-lg mb-4">
+    <div class="card-header text-white d-flex justify-content-center align-items-center">
+        <h4 class="mb-0"><i class="bi bi-filter"></i> Filtro de Asistencia</h4>
     </div>
+    <div class="card-body">
+        <form id="filtroForm" class="row g-3">
+
+            <div class="col-md-4">
+                <label for="dni" class="form-label">
+                    <i class="bi bi-person-badge"></i> DNI
+                </label>
+                <input type="number" class="form-control" id="dnire" placeholder="Ingrese DNI" min="10000000" max="99999999">
+            </div>
+
+            <div class="col-md-4">
+                <label for="fechain" class="form-label">
+                    <i class="bi bi-calendar"></i> Fecha de Inicio
+                </label>
+                <input type="date" class="form-control" id="fechain" required>
+            </div>
+
+            <div class="col-md-4">
+                <label for="fechafi" class="form-label">
+                    <i class="bi bi-calendar-check"></i> Fecha de Fin
+                </label>
+                <input type="date" class="form-control" id="fechafi" required>
+            </div>
+
+            <div class="col-12 text-center">
+                <button type="submit" class="btn btn-primary" id="filtraras">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+                <button type="reset" class="btn btn-secondary" id="limpiarfil">
+                    <i class="bi bi-arrow-repeat"></i> Limpiar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 

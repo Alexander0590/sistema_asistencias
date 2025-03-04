@@ -33,7 +33,8 @@
                     </div>
                     <div class="card-body" id="formCardBody">
                         <form class="row g-3" id="asistenciaform">
-                            <!-- Lector de Código -->
+
+                            <!-- Código -->
                             <div class="col-md-3" id="codigoContainer">
                                 <label for="acodigo" class="form-label">
                                     <i class="bi bi-upc-scan"></i> DNI
@@ -52,20 +53,49 @@
                                 <label for="fecha" class="form-label">
                                     <i class="bi bi-calendar"></i> Fecha de Registro
                                 </label>
-                                <input type="date" class="form-control" id="fecha">
+                                <input type="date" class="form-control" id="fechare">
                             </div>
-                            <!-- Estado -->
-                            <div class="col-md-4" id="divestado">
+                            <!-- Estado falta -->
+                            <div class="col-md-4" id="divestadof" style="display: none;">
                                 <label for="estado" class="form-label">
                                     <i class="bi bi-file-text"></i> Estado
                                 </label>
-                                <select class="form-select" id="estado" required>
+                                <select class="form-select" id="estadof" disabled>
                                     <option value="">Seleccione</option>
-                                    <option value="1">Trabajo en Campo</option>
-                                    <option value="2">Tardanza</option>
-                                    <option value="3">Puntual</option>
+                                    <option value="3">Falta</option>
                                 </select>
                             </div>
+                            <!-- justificado de falta -->
+                            <div class="col-md-4" id="divfjus" style="display: none;">
+                                <label class="form-label">
+                                    <i class="bi bi-file-earmark"></i> Justificado
+                                </label>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="justificadof" id="justsit" value="si">
+                                        <label class="form-check-label" for="justsit">Sí</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="justificadof" id="justnot" value="no">
+                                        <label class="form-check-label" for="justnot">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- minutos descuento falta -->
+                            <div class="col-md-4 mb-2" id="divminf" style="display: none;" >
+                                <label for="mdesm" class="form-label">
+                                    <i class="bi bi-clock-history"></i> Minutos de Descuento
+                                </label>
+                                <input type="number" class="form-control" id="mdesf" disabled>
+                            </div>
+                            <!-- comentario de falta-->
+                            <div class="col-md-12" id="divcomf" style="display: none;">
+                                <label for="comenm" class="form-label">
+                                    <i class="bi bi-chat-left"></i> Comentarios
+                                </label>
+                                <textarea class="form-control" id="comenf" rows="3" placeholder="Escribe aquí..."></textarea>
+                            </div>
+                            
                             <!-- Turno -->
                             <div class="col-md-4" id="divturno">
                                 <label for="turno" class="form-label">
@@ -80,7 +110,7 @@
                             </div>
 
                             <!-- Sección para el turno de la mañana -->
-                            <div class="col-md-12 mt-4">
+                            <div class="col-md-12 mt-4" id="divm">
                                 <h5>Turno de la Mañana</h5>
                                 <div class="row">
                                     <div class="col-md-4 mb-2">
@@ -103,6 +133,7 @@
                                             <option value="">Seleccione</option>
                                             <option value="1">Puntual</option>
                                             <option value="2">Tardanza</option>
+                                            <option value="3">Falta</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-2">
@@ -136,7 +167,7 @@
                             </div>
 
                             <!-- Sección para el turno de la tarde -->
-                            <div class="col-md-12 mt-4">
+                            <div class="col-md-12 mt-4" id="divt">
                                 <h5>Turno de la Tarde</h5>
                                 <div class="row">
                                     <div class="col-md-4 mb-2">
@@ -155,10 +186,11 @@
                                         <label for="estadot" class="form-label">
                                             <i class="bi bi-file-text"></i> Estado
                                         </label>
-                                        <select class="form-select" id="estadot">
+                                        <select class="form-select" id="estadota">
                                             <option value="">Seleccione</option>
                                             <option value="1">Puntual</option>
                                             <option value="2">Tardanza</option>
+                                            <option value="3">Falta</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-2">
@@ -220,6 +252,13 @@
                             <div class="col-12 text-center mt-4">
                                 <button type="submit" class="btn btn-success" id="btnregistraras">
                                     <i class="bi bi-check-circle"></i> Registrar
+                                </button>
+
+                                <button type="button" class="btn btn-warning" id="btacasis" style="display: none;">
+                                    <i class="bi bi-arrow-clockwise"></i> Actualizar
+                                </button>
+                                <button type="submit" class="btn btn-danger bg-danger text-white" id="btnfal" style="display: none;">
+                                    <i class="bi bi-x-circle"></i> Registrar Faltaaaa
                                 </button>
                                 <button type="reset" class="btn btn-secondary" id="btnLimpiar">
                                     <i class="bi bi-arrow-repeat"></i> Limpiar
