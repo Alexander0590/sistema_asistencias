@@ -159,7 +159,7 @@ background-color: #0c0c24;
 }
 
 /* Estilos para los botones */
-.btn-danger {
+.registrarf {
   background-color: #dc3545; 
   border: none;
   color: white;
@@ -168,11 +168,11 @@ background-color: #0c0c24;
   transition: background-color 0.3s ease;
 }
 
-.btn-danger:hover {
+.registrarf:hover {
   background-color: #c82333; 
 }
 
-.btn-success {
+.registrartc {
   background-color: #28a745; 
   border: none;
   color: white;
@@ -181,7 +181,7 @@ background-color: #0c0c24;
   transition: background-color 0.3s ease;
 } */
 
- .btn-success:hover {
+ .registrartc:hover {
   background-color: #218838; 
 }
 

@@ -90,7 +90,46 @@ switch ($accion) {
                 echo json_encode(["success" => false, "message" => "Método no permitido"]);
             }
         break;
-    
+        case "createtc":
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $dni = $_POST['id'];
+                $estado = $_POST['estador'];
+                $horaim = $_POST['horaim'];
+                $horait = $_POST['horait'];
+                $horasm = $_POST['horasm'];
+                $horast = $_POST['horast'];
+                $descuento = $_POST['descuento'];
+                $minutos = $_POST['minutos'];
+
+                date_default_timezone_set('America/Lima');
+
+                $fecha = date("Y-m-d");
+
+
+                $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+                $nombreDia = ucfirst($dias[date('w', strtotime($fecha))]);
+
+                $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = CURDATE()";
+                $result = mysqli_query($cnn, $dni_query);
+
+                if (mysqli_num_rows($result) > 0) {
+                    echo json_encode(["success" => false, "message" => "El personal con DNI $dni ya está registrado"]);
+                    exit;
+                }
+
+                $query = "INSERT INTO asistencia (dni, fecha, dia, horaim, horasm, estadom, minutos_descum, horait, horast, estadot, minutos_descut, descuento_dia) 
+                VALUES ('$dni', '$fecha', '$nombreDia', '$horaim', '$horasm', '$estado', '$minutos', '$horait', '$horast', '$estado', '$minutos', '$descuento')";
+      
+
+                if (mysqli_query($cnn, $query)) {
+                    echo json_encode(["success" => true, "message" => "Falta registrada correctamente"]);
+                } else {
+                    echo json_encode(["success" => false, "message" => "Error en la base de datos: " . mysqli_error($cnn)]);
+                }
+            } else {
+                echo json_encode(["success" => false, "message" => "Método no permitido"]);
+            }
+        break;
     default:
         echo json_encode(["error" => "Acción no válida"], JSON_UNESCAPED_UNICODE);
         break;

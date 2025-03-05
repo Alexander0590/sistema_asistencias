@@ -17,16 +17,25 @@ $(document).ready(function () {
                     for (z in registro) {
                         i++;
                         template +=
-                            '<tr class="fila-falta">' + // Clase para filas de faltas
+                           '<tr class="fila-falta">' + 
                             '<td class="text-center align-middle">' + i + '</td>' +
                             '<td>' + registro[z].dni + '</td>' +
                             '<td>' + registro[z].apellidos + '</td>' +
                             '<td>' + registro[z].nombres + '</td>' +
-                            '<td>' +
-                            '<button class="btn btn-danger btn-sm registrarf" data-id=' + registro[z].dni + '>' +
-                            '<i class="bi bi-x-circle"></i> Registrar falta</button>' +
+                            '<td class="text-center align-middle" style="white-space: nowrap; width: 100px;">' + 
+                                '<div class="d-flex justify-content-center gap-1">' + 
+                                    '<button class="btn btn-danger btn-sm registrarf d-block" style="padding: 3px 6px; font-size: 15px;" data-id="' + registro[z].dni + '">' +
+                                        '<i class="bi bi-x-circle"></i> Registrar falta' +
+                                    '</button>' +
+                                    '<button class="btn btn-success btn-sm registrartc d-block" style="padding: 3px 6px; font-size: 15px;" data-id="' + registro[z].dni + '">' +
+                                        '<i class="bi bi-check-circle"></i> Registrar' +
+                                    '</button>' +
+                                '</div>' +
                             '</td>' +
-                            '</tr>';
+                        '</tr>';
+
+
+
                     }
                     $('#cuerpo_tabla_fd').html(template);
                 }
@@ -70,7 +79,7 @@ $(document).ready(function () {
                                 <td>${registro2[z].apellidos}</td>
                                 <td>${registro2[z].nombres}</td>
                                 <td>
-                                    <button class="btn btn-success btn-sm registrara" data-id="${registro2[z].dni}">
+                                    <button class="btn btn-primary btn-sm bg-primary registrara" data-id="${registro2[z].dni}">
                                         <i class="bi bi-pencil"></i> Editar
                                     </button>
                                 </td>
@@ -262,4 +271,62 @@ $(document).on('click', '#btnfal', function (e) {
             btn.prop('disabled', false);
         }
     });
+});
+
+
+$(document).on('click', '.registrartc', function (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    let id = $(this).data('id');
+    let estador = "Trabajo en Campo"
+    let horaim = '8:00:00';
+    let horait = '14:00:00';
+    let horasm = '13:00:00';
+    let horast = '18:00:00';
+    let descuento = 0;
+    let minutos = 0;
+   
+    $.ajax({
+        url: 'proceso/proceso_asistencia_diaria.php?accion=createtc',
+        type: 'POST',
+        data: {
+            id: id,
+            estador: estador,
+            horaim: horaim,
+            horait: horait,
+            horasm: horasm,
+            horast: horast,
+            descuento: descuento,
+            minutos: minutos
+            
+        },
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                Swal.fire({
+                    title: "¡Éxito!",
+                    text: "Trabajo en campo ha sido registrado correctamente.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    $("#vistas").fadeOut(200, function () {
+                        $(this).load("view/asistencia_diaria.php", function () {
+                            $(this).fadeIn(200);
+                        });
+                    });
+                });
+            } else {
+                Swal.fire({
+                    title: "¡Error!",
+                    text: "Error al registrar asistencia: " + response.message,
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            }
+        },
+        error: function () {
+            alert('Ocurrió un error en la solicitud.');
+        }
+    });
+
 });
