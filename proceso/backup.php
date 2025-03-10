@@ -3,7 +3,7 @@ $host = "localhost";
 $user = "root";
 $pass = ""; 
 $dbname = "bdasistencia";
-
+date_default_timezone_set('America/Lima');
 // ruta de la carpeta 
 $backup_folder = 'C:/copias_bdasistencia';
 // verificar si la carpeta existe sino crearla

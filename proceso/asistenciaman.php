@@ -1,6 +1,6 @@
 <?php
 include('../conecxion/conecxion.php');
-
+date_default_timezone_set('America/Lima');
 $action = $_GET['action'] ?? '';
 
 switch ($action) {
@@ -96,8 +96,50 @@ switch ($action) {
             echo json_encode($asistencia);
 
     break;
-    case 'createpu':
-    
+    case 'create':
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $dni = isset($_POST['dni']) ? $_POST['dni'] : ''; 
+            $fechare = isset($_POST['fechare']) ? $_POST['fechare'] : ''; 
+            $horaim = isset($_POST['horaim']) ? $_POST['horaim'] : ''; 
+            $horasm = isset($_POST['horasm']) ? $_POST['horasm'] : ''; 
+            $estadom = isset($_POST['estadom']) ? $_POST['estadom'] : ''; 
+            $minutos_descum = isset($_POST['minutos_descum']) && $_POST['minutos_descum'] !== '' ? floatval($_POST['minutos_descum']) : 0;
+            $comentariom = isset($_POST['comentariom']) ? $_POST['comentariom'] : ''; 
+            $horait = isset($_POST['horait']) ? $_POST['horait'] : ''; 
+            $horast = isset($_POST['horast']) ? $_POST['horast'] : ''; 
+            $estadot = isset($_POST['estadot']) ? $_POST['estadot'] : ''; 
+            $minutos_descut = isset($_POST['minutos_descut']) && $_POST['minutos_descut'] !== '' ? floatval($_POST['minutos_descut']) : 0;
+            $comentariot = isset($_POST['comentariot']) ? $_POST['comentariot'] : ''; 
+            $totaldes = isset($_POST['totaldes']) && $_POST['totaldes'] !== '' ? floatval($_POST['totaldes']) : 0;
+        
+            $estadomc = ($estadom == "1") ? "Puntual" : (($estadom == "2") ? "Tardanza" : "");
+            $estadotc = ($estadot == "1") ? "Puntual" : (($estadot == "2") ? "Tardanza" : "");
+        
+            $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+            $nombreDia = ucfirst($dias[date('w', strtotime($fechare))]);
+        
+            // Verificar si ya existe un registro para ese DNI y fecha
+            $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = CURDATE()";
+            $result = mysqli_query($cnn, $dni_query);
+        
+            if (mysqli_num_rows($result) > 0) {
+                echo json_encode(["error" => false, "message" => "El personal con DNI $dni ya está registrado"]);
+                mysqli_close($cnn);
+                exit;
+            }
+        
+            $query = "INSERT INTO asistencia (dni, fecha, dia, horaim, horasm, estadom, minutos_descum, horait, horast, estadot, comentario, comentariot, minutos_descut, descuento_dia) 
+                      VALUES ('$dni', '$fechare', '$nombreDia', '$horaim', '$horasm', '$estadomc', $minutos_descum, '$horait', '$horast', '$estadotc', '$comentariom', '$comentariot', $minutos_descut, $totaldes)";
+        
+            if (mysqli_query($cnn, $query)) {
+                echo json_encode(["success" => true, "message" => "Asistencia registrada correctamente"]);
+            } else {
+                echo json_encode(["error" => false , "message" => "Error en la base de datos: " . mysqli_error($cnn)]);
+            }
+        
+
+            mysqli_close($cnn);
+        }
    
     break;
     

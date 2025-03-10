@@ -1,5 +1,8 @@
+
+
 $(document).ready(function () {
     listar_faltas();
+   
 
     function listar_faltas() {
         $.ajax({
@@ -28,7 +31,7 @@ $(document).ready(function () {
                                         '<i class="bi bi-x-circle"></i> Registrar falta' +
                                     '</button>' +
                                     '<button class="btn btn-success btn-sm registrartc d-block" style="padding: 3px 6px; font-size: 15px;" data-id="' + registro[z].dni + '">' +
-                                        '<i class="bi bi-check-circle"></i> Registrar' +
+                                        '<i class="bi bi-check-circle"></i> Registrar Trabajo en Campo' +
                                     '</button>' +
                                 '</div>' +
                             '</td>' +
@@ -44,11 +47,7 @@ $(document).ready(function () {
         listar_asistencias();
     }
 
-    $(document).on('click', '.registrarf', function (e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        
-    });
+  
 
     function listar_asistencias() {
         $.ajax({
@@ -276,7 +275,6 @@ $(document).on('click', '#btnfal', function (e) {
 
 $(document).on('click', '.registrartc', function (e) {
     e.preventDefault();
-    e.stopImmediatePropagation();
     let id = $(this).data('id');
     let estador = "Trabajo en Campo"
     let horaim = '8:00:00';
@@ -329,4 +327,6 @@ $(document).on('click', '.registrartc', function (e) {
         }
     });
 
+
 });
+

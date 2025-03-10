@@ -32,7 +32,10 @@
                         <b><i class="bi bi-calendar-check"></i> REGISTRO DE ASISTENCIA</b>
                     </div>
                     <div class="card-body" id="formCardBody">
+                        
                         <form class="row g-3" id="asistenciaform">
+                            <!-- sueldo del personal -->
+                             <input type="hidden"  id="sueldopriv">
 
                             <!-- Código -->
                             <div class="col-md-3" id="codigoContainer">
@@ -96,19 +99,7 @@
                                 <textarea class="form-control" id="comenf" rows="3" placeholder="Escribe aquí..."></textarea>
                             </div>
                             
-                            <!-- Turno -->
-                            <div class="col-md-4" id="divturno">
-                                <label for="turno" class="form-label">
-                                    <i class="bi bi-brightness-alt-high"></i> Turno
-                                </label>
-                                <select class="form-select" id="turno" required>
-                                    <option value="">Seleccione</option>
-                                    <option value="1">Diurno</option>
-                                    <option value="2">Tarde</option>
-                                    <option value="3">Ambos</option>
-                                </select>
-                            </div>
-
+                          
                             <!-- Sección para el turno de la mañana -->
                             <div class="col-md-12 mt-4" id="divm">
                                 <h5>Turno de la Mañana</h5>
@@ -134,15 +125,16 @@
                                             <option value="1">Puntual</option>
                                             <option value="2">Tardanza</option>
                                             <option value="3">Falta</option>
+                                            <option value="4">Trabajo en campo</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-2">
+                                    <div class="col-md-4 mb-2" id="divmdm" style="display: none;">
                                         <label for="mdesm" class="form-label">
                                             <i class="bi bi-clock-history"></i> Minutos de Descuento
                                         </label>
                                         <input type="number" class="form-control" id="mdesm">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="divjusm" style="display: none;">
                                         <label class="form-label">
                                             <i class="bi bi-file-earmark"></i> Justificado
                                         </label>
@@ -157,7 +149,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-12" id="divcomm" style="display: none;">
                                         <label for="comenm" class="form-label">
                                             <i class="bi bi-chat-left"></i> Comentarios
                                         </label>
@@ -191,15 +183,16 @@
                                             <option value="1">Puntual</option>
                                             <option value="2">Tardanza</option>
                                             <option value="3">Falta</option>
+                                            <option value="4">Trabajo en campo</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-2">
+                                    <div class="col-md-4 mb-2" id="divmdt"style="display: none;">
                                         <label for="mdest" class="form-label">
                                             <i class="bi bi-clock-history"></i> Minutos de Descuento
                                         </label>
                                         <input type="number" class="form-control" id="mdest">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="divjust" style="display: none;">
                                         <label class="form-label">
                                             <i class="bi bi-file-earmark"></i> Justificado
                                         </label>
@@ -214,7 +207,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-12" id="divcomt" style="display: none;">
                                         <label for="coment" class="form-label">
                                             <i class="bi bi-chat-left"></i> Comentarios
                                         </label>
@@ -258,7 +251,7 @@
                                     <i class="bi bi-arrow-clockwise"></i> Actualizar
                                 </button>
                                 <button type="submit" class="btn btn-danger bg-danger text-white" id="btnfal" style="display: none;">
-                                    <i class="bi bi-x-circle"></i> Registrar Faltaaaa
+                                    <i class="bi bi-x-circle"></i> Registrar Falta
                                 </button>
                                 <button type="reset" class="btn btn-secondary" id="btnLimpiar">
                                     <i class="bi bi-arrow-repeat"></i> Limpiar
@@ -271,5 +264,7 @@
         </div>
     </div>
 </div>
+<script src="javascrip/asistenciamante.js"></script>
+
 </body>
 </html>

@@ -21,7 +21,7 @@ if($_SESSION['rol']==="1"){
     <link rel="stylesheet" href="lib/boostrap-iconos/bootstrap-icons.min.css">
     <link rel="stylesheet" href="lib/sweetalert2/sweetalert2.min.css">
     <title>Panel</title>
-    <script src="lib/javascrip/jquery-3.7.1.min.js"></script> 
+    <script src="lib/jquery-3.7.1.min.js"></script> 
    <link rel="stylesheet" href="estilos/estilos_panel.css">
    <link rel="stylesheet" href="estilos/estilosdeviews.css">
    <link rel="shortcut icon" href="img/muni.png" type="image/x-icon">
@@ -140,10 +140,10 @@ if($_SESSION['rol']==="1"){
 <script src="lib/sweetalert2/sweetalert2.min.js"></script>
 <script src="javascrip/backup.js"></script>
 <script src="javascrip/panel.js"></script>
-<script src="javascrip/asistenciamante.js"></script>
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
 <script src="javascrip/usuariosmante.js"></script>
 <script src="javascrip/personalmante.js"></script>
+
 
 </body>
 </html>

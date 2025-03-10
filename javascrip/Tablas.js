@@ -45,21 +45,21 @@ $('#tasis').DataTable({
             "previous": "Anterior"
         }
     },
-    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + // Botones a la izquierda, búsqueda a la derecha
-           '<"row"<"col-sm-12"tr>>' + // Tabla
-           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', // Información y paginación
+    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + 
+           '<"row"<"col-sm-12"tr>>' + 
+           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', 
     "buttons": [
         {
-            extend: 'excelHtml5', // Botón para exportar a Excel
+            extend: 'excelHtml5', 
             text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
             className: 'btn btn-success',
-            title: 'Reporte_de_Asistencia' // Título del archivo Excel
+            title: 'Reporte_de_Asistencia' 
         },
         {
-            extend: 'pdfHtml5', // Botón para exportar a PDF
+            extend: 'pdfHtml5', 
             text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
             className: 'btn btn-danger',
-            title: 'reporte_de_Asistencia', // Título del archivo PDF
+            title: 'reporte_de_Asistencia', 
             customize: function (doc) {
                 // Personalización del PDF
                 doc.defaultStyle.fontSize = 10;
@@ -72,12 +72,11 @@ $('#tasis').DataTable({
 });
 //iniciar tabla personal
 $('#tper').DataTable({
-    "paging": true,
+    "paging": false,
     "searching": true,
-    "ordering": true,
+    "ordering": false,
     "info": true,
     "autoWidth": false,
-    "lengthMenu": [5,10, 30, 50,100],  
     "scrollX": true, 
     "responsive": true,
     "language": {
@@ -230,7 +229,7 @@ function obtenerUsuarios() {
                         asistencia.fecha,
                         asistencia.dia,
                         asistencia.horaim ? `${asistencia.horaim} AM` : "No hay registro",
-                        asistencia.horasm ? `${asistencia.horasm} AM` : "No hay registro",
+                        asistencia.horasm ? `${asistencia.horasm} PM` : "No hay registro",
                         asistencia.estadom || "No hay registro",
                         asistencia.horait ? `${asistencia.horait} PM` : "No hay registro",
                         asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
