@@ -273,17 +273,24 @@ $(document).on('click', '#btnfal', function (e) {
 });
 
 
-$(document).on('click', '.registrartc', function (e) {
+$(document).off('click', '.registrartc').on('click', '.registrartc', function (e) {
     e.preventDefault();
-    let id = $(this).data('id');
-    let estador = "Trabajo en Campo"
+
+    let $btn = $(this); 
+    if ($btn.data('enviando')) {
+        return; 
+    }
+    $btn.data('enviando', true); 
+
+    let id = $btn.data('id');
+    let estador = "Trabajo en Campo";
     let horaim = '8:00:00';
     let horait = '14:00:00';
     let horasm = '13:00:00';
     let horast = '18:00:00';
     let descuento = 0;
     let minutos = 0;
-   
+
     $.ajax({
         url: 'proceso/proceso_asistencia_diaria.php?accion=createtc',
         type: 'POST',
@@ -296,7 +303,6 @@ $(document).on('click', '.registrartc', function (e) {
             horast: horast,
             descuento: descuento,
             minutos: minutos
-            
         },
         dataType: 'json',
         success: function (response) {
@@ -324,9 +330,9 @@ $(document).on('click', '.registrartc', function (e) {
         },
         error: function () {
             alert('Ocurrió un error en la solicitud.');
+        },
+        complete: function () {
+            $btn.data('enviando', false); 
         }
     });
-
-
 });
-
