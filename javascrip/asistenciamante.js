@@ -290,13 +290,14 @@ $(document).on('click', '#filtraras', function (e) {
 });
 
 $(document).on('click', '#btnregistraras', function (e) {
-    e.preventDefault(); 
+    e.preventDefault();
 
     let dni = $('#acodigo').val().trim();
     let fechare = $('#fechare').val().trim();
     let horaim = $('#hentradam').val().trim();
     let horait = $('#hentradat').val().trim();
-    
+    let horast = $('#hsalidat').val().trim(); 
+
     if (dni === "" || fechare === "") {
         Swal.fire({
             title: "Error",
@@ -304,7 +305,7 @@ $(document).on('click', '#btnregistraras', function (e) {
             icon: "warning",
             confirmButtonText: "OK"
         });
-        return; 
+        return;
     }
 
     if (horaim === "" && horait === "") {
@@ -317,16 +318,56 @@ $(document).on('click', '#btnregistraras', function (e) {
         return;
     }
 
-   
-    let horasm = $('#hsalidam').val();
+    if (horaim !== "") {
+        let horaMinimaM = "07:30:00";
+        let horaMaximaM = "13:00:00";
+
+        if (horaim <= horaMinimaM || horaim >= horaMaximaM) {
+            Swal.fire({
+                title: "Error",
+                text: "La hora de entrada en la mañana debe estar entre 07:30 y 13:00.",
+                icon: "warning",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+    }
+
+
+    if (horait !== "") {
+        let horaMinimaT = "13:35:00";
+        let horaMaximaT = "18:00:00";
+
+        if (horait <= horaMinimaT || horait >= horaMaximaT) {
+            Swal.fire({
+                title: "Error",
+                text: "La hora de entrada en la tarde debe estar entre 13:35 y 18:00.",
+                icon: "warning",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+    }
+
+    if (horast !== "" && horast <= "18:00:00") {
+        Swal.fire({
+            title: "Error",
+            text: "La hora de salida debe ser mayor a 18:00.",
+            icon: "warning",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+
+    $('#btnregistraras').prop('disabled', true);
+
     let estadom = $('#estadom').val();
     let minutos_descum = $('#mdesm').val();
     let comentariom = $('#comenm').val();
-    let horast = $('#hsalidat').val();
     let estadot = $('#estadota').val();
     let minutos_descut = $('#mdest').val();
     let comentariot = $('#coment').val();
-    // let totalminudes = $('#totalminutos').val();
     let totaldes = $('#totaldescuento').val();
 
     $.ajax({
@@ -336,7 +377,6 @@ $(document).on('click', '#btnregistraras', function (e) {
             dni: dni,
             fechare: fechare,
             horaim: horaim,
-            horasm: horasm,
             estadom: estadom,
             minutos_descum: minutos_descum,
             comentariom: comentariom,
@@ -345,11 +385,11 @@ $(document).on('click', '#btnregistraras', function (e) {
             estadot: estadot,
             minutos_descut: minutos_descut,
             comentariot: comentariot,
-            // totalminudes: totalminudes,
             totaldes: totaldes
         },
         dataType: 'json',
         success: function (response) {
+            $('#btnregistraras').prop('disabled', false); 
             if (response.success) {
                 Swal.fire({
                     title: "¡Registro exitoso!",
@@ -369,6 +409,7 @@ $(document).on('click', '#btnregistraras', function (e) {
             }
         },
         error: function (xhr, status, error) {
+            $('#btnregistraras').prop('disabled', false); 
             console.error('Error en la solicitud AJAX:', xhr.responseText);
             Swal.fire({
                 title: "Error",

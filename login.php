@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Sistema de Punto de Venta</title>
+  <title>Login</title>
   <link rel="stylesheet" href="lib/boostrap-css/bootstrap.min.css">
   <link rel="stylesheet" href="lib/boostrap-iconos/bootstrap-icons.min.css">
   <link rel="shortcut icon" href="img/muni.png" type="image/x-icon">
   <style>
     :root {
-      --primary-color: #060614; /* Fondo blanco */
+      --primary-color: #060614; 
       --secondary-color: #060614;
       --accent-color: #6c5ce7;
       --border-radius: 15px;
-      --box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+      --box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1); 
     }
 
     body {
       margin: 0;
       padding: 0;
       font-family: 'Arial', sans-serif;
-      background: var(--primary-color); /* Fondo blanco */
+      background: var(--primary-color); 
       display: flex;
-      justify-content: center; /* Alinea el contenido a la derecha */
+      justify-content: center; 
       align-items: center;
       min-height: 100vh;
       overflow: hidden;
@@ -40,7 +40,7 @@
       position: relative;
       overflow: hidden;
       /* margin-right: 10%; Margen derecho para separar del borde */
-      border: 1px solid #ddd; /* Borde suave para mayor visibilidad */
+      border: 1px solid #ddd; 
     }
 
     @keyframes fade-in {
@@ -57,7 +57,7 @@
     .login-container img {
       width: 180px;
       margin-bottom: 1.5rem;
-      filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1)); /* Sombra más suave */
+      filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1)); 
     }
 
     .login-container h3 {
@@ -82,12 +82,12 @@
     }
 
     .form-group .form-control::placeholder {
-      color: rgba(0, 0, 0, 0.5); /* Placeholder más suave */
+      color: rgba(0, 0, 0, 0.5); 
     }
 
     .form-group .form-control:focus {
       border-color: var(--accent-color);
-      box-shadow: 0 0 10px rgba(108, 92, 231, 0.2); /* Sombra más suave */
+      box-shadow: 0 0 10px rgba(108, 92, 231, 0.2);
       background: rgba(255, 255, 255, 1);
     }
 
@@ -115,12 +115,12 @@
 
     .btn-custom:hover {
       transform: translateY(-3px);
-      box-shadow: 0px 6px 15px rgba(108, 92, 231, 0.3); /* Sombra más suave */
+      box-shadow: 0px 6px 15px rgba(108, 92, 231, 0.3); 
     }
 
     .btn-custom:active {
       transform: translateY(0);
-      box-shadow: 0px 4px 10px rgba(108, 92, 231, 0.2); /* Sombra más suave */
+      box-shadow: 0px 4px 10px rgba(108, 92, 231, 0.2); 
     }
 
     .error-message {

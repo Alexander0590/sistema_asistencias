@@ -1,4 +1,9 @@
 
+function sumarminutosdesc2() {
+    let num1 = parseInt($('#mdesm2').val()) || 0;
+    let num2 = parseInt($('#mdest2').val()) || 0;
+    $('#totalminutos2').val(num1 + num2).trigger('input');
+}
 
 $(document).ready(function () {
     listar_faltas();
@@ -102,7 +107,7 @@ $(document).on('click', '.registrara', function (e) {
     let id = $(this).data('id');
 
     $("#vistas").fadeOut(200, function () {
-        $(this).load("view/asistencia.html", function () {
+        $(this).load("view/editar_asistencia.php", function () {
             $(this).fadeIn(200); 
             $.ajax({
                 url: 'proceso/proceso_asistencia_diaria.php?accion=readOne', 
@@ -110,30 +115,56 @@ $(document).on('click', '.registrara', function (e) {
                 data: { id: id },
                 dataType: 'json',
                 success: function (data) {
-                    if ($('#asistenciaform').length) {
-                        $('#btacasis').show();
-                        $('#btnregistraras').hide();
-                        $('#acodigo').val(data.dni);
-                        $('#fechare').val(data.fecha);
-                        $('#hentradam').val(data.horaim);
-                        $('#hsalidam').val(data.horasm);
-                        $('#hentradat').val(data.horait);
-                        $('#hsalidat').val(data.horast);
-                        let estado1;
-                        let estado2;
-                        const estadoMap = { "Puntual": "1", "Tardanza": "2","Falta": "3" };
-                        estado1 = estadoMap[data.estadom] || "";
-                        estado2 = estadoMap[data.estadot] || "";
-                        $('#estadom').val(estado1);
-                        $('#estadota').val(estado2);
+                    if ($('#editasistenciaform').length) {
+                       
+                        let estadom;
+                        let estadot;
 
-                        let minutosTarde = parseInt(data.minutos_descut) || 0;
-                        let minutosManana = parseInt(data.minutos_descum) || 0;
-                        let totalMinutos = minutosTarde + minutosManana;
+                        if ( data.estadom === "Puntual") {
+                            estadom = 1;
+                            $("#divjust2, #divcomm2").hide();
+                            $("#divjust2, #divcomt2").hide();
+                        } else if ( data.estadom === "Tardanza") {
+                            estadom = 2;
+                        } else if ( data.estadom === "Falta") {
+                            estadom = 3;
+                        } else if ( data.estadom === "Trabajo en Campo") {
+
+                            estadom = 4;
+                            $("#divjusm2, #divcomm2").hide();
+                            $("#divjust2, #divcomt2").hide();
+                        } else {
+                            estadom = 0; 
+                        }
+
                         
-                        $('#mdesm').val(minutosManana);
-                        $('#mdest').val(minutosTarde);
-                        $('#totalminutos').val(totalMinutos);
+                        if ( data.estadot === "Puntual") {
+                            estadot = 1;
+                        } else if ( data.estadom === "Tardanza") {
+                            estadot = 2;
+                        } else if ( data.estadom === "Falta") {
+                            estadot = 3;
+                        } else if ( data.estadom === "Trabajo en Campo") {
+                            estadot = 4;
+                        } else {
+                            estadot = 0; 
+                        }
+                            $('#acodigo2').prop('disabled',true);
+                            $('#adatos2').prop('disabled',true);
+                            $('#adatos2').val(data.nombres+" "+data.apellidos);
+                            $('#sueldopriv2').val(data.sueldo);
+                            $('#acodigo2').val(data.dni);
+                            $('#estadom2').val(estadom);
+                            $('#estadota2').val(estadot);
+                            $('#fechare2').val(data.fecha);
+                            $('#hentradam2').val(data.horaim);
+                            $('#hentradat2').val(data.horait);
+                            $('#hsalidat2').val(data.horast);
+                            $('#mdesm2').val(data.minutos_descum);
+                            $('#mdest2').val(data.minutos_descut);
+                            $('#mdesm2, #mdest2').off('input').on('input', sumarminutosdesc2);
+                            sumarminutosdesc2();
+                       
                        
                     } else {
                         console.error("No se encontró el formulario en usuario.php");
@@ -149,7 +180,8 @@ $(document).on('click', '.registrara', function (e) {
 
 });
 
-//traer datos de las  faltas
+
+//traer falta
 $(document).on('click', '.registrarf', function (e) {
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -272,7 +304,7 @@ $(document).on('click', '#btnfal', function (e) {
     });
 });
 
-
+//registrar trabajo de campo
 $(document).off('click', '.registrartc').on('click', '.registrartc', function (e) {
     e.preventDefault();
 

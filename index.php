@@ -10,7 +10,6 @@
     <script src="lib/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="lib/sweetalert2/sweetalert2.min.css">
     <style>
-      /* Mueve el contenedor principal hacia la derecha */
       .container {
         justify-content: flex-end; 
         padding-right: 5rem; 
@@ -62,9 +61,9 @@
         margin-top: 1rem;
     }
 
-    /* Estilos para las nuevas tarjetas */
+   
     .stats-container {
-        margin-left: 17rem; /* Ajusta este valor para mover las tarjetas a la derecha */
+        margin-left: 17rem; 
     }
 
     .card {

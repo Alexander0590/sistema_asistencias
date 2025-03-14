@@ -186,7 +186,7 @@ function obtenerUsuarios() {
                         personal.apellidos,
                         personal.nombres,
                         personal.modalidad_contratacion,
-                        personal.cargo,
+                        personal.nombre_cargo,
                         estado,
                         personal.fecha_nacimiento,
                         personal.edad,

@@ -201,7 +201,7 @@ $(document).on('click', '.perEditar', function () {
                         $('#btnLimper').hide(); 
                         $('#ocfoto').hide();  
                         $('#btacuper').show();
-                        $('#pcargo').val(data.cargo); 
+                        $('#pcargo').val(data.idcargo); 
                         $('#pfechanaci').val(data.fecha_nacimiento); 
                         $('#psuel').val(data.sueldo); 
                         if (data.foto) {

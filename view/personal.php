@@ -1,3 +1,13 @@
+<?php
+include '../conecxion/conecxion.php'; 
+
+$sql = "SELECT nombre,idcargo FROM cargos"; 
+$resultado = $cnn->query($sql);
+
+if (!$resultado) {
+    die("Error en la consulta: " . $cnn->error);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,7 +81,18 @@
                   <label for="cargo" class="form-label" >
                   <i class="bi bi-briefcase"></i> Cargo
                   </label>
-                  <input type="text" class="form-control" id="pcargo" placeholder="Ingresa el Cargo" required>
+                  <select class="form-select" id="pcargo" required>
+                    <option value="">Seleccione un cargo</option>
+                    <?php
+                      if ($resultado->num_rows > 0) {
+                          while ($fila = $resultado->fetch_assoc()) {
+                              echo "<option value='" . $fila['idcargo'] . "'>" . $fila['nombre'] . "</option>";
+                          }
+                      } else {
+                          echo "<option value=''>No hay cargos disponibles</option>";
+                      }
+                      ?>
+                </select>
                 </div>
                 <div class="col-md-3" >
                   <label for="sueldo" class="form-label" >
@@ -150,3 +171,6 @@
   </script>
 </body>
 </html>
+<?php
+$cnn->close();
+?>

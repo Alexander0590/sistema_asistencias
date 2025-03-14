@@ -5,19 +5,33 @@ require_once('tcpdf/tcpdf.php');
 $idpersonal = $_GET['id']; 
 
 // Consultar la base de datos para obtener los datos del personal
-$query = "SELECT dni, nombres, apellidos, cargo, foto FROM personal WHERE dni = ?";
+$query = "SELECT 
+    p.dni, 
+    p.nombres, 
+    p.apellidos, 
+    p.idcargo, 
+    c.nombre AS nombre_cargo, 
+    p.foto
+FROM 
+    personal p
+INNER JOIN 
+    cargos c ON p.idcargo = c.idcargo
+WHERE 
+    p.dni = ?;";
+
 $stmt = $cnn->prepare($query);
-$stmt->bind_param("i", $idpersonal); 
+$stmt->bind_param("s", $idpersonal); // Usa "s" si dni es string
 $stmt->execute();
 $result = $stmt->get_result();
 $personal = $result->fetch_assoc();
+
 
 if ($personal) {
     // Extraer los datos del personal
     $nombre = $personal['nombres'];
     $apellido = $personal['apellidos'];
     $codigo = $personal['dni'];
-    $cargo = $personal['cargo'];
+    $cargo = $personal['nombre_cargo'];
     $foto64 = $personal['foto']; 
 
     // Limpiar la cadena Base64 si es necesario

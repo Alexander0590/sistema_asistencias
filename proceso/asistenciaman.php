@@ -101,7 +101,6 @@ switch ($action) {
             $dni = isset($_POST['dni']) ? $_POST['dni'] : ''; 
             $fechare = isset($_POST['fechare']) ? $_POST['fechare'] : ''; 
             $horaim = isset($_POST['horaim']) ? $_POST['horaim'] : ''; 
-            $horasm = isset($_POST['horasm']) ? $_POST['horasm'] : ''; 
             $estadom = isset($_POST['estadom']) ? $_POST['estadom'] : ''; 
             $minutos_descum = isset($_POST['minutos_descum']) && $_POST['minutos_descum'] !== '' ? floatval($_POST['minutos_descum']) : 0;
             $comentariom = isset($_POST['comentariom']) ? $_POST['comentariom'] : ''; 
@@ -129,7 +128,7 @@ switch ($action) {
             }
         
             $query = "INSERT INTO asistencia (dni, fecha, dia, horaim, horasm, estadom, minutos_descum, horait, horast, estadot, comentario, comentariot, minutos_descut, descuento_dia) 
-                      VALUES ('$dni', '$fechare', '$nombreDia', '$horaim', '$horasm', '$estadomc', $minutos_descum, '$horait', '$horast', '$estadotc', '$comentariom', '$comentariot', $minutos_descut, $totaldes)";
+                      VALUES ('$dni', '$fechare', '$nombreDia', '$horaim', '13:00:00', '$estadomc', $minutos_descum, '$horait', '$horast', '$estadotc', '$comentariom', '$comentariot', $minutos_descut, $totaldes)";
         
             if (mysqli_query($cnn, $query)) {
                 echo json_encode(["success" => true, "message" => "Asistencia registrada correctamente"]);

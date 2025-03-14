@@ -28,7 +28,10 @@ switch ($accion) {
     case "readOne":
         //traer la asistencia
         $dni= $_GET['id'];
-        $sql = "SELECT * FROM asistencia WHERE dni = '$dni' and fecha = CURDATE()";
+        $sql = "SELECT a.*, p.nombres ,p.apellidos,p.sueldo
+        FROM asistencia a
+        JOIN personal p ON a.dni = p.dni
+        WHERE a.dni = '$dni' AND a.fecha = CURDATE()";
         $result = mysqli_query($cnn, $sql);
 
         if ($result && mysqli_num_rows($result) > 0) {

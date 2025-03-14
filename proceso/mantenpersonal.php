@@ -23,8 +23,8 @@
             if (mysqli_num_rows($result) > 0) {
                 echo json_encode(["status" => "error", "message" => "El DNI ya está registrado"]);
             } else {
-                $query = "INSERT INTO personal (dni, nombres, apellidos, modalidad_contratacion, cargo, fecha_nacimiento,  sueldo, fecha_registro, foto) 
-                          VALUES ('$dni', '$nombres','$apellidos', '$modalidad_texto', '$cargo', '$fechanaci', $sueldo, NOW(), '$foto64')";
+                $query = "INSERT INTO personal (dni, nombres, apellidos, modalidad_contratacion, idcargo, fecha_nacimiento,  sueldo, fecha_registro, foto) 
+                          VALUES ('$dni', '$nombres','$apellidos', '$modalidad_texto', $cargo, '$fechanaci', $sueldo, NOW(), '$foto64')";
                 if (mysqli_query($cnn, $query)) {
                     echo json_encode(["status" => "success"]);
                 } else {
@@ -37,7 +37,13 @@
 
          case 'read':
             // Leer todos los usuarios
-            $query = "SELECT * FROM personal";
+            $query = "SELECT personal.*, cargos.nombre AS nombre_cargo
+                    FROM 
+                        personal
+                    INNER JOIN 
+                        cargos 
+                    ON 
+                    personal.idcargo = cargos.idcargo;";
             $result = mysqli_query($cnn, $query);
             
             $personal = [];
@@ -81,7 +87,7 @@
                     if (mysqli_num_rows($result) > 0) {
                         echo json_encode(["status" => "error", "message" => "El DNI ya está en uso por otro Trabajador."]);
                     } else {
-                        $query = "UPDATE personal SET  dni= '$dni' , nombres = '$nombres', apellidos = '$apellidos', modalidad_contratacion = '$modalidad1', cargo = '$cargo', fecha_nacimiento= '$fechanaci' ,sueldo= $sueldo ,foto = '$foto' ,estado = '$estado1'
+                        $query = "UPDATE personal SET  dni= '$dni' , nombres = '$nombres', apellidos = '$apellidos', modalidad_contratacion = '$modalidad1', idcargo = $cargo, fecha_nacimiento= '$fechanaci' ,sueldo= $sueldo ,foto = '$foto' ,estado = '$estado1'
                         WHERE dni = '$dnivie'";                        
                         if (mysqli_query($cnn, $query)) {
                             echo json_encode(["status" => "success"]);
@@ -108,18 +114,36 @@
         }
             
         break;
-
-     case 'delete':
-         // Eliminar un usuario
-         $id = $_GET['id'];
-         echo $id;
-         $query = "DELETE FROM personal WHERE dni = $id";
-         if (mysqli_query($cnn, $query)) {
-             echo json_encode(["status" => "success"]);
-         } else {
-             echo json_encode(["status" => "error", "message" => mysqli_error($cnn)]);
-         }
-         break;
+//eliminar personal
+        case 'delete':
+            $id = $_GET['id'];
+        
+            if (!empty($id)) {
+                mysqli_begin_transaction($cnn);
+        
+                try {
+                    $queryAsistencia = "DELETE FROM asistencia WHERE dni = ?";
+                    $stmtAsistencia = mysqli_prepare($cnn, $queryAsistencia);
+                    mysqli_stmt_bind_param($stmtAsistencia, "s", $id);
+                    mysqli_stmt_execute($stmtAsistencia);
+        
+                    $queryPersonal = "DELETE FROM personal WHERE dni = ?";
+                    $stmtPersonal = mysqli_prepare($cnn, $queryPersonal);
+                    mysqli_stmt_bind_param($stmtPersonal, "s", $id);
+                    mysqli_stmt_execute($stmtPersonal);
+        
+                    mysqli_commit($cnn);
+        
+                    echo json_encode(["status" => "success"]);
+                } catch (Exception $e) {
+                    mysqli_rollback($cnn);
+                    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+                }
+            } else {
+                echo json_encode(["status" => "error", "message" => "ID no válido"]);
+            }
+            break;
+        
  
      default:
          echo json_encode(["status" => "error", "message" => "Acción no válida"]);
