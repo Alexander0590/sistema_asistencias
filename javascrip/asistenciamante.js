@@ -79,8 +79,8 @@ function validarFormulario() {
 
     // Función para calcular el descuento
     function calculardecuento() {
-        let sueldoSemanal = parseFloat($('#sueldopriv').val()) || 0;
-        let gananciaPorMinuto = sueldoSemanal / 2400;
+        let sueldoMensual = parseFloat($('#sueldopriv').val()) || 0;
+        let gananciaPorMinuto = sueldoMensual / 14400;
         let totalMinutos = parseInt($('#totalminutos').val()) || 0;
         let gananciaTotal = gananciaPorMinuto * totalMinutos;
         $('#totaldescuento').val(gananciaTotal.toFixed(2));
@@ -349,7 +349,7 @@ $(document).on('click', '#btnregistraras', function (e) {
         }
     }
 
-    if (horast !== "" && horast <= "18:00:00") {
+    if (horast !== "" && horast  >= "18:00:00") {
         Swal.fire({
             title: "Error",
             text: "La hora de salida debe ser mayor a 18:00.",

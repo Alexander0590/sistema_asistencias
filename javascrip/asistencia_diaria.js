@@ -4,11 +4,30 @@ function sumarminutosdesc2() {
     let num2 = parseInt($('#mdest2').val()) || 0;
     $('#totalminutos2').val(num1 + num2).trigger('input');
 }
+function calcularMinutosm2() {
+    let horaTolerancia = 8 * 60 + 16;
+    let inputHora = $("#hentradam2").val();
 
+    if (!inputHora) {
+        $("#mdesm2").val("");
+        return;
+    }
+
+    let [horas, minutos] = inputHora.split(":").map(Number);
+    let minutosIngresados = horas * 60 + minutos;
+    let diferencia = minutosIngresados - horaTolerancia;
+
+    $("#mdesm2").val(diferencia > 0 ? diferencia : 0).trigger('input');
+}
+function calculardecuento2() {
+    let sueldoMensual = parseFloat($('#sueldopriv2').val()) || 0;
+    let gananciaPorMinuto = sueldoMensual / 14400;
+    let totalMinutos = parseInt($('#totalminutos2').val()) || 0;
+    let gananciaTotal = gananciaPorMinuto * totalMinutos;
+    $('#totaldescuento2').val(gananciaTotal.toFixed(2));
+}
 $(document).ready(function () {
     listar_faltas();
-   
-
     function listar_faltas() {
         $.ajax({
             async: true,
@@ -116,23 +135,52 @@ $(document).on('click', '.registrara', function (e) {
                 dataType: 'json',
                 success: function (data) {
                     if ($('#editasistenciaform').length) {
-                       
+
+                        $("#estadom2").on("change", function() {
+                            let valor6 = $(this).val();
+                            if(valor6==="1"){
+                                $('#mdesm2 ,#totaldescuento2').val(0);
+                                sumarminutosdesc2();
+                                $("input[name='justificadom2']").prop("checked", false);
+                                $("#divjusm2, #divcomm2").hide();
+
+                            }else if(valor6==="2"){
+                            $("#divjusm2, #divcomm2").show();
+                            $('input[name="justificadom2"]').off('change').on('change', function() {
+                                if ($(this).val() === "si") {
+                                    $('#mdesm2').val(0).trigger('input');
+                                } else if ($(this).val() === "no") {
+                                    $("#hentradam2").off('input').on("input", calcularMinutosm2);
+                                    calcularMinutosm2();
+                                    
+                                }
+                            });
+                            }
+                        });
+
+                        $("#estadot2").on("change", function() {
+                            let valor7 = $(this).val();
+                            if(valor7==="1"){
+                                $('#mdest2').val(0);
+                                sumarminutosdesc2();
+                                $("input[type='justificadot2']").prop("checked", false);
+                                $("#divjust2, #divcomt2").hide();
+
+                            }
+                        });
                         let estadom;
                         let estadot;
 
                         if ( data.estadom === "Puntual") {
                             estadom = 1;
-                            $("#divjust2, #divcomm2").hide();
-                            $("#divjust2, #divcomt2").hide();
+                            $("#divjusm2, #divcomm2").hide();
                         } else if ( data.estadom === "Tardanza") {
                             estadom = 2;
                         } else if ( data.estadom === "Falta") {
                             estadom = 3;
                         } else if ( data.estadom === "Trabajo en Campo") {
-
                             estadom = 4;
                             $("#divjusm2, #divcomm2").hide();
-                            $("#divjust2, #divcomt2").hide();
                         } else {
                             estadom = 0; 
                         }
@@ -140,14 +188,24 @@ $(document).on('click', '.registrara', function (e) {
                         
                         if ( data.estadot === "Puntual") {
                             estadot = 1;
+                            $("#divjust2, #divcomt2").hide();
                         } else if ( data.estadom === "Tardanza") {
                             estadot = 2;
                         } else if ( data.estadom === "Falta") {
                             estadot = 3;
                         } else if ( data.estadom === "Trabajo en Campo") {
                             estadot = 4;
+                            $("#divjust2, #divcomt2").hide();
                         } else {
                             estadot = 0; 
+                        }
+                        if(data.minutos_descum > "0" && data.estadom=="Tardanza" ){
+                            $("#justnom2").prop("checked", true);
+                        }else if(data.minutos_descum ==="0" && data.estadom=="Tardanza"){
+                            $("#justsim2").prop("checked", true);
+                        }else{
+                            $("#justnom2").prop("checked", false);
+                            $("#justsim2").prop("checked", false);
                         }
                             $('#acodigo2').prop('disabled',true);
                             $('#adatos2').prop('disabled',true);
@@ -162,6 +220,7 @@ $(document).on('click', '.registrara', function (e) {
                             $('#hsalidat2').val(data.horast);
                             $('#mdesm2').val(data.minutos_descum);
                             $('#mdest2').val(data.minutos_descut);
+                            $('#totaldescuento2').val(data.descuento_dia);
                             $('#mdesm2, #mdest2').off('input').on('input', sumarminutosdesc2);
                             sumarminutosdesc2();
                        
@@ -215,13 +274,13 @@ $(document).on('click', '.registrarf', function (e) {
                                 $('#totalminutos').val(0).prop('disabled', true);
 
                             } else if ($(this).val() === "no") {
-                                $('#mdesf').val(480).prop('disabled', true);;
+                                $('#mdesf').val(480).prop('disabled', true); 
                                 let sueldoMensual = parseFloat(data.sueldo) || 0;
-                                let pagoPorMinuto = (sueldoMensual / 4) / (8 * 5 * 60); 
+                                let pagoPorMinuto = sueldoMensual / 14400; 
                                 let descuento = 480 * pagoPorMinuto;
                                 $('#totaldescuento').val(descuento.toFixed(2)).prop('disabled', true);
                                 $('#totalminutos').val(480).prop('disabled', true);
-                                $('#neto').val(sueldoMensual-descuento).prop('disabled', true);
+                                $('#neto').val((sueldoMensual - descuento).toFixed(2)).prop('disabled', true);
                             }
                         });
                     } else {

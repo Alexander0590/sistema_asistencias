@@ -67,7 +67,7 @@
                                     <label for="mdesm" class="form-label">
                                         <i class="bi bi-clock-history"></i> Minutos de Descuento
                                     </label>
-                                    <input type="number" class="form-control" id="mdesm2">
+                                    <input type="number" class="form-control" id="mdesm2" disabled>
                                 </div>
                                 <div class="col-md-4" id="divjusm2" >
                                     <label class="form-label">
@@ -75,11 +75,11 @@
                                     </label>
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="justificadom2" id="justsim" value="si">
+                                            <input class="form-check-input" type="radio" name="justificadom2" id="justsim2" value="si">
                                             <label class="form-check-label" for="justsim">Sí</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="justificadom2" id="justnom" value="no">
+                                            <input class="form-check-input" type="radio" name="justificadom2" id="justnom2" value="no">
                                             <label class="form-check-label" for="justnom">No</label>
                                         </div>
                                     </div>
@@ -125,7 +125,7 @@
                                     <label for="mdest" class="form-label">
                                         <i class="bi bi-clock-history"></i> Minutos de Descuento
                                     </label>
-                                    <input type="number" class="form-control" id="mdest2">
+                                    <input type="number" class="form-control" id="mdest2" disabled>
                                 </div>
                                 <div class="col-md-4" id="divjust2" >
                                     <label class="form-label">
@@ -159,13 +159,13 @@
                                     <label for="totaldescuento" class="form-label">
                                         <i class="bi bi-cash"></i> Total de Descuento
                                     </label>
-                                    <input type="number" class="form-control" id="totaldescuento2" >
+                                    <input type="number" class="form-control" id="totaldescuento2"  disabled>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="totalminutos" class="form-label">
                                         <i class="bi bi-clock-history"></i> Total de Minutos de Descuento
                                     </label>
-                                    <input type="number" class="form-control" id="totalminutos2" >
+                                    <input type="number" class="form-control" id="totalminutos2" disabled>
                                 </div>
                                </div>
 
