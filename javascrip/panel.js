@@ -76,11 +76,15 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/asistencia_diaria.php"); 
     });
+    //reporte asistencia
     $("#reporteas").click(function (e) {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_de_asistencia.php"); 
     });
-
+    $("#lserena").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/Lista_seguridadciu.php"); 
+    });
     $("#cerrarsesion").click(function(){
       Swal.fire({
           title: "¿Estás seguro de que quieres salir?",

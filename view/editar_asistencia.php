@@ -133,11 +133,11 @@
                                     </label>
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="justificadot2" id="justsit" value="si">
+                                            <input class="form-check-input" type="radio" name="justificadot2" id="justsit2" value="si">
                                             <label class="form-check-label" for="justsit">Sí</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="justificadot2" id="justnot" value="no">
+                                            <input class="form-check-input" type="radio" name="justificadot2" id="justnot2" value="no">
                                             <label class="form-check-label" for="justnot">No</label>
                                         </div>
                                     </div>

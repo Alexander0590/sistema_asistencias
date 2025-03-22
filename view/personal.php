@@ -94,6 +94,8 @@ if (!$resultado) {
                       ?>
                 </select>
                 </div>
+                
+
                 <div class="col-md-3" >
                   <label for="sueldo" class="form-label" >
                   <i class="bi bi-cash"></i> Sueldo

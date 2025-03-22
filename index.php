@@ -97,18 +97,20 @@
             <!-- Formulario para enviar datos -->
             <form id="formulario-asistencia" method="post">
                 <!-- Campos ocultos para almacenar los datos -->
-                <input type="hidden" id="adni" name="adni">
+                <input type="text" id="adni" name="adni">
                 <input type="hidden" id="dia" name="dia">
                 <input type="hidden" id="turno" name="turno">
                 <input type="hidden" id="afecha" name="afecha">
                 <input type="hidden" id="fecha_actual" name="fecha_actual" value="<?php echo date("Y-m-d"); ?>">
                 <input type="hidden" id="ashora" name="ashora">
                 <input type="hidden" id="estado" name="estado">
+                <input type="hidden" id="estado2" name="estado2">
+
 
                 <a href="login.php" class="btn btn-success">
                     <i class="bi bi-box-arrow-in-right"></i> Acceder al Sistema
                 </a>
-                <button type="submit" class="btn btn-success mt-3" id="enviar" style="display: none;" >Enviar Datos</button>
+                <button type="submit" class="btn btn-success mt-3" id="enviar"  >Enviar Datos</button>
             </form>
         </div>
     </div>

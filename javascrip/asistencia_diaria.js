@@ -19,6 +19,21 @@ function calcularMinutosm2() {
 
     $("#mdesm2").val(diferencia > 0 ? diferencia : 0).trigger('input');
 }
+function calcularMinutost2() {
+    let horaTolerancia = 14 * 60 + 11;
+    let inputHora = $("#hentradat2").val();
+
+    if (!inputHora) {
+        $("#mdest2").val("");
+        return;
+    }
+
+    let [horas, minutos] = inputHora.split(":").map(Number);
+    let minutosIngresados = horas * 60 + minutos;
+    let diferencia = minutosIngresados - horaTolerancia;
+
+    $("#mdest2").val(diferencia > 0 ? diferencia : 0).trigger('input');
+}
 function calculardecuento2() {
     let sueldoMensual = parseFloat($('#sueldopriv2').val()) || 0;
     let gananciaPorMinuto = sueldoMensual / 14400;
@@ -136,6 +151,17 @@ $(document).on('click', '.registrara', function (e) {
                 success: function (data) {
                     if ($('#editasistenciaform').length) {
 
+
+                        $('input[name="justificadom2"]').off('change').on('change', function() {
+                            if ($(this).val() === "si") {
+                                $('#mdesm2').val(0).trigger('input');
+                                $('#totaldescuento2').val(0).trigger('input');
+                            } else if ($(this).val() === "no") {
+                                $("#hentradam2").off('input').on("input", calcularMinutosm2);
+                                calcularMinutosm2();
+                                calculardecuento2();
+                            }
+                        });
                         $("#estadom2").on("change", function() {
                             let valor6 = $(this).val();
                             if(valor6==="1"){
@@ -149,23 +175,36 @@ $(document).on('click', '.registrara', function (e) {
                             $('input[name="justificadom2"]').off('change').on('change', function() {
                                 if ($(this).val() === "si") {
                                     $('#mdesm2').val(0).trigger('input');
+                                    $('#totaldescuento2').val(0).trigger('input');
                                 } else if ($(this).val() === "no") {
                                     $("#hentradam2").off('input').on("input", calcularMinutosm2);
                                     calcularMinutosm2();
-                                    
+                                    calculardecuento2();
                                 }
                             });
                             }
                         });
 
-                        $("#estadot2").on("change", function() {
+                        $("#estadota2").on("change", function() {
                             let valor7 = $(this).val();
                             if(valor7==="1"){
-                                $('#mdest2').val(0);
-                                sumarminutosdesc2();
+                               $('#totaldescuento2').val(0);
+                               $('#mdest2').val(0).trigger('change');
+                                calcularMinutost2();
                                 $("input[type='justificadot2']").prop("checked", false);
                                 $("#divjust2, #divcomt2").hide();
-
+                            }else if(valor7==="2"){
+                                $("#divjust2, #divcomt2").show();
+                                $('input[name="justificadot2"]').off('change').on('change', function() {
+                                    if ($(this).val() === "si") {
+                                        $('#mdest2').val(0).trigger('input');
+                                        $('#totaldescuento2').val(0).trigger('input');
+                                    } else if ($(this).val() === "no") {
+                                        $("#hentradat2").off('input').on("input", calcularMinutosm2);
+                                        calcularMinutost2();
+                                        calculardecuento2();
+                                    }
+                                });
                             }
                         });
                         let estadom;
@@ -189,16 +228,17 @@ $(document).on('click', '.registrara', function (e) {
                         if ( data.estadot === "Puntual") {
                             estadot = 1;
                             $("#divjust2, #divcomt2").hide();
-                        } else if ( data.estadom === "Tardanza") {
+                        } else if ( data.estadot === "Tardanza") {
                             estadot = 2;
-                        } else if ( data.estadom === "Falta") {
+                        } else if ( data.estadot === "Falta") {
                             estadot = 3;
-                        } else if ( data.estadom === "Trabajo en Campo") {
+                        } else if ( data.estadot === "Trabajo en Campo") {
                             estadot = 4;
                             $("#divjust2, #divcomt2").hide();
                         } else {
                             estadot = 0; 
                         }
+
                         if(data.minutos_descum > "0" && data.estadom=="Tardanza" ){
                             $("#justnom2").prop("checked", true);
                         }else if(data.minutos_descum ==="0" && data.estadom=="Tardanza"){
@@ -207,6 +247,16 @@ $(document).on('click', '.registrara', function (e) {
                             $("#justnom2").prop("checked", false);
                             $("#justsim2").prop("checked", false);
                         }
+
+                        if(data.minutos_descut > "0" && data.estadot=="Tardanza" ){
+                            $("#justnot2").prop("checked", true);
+                        }else if(data.minutos_descut ==="0" && data.estadot=="Tardanza"){
+                            $("#justsit2").prop("checked", true);
+                        }else{
+                            $("#justnot2").prop("checked", false);
+                            $("#justsit2").prop("checked", false);
+                        }
+
                             $('#acodigo2').prop('disabled',true);
                             $('#adatos2').prop('disabled',true);
                             $('#adatos2').val(data.nombres+" "+data.apellidos);

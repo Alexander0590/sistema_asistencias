@@ -95,11 +95,9 @@ if($_SESSION['rol']==="1"){
         </div>
     </div>
     <div class="menu-item">
-        <a href="#"><i class="bi bi-calendar-event"></i><span>Eventos</span></a>
+        <a href="#"><i class="bi bi-shield"></i><span>Seguridad Ciudadana</span></a>
         <div class="submenu">
-            <a href="#">Ver eventos</a>
-            <a href="#">Agregar evento</a>
-            <a href="#">Reportes de eventos</a>
+            <a href="#" id="lserena">Lista de Serenazgo</a>
         </div>
     </div>
     <div class="menu-item">

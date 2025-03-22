@@ -6,7 +6,10 @@ date_default_timezone_set('America/Lima');
 
 switch ($accion) {
     case "listar_faltas":
-        $sql = "SELECT * FROM personal WHERE personal.dni NOT IN (SELECT dni FROM asistencia WHERE fecha = CURDATE())AND personal.estado = 'activo';";
+        $sql = "SELECT personal.* FROM personal JOIN cargos ON personal.idcargo = cargos.idcargo
+                WHERE personal.dni NOT IN (SELECT dni FROM asistencia WHERE fecha = CURDATE()) 
+                AND personal.estado = 'activo'
+                AND cargos.nombre <> 'Serenazgo'";
         $registros = mysqli_query($cnn, $sql);
         $cantidad = mysqli_num_rows($registros);
         $json = ($cantidad > 0) ? mysqli_fetch_all($registros, MYSQLI_ASSOC) : "sin_data";
@@ -25,6 +28,43 @@ switch ($accion) {
       
         echo json_encode($json2, JSON_UNESCAPED_UNICODE);
         break;
+
+
+    case "listar_serenazgoen":
+        mysqli_query($cnn, "SET lc_time_names = 'es_ES'");
+
+                $sql = " WITH ultimos_dias AS (
+                SELECT CURDATE() - INTERVAL 2 DAY AS fecha UNION ALL
+                SELECT CURDATE() - INTERVAL 1 DAY AS fecha UNION ALL
+                SELECT CURDATE() AS fecha
+            )
+            SELECT p.dni, p.nombres, p.apellidos, d.fecha, 
+                DATE_FORMAT(d.fecha, '%W') AS dia_semana
+            FROM personal p
+            JOIN cargos c ON p.idcargo = c.idcargo
+            CROSS JOIN ultimos_dias d
+            LEFT JOIN asistencia_seguridad a 
+                ON a.dni = p.dni AND a.fecha = d.fecha
+            WHERE p.estado = 'activo'
+            AND c.nombre = 'Serenazgo'
+            AND NOT EXISTS (
+                SELECT 1 FROM asistencia_seguridad a2 
+                WHERE a2.dni = p.dni 
+                AND a2.fecha = d.fecha
+            )
+            ORDER BY p.dni, d.fecha ";
+    
+        
+        $registross2 = mysqli_query($cnn, $sql);
+        $cantidad = mysqli_num_rows($registross2);
+        
+        // Convertir los resultados a JSON
+        $json = ($cantidad > 0) ? mysqli_fetch_all($registross2, MYSQLI_ASSOC) : [];
+        
+        echo json_encode($json, JSON_UNESCAPED_UNICODE);
+break;
+       
+
     case "readOne":
         //traer la asistencia
         $dni= $_GET['id'];

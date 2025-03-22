@@ -1,4 +1,5 @@
 //Personal
+
     //registrar un personal 
     $(document).on('click', '#btreper', function (e) {
         e.preventDefault();
@@ -355,4 +356,3 @@ $(document).on('click', '.perImpri', function () {
             });
 
 });
-    

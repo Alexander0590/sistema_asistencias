@@ -12,6 +12,7 @@ $estado = $_POST['estado'];
 $tiempotrabajo=0;
 $tiempotardanzadia=0;
 $comentario="";
+$comentariot="";
 
 //sql para buscar antes de agregar o actualizar
 $buscar_sql="select * from asistencia where dni='$dni' and fecha='$fecha' ";
@@ -72,7 +73,7 @@ if($turno=="Mañana" and $respuesta_buscar=="no_registrado"){
 
         $sql="insert into asistencia 
         values($id,'$dni','$fecha','$dia','$horaingresom','$horasalm','$estadom',$minutos_descum,'$horaingresot',
-        '$horasalt','$estadot',$minutos_descut,'$comentario',$tiempotrabajo,$tiempotardanzadia)";
+        '$horasalt','$estadot',$minutos_descut,'$comentario','$comentariot',$tiempotrabajo,$tiempotardanzadia)";
         mysqli_query($cnn,$sql)or die("Error en registrar asistencia de la mañana");
         echo "Asistencia de: ". $dni." registrada correctamente, en turno de mañana!";
 }
