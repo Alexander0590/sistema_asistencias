@@ -30,41 +30,131 @@ switch ($accion) {
         break;
 
 
-    case "listar_serenazgoen":
+    case "listar_serenazgosa":
         mysqli_query($cnn, "SET lc_time_names = 'es_ES'");
 
-                $sql = " WITH ultimos_dias AS (
-                SELECT CURDATE() - INTERVAL 2 DAY AS fecha UNION ALL
-                SELECT CURDATE() - INTERVAL 1 DAY AS fecha UNION ALL
-                SELECT CURDATE() AS fecha
+        $sql = "WITH ultimo_dia AS (
+            SELECT CURDATE() - INTERVAL 1 DAY AS fecha 
+        )
+        SELECT 
+            p.dni, 
+            p.nombres, 
+            p.apellidos, 
+            a.fecha AS fecha_asistencia, 
+            DATE_FORMAT(a.fecha, '%W') AS dia_semana, 
+            a.horai,
+            COALESCE(a.horas, 'Falta salida') AS hora_salida
+        FROM personal p
+        JOIN cargos c ON p.idcargo = c.idcargo
+        CROSS JOIN ultimo_dia d
+        LEFT JOIN asistencia_seguridad a 
+            ON a.dni = p.dni 
+            AND (
+                a.fecha = d.fecha - INTERVAL 1 DAY 
+                OR a.fecha = d.fecha - INTERVAL 2 DAY 
             )
-            SELECT p.dni, p.nombres, p.apellidos, d.fecha, 
-                DATE_FORMAT(d.fecha, '%W') AS dia_semana
-            FROM personal p
-            JOIN cargos c ON p.idcargo = c.idcargo
-            CROSS JOIN ultimos_dias d
-            LEFT JOIN asistencia_seguridad a 
-                ON a.dni = p.dni AND a.fecha = d.fecha
-            WHERE p.estado = 'activo'
-            AND c.nombre = 'Serenazgo'
-            AND NOT EXISTS (
-                SELECT 1 FROM asistencia_seguridad a2 
-                WHERE a2.dni = p.dni 
-                AND a2.fecha = d.fecha
-            )
-            ORDER BY p.dni, d.fecha ";
-    
-        
-        $registross2 = mysqli_query($cnn, $sql);
-        $cantidad = mysqli_num_rows($registross2);
-        
+        WHERE p.estado = 'activo'
+        AND c.nombre = 'Serenazgo'
+        AND DAYOFWEEK(CURDATE()) = 2 
+        AND a.horai IS NOT NULL 
+        AND a.horas IS NULL 
+        ORDER BY a.fecha, a.horai";
+
+        $registro5 = mysqli_query($cnn, $sql);
+        $cantidad = mysqli_num_rows($registro5);
+
         // Convertir los resultados a JSON
-        $json = ($cantidad > 0) ? mysqli_fetch_all($registross2, MYSQLI_ASSOC) : [];
-        
+        if ($cantidad > 0) {
+            $json = mysqli_fetch_all($registro5, MYSQLI_ASSOC); 
+        } else {
+            $json = 'sin_data'; 
+        };
+
         echo json_encode($json, JSON_UNESCAPED_UNICODE);
 break;
        
+case "listar_serenazgoentrada":
+    mysqli_query($cnn, "SET lc_time_names = 'es_ES'");
+        $sql2="WITH ultimo_dia AS (
+            SELECT CURDATE() - INTERVAL 1 DAY AS fecha 
+        )
+        SELECT 
+            p.dni, 
+            p.nombres, 
+            p.apellidos,
+            d.fecha AS fecha_asistencia,  
+            DATE_FORMAT(d.fecha, '%W') AS dia_semana  
+        FROM personal p
+        JOIN cargos c ON p.idcargo = c.idcargo
+        CROSS JOIN ultimo_dia d
+        LEFT JOIN asistencia_seguridad a 
+            ON a.dni = p.dni 
+            AND a.fecha = d.fecha 
+        WHERE p.estado = 'activo'
+        AND c.nombre = 'Serenazgo'
+        AND a.dni IS NULL  
+        AND DAYOFWEEK(CURDATE()) = 2  
+        ORDER BY p.apellidos, p.nombres";
 
+        $registro4 = mysqli_query($cnn, $sql2);
+        $cantidad = mysqli_num_rows($registro4);
+
+        // Convertir los resultados a JSON
+        if ($cantidad > 0) {
+            $json = mysqli_fetch_all($registro4, MYSQLI_ASSOC); 
+        } else {
+            $json = 'sin_data'; 
+        };
+        echo json_encode($json, JSON_UNESCAPED_UNICODE);
+break;
+case "listarfaltaseguri":
+
+    $sql = "SELECT personal.* FROM personal 
+    JOIN cargos ON personal.idcargo = cargos.idcargo
+    WHERE personal.dni NOT IN (
+        SELECT dni FROM asistencia_seguridad 
+        WHERE fecha = CURDATE()
+    ) 
+    AND personal.estado = 'activo'
+    AND cargos.nombre = 'Serenazgo'";
+    
+    $registros = mysqli_query($cnn, $sql);
+    $cantidad = mysqli_num_rows($registros);
+    $json = ($cantidad > 0) ? mysqli_fetch_all($registros, MYSQLI_ASSOC) : "sin_data";
+    echo json_encode($json, JSON_UNESCAPED_UNICODE);
+
+
+break;
+case"listarasistenciaseguri":
+    
+    $sql = "SELECT 
+                personal.*, 
+                asistencia_seguridad.fecha as fecha_asistencia,
+                asistencia_seguridad.horai,
+                asistencia_seguridad.horas,
+                DAYNAME(asistencia_seguridad.fecha) as dia_semana
+            FROM personal 
+            JOIN cargos ON personal.idcargo = cargos.idcargo
+            JOIN asistencia_seguridad ON personal.dni = asistencia_seguridad.dni
+            WHERE asistencia_seguridad.fecha = CURDATE()
+            AND personal.estado = 'activo'
+            AND cargos.nombre = 'Serenazgo'
+            ORDER BY personal.apellidos ASC";
+    
+    $registros = mysqli_query($cnn, $sql);
+    
+    if (!$registros) {
+        echo json_encode(["error" => "Error en la consulta: " . mysqli_error($cnn)]);
+        exit;
+    }
+    
+    $cantidad = mysqli_num_rows($registros);
+    $data = ($cantidad > 0) ? mysqli_fetch_all($registros, MYSQLI_ASSOC) : [];
+    
+    ob_clean();
+    echo json_encode(["data" => $data], JSON_UNESCAPED_UNICODE);
+   
+break;
     case "readOne":
         //traer la asistencia
         $dni= $_GET['id'];

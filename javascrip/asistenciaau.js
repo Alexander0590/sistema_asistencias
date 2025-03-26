@@ -144,6 +144,7 @@ function actualizarFechaHora() {
         document.getElementById("turno-actual").style.display = "none";
         sistemaCerrado = true;
         mensaje = "Sistema cerrado Fuera del horario de tolerancia ";
+        mensaje2=" ";
     } else if (ahora >= salidaTurno2 && ahora < toleranciat22se) {
         // Después de la salida (6:00 PM - 7:00 PM)
         estado="Salida";

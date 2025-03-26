@@ -1,153 +1,314 @@
 $(document).ready(function () {
-    listar_serefaltasse();
-    function listar_serefaltasse() {
-        $.ajax({
-            async: true,
-            url: 'proceso/proceso_asistencia_diaria.php',
-            type: 'GET',
-            data: { accion: 'listar_serenazgoen'},
-            success: function (response) {
-                try {
-                        
-                    var registros2 = JSON.parse(response);
     
-                    var template = '';
-                    var i = 0;
-    
-                    if (registros2.length === 0) {
-                        $('#cuerpo_tabla_en_t1').html('<tr><td colspan="8" class="text-center">No hay registros</td></tr>');
-                    } else {
-                        for (var z in registros2) {
-                            i++;
-                            template +=
-                                '<tr class="fila-falta">' +
-                                '<td class="text-center align-middle">' + i + '</td>' +
-                                '<td>' + registros2[z].dni + '</td>' +
-                                '<td>' + registros2[z].apellidos + '</td>' +
-                                '<td>' + registros2[z].nombres + '</td>' +
-                                '<td>' + registros2[z].turno + '</td>' +
-                                '<td>' + registros2[z].fecha + '</td>' +
-                                '<td>' + registros2[z].dia_semana + '</td>' +
-                                '<td class="text-center align-middle">' +
-                                '<div class="d-flex justify-content-center gap-1">' +
-                                '<button class="btn btn-danger btn-sm registrarf d-block" style="padding: 3px 6px; font-size: 15px;" data-id="' + registros2[z].dni + '">' +
-                                '<i class="bi bi-x-circle"></i> Registrar falta' +
-                                '</button>' +
-                                '<button class="btn btn-success btn-sm registrartc d-block" style="padding: 3px 6px; font-size: 15px;" data-id="' + registros2[z].dni + '">' +
-                                '<i class="bi bi-check-circle"></i> Registrar Trabajo en Campo' +
-                                '</button>' +
-                                '</div>' +
-                                '</td>' +
-                                '</tr>';
-                        }
-                        $('#cuerpo_tabla_en_t1').html(template);
-                    }
-                } catch (error) {
-                    console.error("Error al procesar JSON: ", error, response);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en AJAX:", status, error);
+    var table = $('#tper_sn_t2').DataTable({
+        "paging": false,
+        "searching": true,
+        "ordering": false,
+        "info": true,
+        "autoWidth": false,
+        "lengthMenu": [5, 10, 15, 20],  
+        "scrollX": true, 
+        "responsive": true,
+        "language": {
+            "search": "Buscar:",
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "infoEmpty": "No hay registros disponibles",
+            "zeroRecords": "No se encontraron registros",
+            "paginate": {
+                "next": "Siguiente",
+                "previous": "Anterior"
             }
-        });
-    
-        listar_asistenciasse(); 
-    }
-    
+        },
+        "processing": true, 
+        "serverSide": false, 
+        "ajax": {
+            "url": "proceso/proceso_asistencia_diaria.php",
+            "type": "GET",
+            "data": function (d) {
+                d.accion = 'listar_serenazgoentrada';
+                return d;
+            },
+            "dataSrc": function (json) {
+                // Procesar datos de entrada
+                if (json === 'sin_data') return [];
+                
+                try {
+                    var data = typeof json === 'string' ? JSON.parse(json) : json;
+                    var processedData = [];
+                    
+                    // Procesar datos de entrada
+                    $.each(data, function(index, item) {
+                        processedData.push({
+                            "nro": index + 1,
+                            "dni": item.dni,
+                            "apellidos": item.apellidos,
+                            "nombres": item.nombres,
+                            "fecha": item.fecha_asistencia,
+                            "dia": item.dia_semana,
+                            "estado": "Entrada y Salida",
+                            "acciones": `
+                                <div class="d-flex justify-content-center gap-1">
+                                    <button class="btn btn-danger btn-sm registrarfse d-block" data-id="${item.dni}">
+                                        <i class="bi bi-x-circle"></i> Registrar falta
+                                    </button>
+                                    <button class="btn btn-success btn-sm registrartc d-block" data-id="${item.dni}">
+                                        <i class="bi bi-check-circle"></i> Registrar 
+                                    </button>
+                                </div>`
+                        });
+                    });
+                    
+                    cargarSalidas(processedData);
+                    
+                    return processedData;
+                } catch (e) {
+                    console.error("Error al procesar datos:", e);
+                    return [];
+                }
+            }
+        },
+        "columns": [
+            { "data": "nro", "className": "text-center" },
+            { "data": "dni" },
+            { "data": "apellidos" },
+            { "data": "nombres" },
+            { "data": "fecha" },
+            { "data": "dia" },
+            { "data": "estado" },
+            { 
+                "data": "acciones",
+                "className": "text-center",
+                "orderable": false,
+                "searchable": false
+            }
+        ]
+    });
 
-    listar_salidasr();
-    function listar_salidasr() {
+    // Función para cargar datos de salida
+    function cargarSalidas(entradaData) {
         $.ajax({
-            async: true,
             url: 'proceso/proceso_asistencia_diaria.php',
             type: 'GET',
             data: { accion: 'listar_serenazgosa' },
             success: function (response) {
                 try {
-                    var registros3 = JSON.parse(response);
-                    console.log(registros3);
-    
-                    var template = '';
-                    var i = 0;
-    
-                    if (registros3.length === 0) {
-                        $('#cuerpo_tabla_fd').html('');
-                    } else {
-                        for (z in registros3) {
-                            i++;
-                            template +=
-                                '<tr class="fila-falta">' +
-                                '<td class="text-center align-middle">' + i + '</td>' +
-                                '<td>' + registros2[z].dni + '</td>' +
-                                '<td>' + registros2[z].apellidos + '</td>' +
-                                '<td>' + registros2[z].nombres + '</td>' +
-                                '<td class="text-center align-middle" style="white-space: nowrap; width: 100px;">' +
-                                '<div class="d-flex justify-content-center gap-1">' +
-                                '<button class="btn btn-danger btn-sm registrarf d-block" style="padding: 3px 6px; font-size: 15px;" data-id="' + registros2[z].dni + '">' +
-                                '<i class="bi bi-x-circle"></i> Registrar falta' +
-                                '</button>' +
-                                '<button class="btn btn-success btn-sm registrartc d-block" style="padding: 3px 6px; font-size: 15px;" data-id="' + registros2[z].dni + '">' +
-                                '<i class="bi bi-check-circle"></i> Registrar Trabajo en Campo' +
-                                '</button>' +
-                                '</div>' +
-                                '</td>' +
-                                '</tr>';
-                        }
-                        $('#cuerpo_tabla_fd').html(template);
-                    }
-                } catch (error) {
-                    console.error("Error al procesar JSON: ", error, response);
+                    var salidaData = response === 'sin_data' ? [] : 
+                                   (typeof response === 'string' ? JSON.parse(response) : response);
+                    
+                    // Procesar datos de salida
+                    $.each(salidaData, function(index, item) {
+                        entradaData.push({
+                            "nro": entradaData.length + index + 1,
+                            "dni": item.dni,
+                            "apellidos": item.apellidos,
+                            "nombres": item.nombres,
+                            "fecha": item.fecha_asistencia,
+                            "dia": item.dia_semana,
+                            "estado": "Salida",
+                            "acciones": `
+                                <div class="d-flex justify-content-center gap-1">
+                                    <button class="btn btn-success btn-sm registrarsa d-block" data-id="${item.dni}">
+                                        <i class="bi bi-check-circle"></i> Registrar Salida
+                                    </button>
+                                </div>`
+                        });
+                    });
+                    
+                    table.clear();
+                    table.rows.add(entradaData).draw();
+                } catch (e) {
+                    console.error("Error al procesar datos de salida:", e);
                 }
             },
             error: function (xhr, status, error) {
                 console.error("Error en AJAX:", status, error);
             }
         });
-        listar_asistenciasse();
     }
-  
 
-    function listar_asistenciasse() {
-        $.ajax({
-            async: true,
-            url: 'proceso/proceso_asistencia_diaria.php',
-            type: 'GET',
-            data: { accion: 'listar_serenazgo' },
-            success: function (response2) {
-                let template2 = '';
-                var registro2 = JSON.parse(response2);
-                if (registro2 === 'sin_data') {
-                    template2 += `
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                No hay asistencias hoy
-                            </td>
-                        </tr>`;
-                } else {
-                    var registro2 = JSON.parse(response2);
-                    var i = 0;
+
+    $('#tper_sn_t2').on('click', '.registrarfse', function() {
+        var dni = $(this).data('id');
+      
+        
+    });
+
+    $('#tper_sn_t2').on('click', '.registrartc', function() {
+        var dni = $(this).data('id');
+        console.log("Registrar asistencia para DNI:", dni);
+        
+    });
+
+    $('#tper_sn_t2').on('click', '.registrarsa', function() {
+        var dni = $(this).data('id');
+        console.log("Registrar salida para DNI:", dni);
+        
+    });
+
+
     
-                    for (z in registro2) {
-                        i++;
-                        template2 += `
-                            <tr class="fila-asistencia">
-                                <td class="text-center align-middle">${i}</td>
-                                <td>${registro2[z].dni}</td>
-                                <td>${registro2[z].apellidos}</td>
-                                <td>${registro2[z].nombres}</td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm bg-primary registrara" data-id="${registro2[z].dni}">
-                                        <i class="bi bi-pencil"></i> Editar
+        // Configuración común para ambas DataTables
+        const commonConfig = {
+            "paging": false,
+            "searching": true,
+            "ordering": false,
+            "info": true,
+            "autoWidth": false,
+            "lengthMenu": [5, 10, 15, 20],
+            "scrollX": true,
+            "responsive": true,
+            "language": {
+                "search": "Buscar:",
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "zeroRecords": "No se encontraron registros",
+                "paginate": {
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "processing": true,
+            "serverSide": false
+        };
+    
+        // 1. Tabla de Faltas de serenazgo
+        const tableFaltas = $('#tper_faltas').DataTable({
+            ...commonConfig,
+            "ajax": {
+                "url": "proceso/proceso_asistencia_diaria.php",
+                "type": "GET",
+                "data": { accion: 'listarfaltaseguri' },
+                "dataSrc": function (json) {
+                    try {
+                        if (json === 'sin_data') return [];
+                        
+                        const data = typeof json === 'string' ? JSON.parse(json) : json;
+                        return data.map((item, index) => ({
+                            "nro": index + 1,
+                            "dni": item.dni,
+                            "apellidos": item.apellidos,
+                            "nombres": item.nombres,
+                            "acciones": `
+                                <div class="d-flex justify-content-center gap-1">
+                                    <button class="btn btn-success btn-sm registrarfalta2" data-id="${item.dni}">
+                                        <i class="bi bi-check-circle"></i> Registrar falta
                                     </button>
-                                </td>
-                            </tr>`;
+                                </div>`
+                        }));
+                    } catch (e) {
+                        console.error("Error procesando faltas:", e);
+                        return [];
                     }
                 }
-    
-                $('#cuerpo_tabla_ad').html(template2);
             },
+            "columns": [
+                { "data": "nro", "className": "text-center" },
+                { "data": "dni" },
+                { "data": "apellidos" },
+                { "data": "nombres" },
+                { 
+                    "data": "acciones",
+                    "className": "text-center",
+                    "orderable": false,
+                    "searchable": false
+                }
+            ]
+        });
+    
+        const tableAsistencias = $('#tperasissegu').DataTable({
+            ...commonConfig,
+            "ajax": {
+                "url": "proceso/proceso_asistencia_diaria.php",
+                "type": "GET",
+                "data": { accion: 'listarasistenciaseguri' },
+                "dataSrc": function (json) {
+                    if (json.error) {
+                        console.error("Error del servidor:", json.error);
+                        return [];
+                    }
+        
+                    if (!json.data || json.data.length === 0) {
+                        return []; 
+                    }
+        
+                    return json.data.map((item, index) => ({
+                        "nro": index + 1,
+                        "dni": item.dni,
+                        "apellidos": item.apellidos,
+                        "nombres": item.nombres,
+                        "acciones": `
+                            <div class="d-flex justify-content-center gap-1">
+                                <button class="btn btn-warning btn-sm editar-registro" data-id="${item.dni}">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </button>
+                            </div>`
+                    }));
+                }
+            },
+            "columns": [
+                { "data": "nro", "className": "text-center" },
+                { "data": "dni" },
+                { "data": "apellidos" },
+                { "data": "nombres" },
+                { 
+                    "data": "acciones",
+                    "className": "text-center",
+                    "orderable": false,
+                    "searchable": false
+                }
+            ]
+        });
+
+        $('#tper_faltas').on('click', '.registrarfalta2', function() {
+            var dni = $(this).data('id');
+            $('#dni_input1').val(dni); 
+            $('#registroModal').modal('show'); 
+        
+            $('#guardarRegistro').off('click').on('click', function() {
+                var dni = $('#dni_input1').val();
+                var turno = $('#turno').val();
+                var justi = $('#justificar').val();
+                var comentario = $('#comentario').val();
+        
+                $.ajax({
+                    url: 'proceso/mantesernazgo.php?action=regisfh',
+                    type: 'POST', 
+                    data: {
+                        dni: dni,
+                        justi: justi,
+                        turno: turno,
+                        comentario: comentario
+                    },
+                    success: function(response) {
+                        $('#registroModal').modal('hide'); 
+                        
+                        $("#vistas").load("view/Lista_seguridadciu.php", function () {
+                            $(this).fadeIn(200);
+                        });
+        
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Registro guardado!',
+                            text: 'El registro se ha guardado correctamente.',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error:", error);
+                        alert("Hubo un problema al guardar el registro");
+                    }
+                });
+            });
+        });
+        
+       
+    
+        $('#tperasissegu').on('click', '.editar-registro', function() {
+            var dni = $(this).data('id');
+          
             
         });
-    }
-    
+       
 });
