@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    
     var table = $('#tper_sn_t2').DataTable({
         "paging": false,
         "searching": true,
@@ -30,14 +29,15 @@ $(document).ready(function () {
                 return d;
             },
             "dataSrc": function (json) {
-                // Procesar datos de entrada
-                if (json === 'sin_data') return [];
+                if (json === 'sin_data') {
+                    cargarSalidas([]); // Si no hay datos de entrada, cargar solo salida
+                    return [];
+                }
                 
                 try {
                     var data = typeof json === 'string' ? JSON.parse(json) : json;
                     var processedData = [];
                     
-                    // Procesar datos de entrada
                     $.each(data, function(index, item) {
                         processedData.push({
                             "nro": index + 1,
@@ -58,8 +58,13 @@ $(document).ready(function () {
                                 </div>`
                         });
                     });
-                    
-                    cargarSalidas(processedData);
+    
+                    // Si hay datos de entrada, cargar también las salidas
+                    if (processedData.length > 0) {
+                        cargarSalidas(processedData);
+                    } else {
+                        cargarSalidas([]); // Si no hay entradas, solo cargar salidas
+                    }
                     
                     return processedData;
                 } catch (e) {
@@ -84,7 +89,7 @@ $(document).ready(function () {
             }
         ]
     });
-
+    
     // Función para cargar datos de salida
     function cargarSalidas(entradaData) {
         $.ajax({
@@ -92,14 +97,15 @@ $(document).ready(function () {
             type: 'GET',
             data: { accion: 'listar_serenazgosa' },
             success: function (response) {
+                console.log("Respuesta del servidor:", response);
                 try {
                     var salidaData = response === 'sin_data' ? [] : 
-                                   (typeof response === 'string' ? JSON.parse(response) : response);
+                    (typeof response === 'string' ? JSON.parse(response) : response);
                     
-                    // Procesar datos de salida
-                    $.each(salidaData, function(index, item) {
-                        entradaData.push({
-                            "nro": entradaData.length + index + 1,
+                    // Si no hay datos de entrada y sí hay de salida, solo mostrar salidas
+                    if (entradaData.length === 0 && salidaData.length > 0) {
+                        entradaData = salidaData.map((item, index) => ({
+                            "nro": index + 1,
                             "dni": item.dni,
                             "apellidos": item.apellidos,
                             "nombres": item.nombres,
@@ -112,9 +118,28 @@ $(document).ready(function () {
                                         <i class="bi bi-check-circle"></i> Registrar Salida
                                     </button>
                                 </div>`
+                        }));
+                    } else {
+                        // Si hay datos de entrada, agregar las salidas
+                        $.each(salidaData, function(index, item) {
+                            entradaData.push({
+                                "nro": entradaData.length + index + 1,
+                                "dni": item.dni,
+                                "apellidos": item.apellidos,
+                                "nombres": item.nombres,
+                                "fecha": item.fecha_asistencia,
+                                "dia": item.dia_semana,
+                                "estado": "Salida",
+                                "acciones": `
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <button class="btn btn-success btn-sm registrarsa d-block" data-id="${item.dni}">
+                                            <i class="bi bi-check-circle"></i> Registrar Salida
+                                        </button>
+                                    </div>`
+                            });
                         });
-                    });
-                    
+                    }
+    
                     table.clear();
                     table.rows.add(entradaData).draw();
                 } catch (e) {
@@ -126,7 +151,7 @@ $(document).ready(function () {
             }
         });
     }
-
+    
 
     $('#tper_sn_t2').on('click', '.registrarfse', function() {
         var dni = $(this).data('id');
@@ -142,7 +167,9 @@ $(document).ready(function () {
 
     $('#tper_sn_t2').on('click', '.registrarsa', function() {
         var dni = $(this).data('id');
-        console.log("Registrar salida para DNI:", dni);
+        $('#dni_input_salida').val(dni); 
+        $('#registroSalidaModal').modal('show'); 
+      
         
     });
 
@@ -173,7 +200,7 @@ $(document).ready(function () {
             "serverSide": false
         };
     
-        // 1. Tabla de Faltas de serenazgo
+        //  Tabla de Faltas de serenazgo
         const tableFaltas = $('#tper_faltas').DataTable({
             ...commonConfig,
             "ajax": {
@@ -267,11 +294,20 @@ $(document).ready(function () {
             $('#registroModal').modal('show'); 
         
             $('#guardarRegistro').off('click').on('click', function() {
-                var dni = $('#dni_input1').val();
-                var turno = $('#turno').val();
-                var justi = $('#justificar').val();
-                var comentario = $('#comentario').val();
-        
+                var dni = $('#dni_input1').val().trim();
+                var turno = $('#turno').val().trim();
+                var justi = $('#justificar').val().trim();
+                var comentario = $('#comentario').val().trim();
+            
+                if (!dni || !turno || !justi || !comentario) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Campos vacíos',
+                        text: 'Todos los campos son obligatorios.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
                 $.ajax({
                     url: 'proceso/mantesernazgo.php?action=regisfh',
                     type: 'POST', 

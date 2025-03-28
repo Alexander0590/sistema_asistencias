@@ -194,7 +194,7 @@ function actualizarFechaHora() {
     document.getElementById('afecha').value = fechaFormateada;
     document.getElementById('ashora').value = horaFormateada;
     document.getElementById('dia').value = fechaFormateada2;
-    document.getElementById('turno').value = turnoActual;
+    document.getElementById('turno2').value = turnoActual;
     document.getElementById('estado').value = estado;
     document.getElementById('estado2').value = estado2;
 }
@@ -219,7 +219,7 @@ $('#formulario-asistencia').on('submit', function(e) {
         estado: $('#estado').val(),
         estado2: $('#estado2').val(),
         ashora: $('#ashora').val(),
-        turno: $('#turno').val()
+        turno: $('#turno2').val()
     };
     
     // Verifica si ambos estados están vacíos y muestra alerta
@@ -259,6 +259,11 @@ $('#formulario-asistencia').on('submit', function(e) {
                     dataToSend.estado = dataToSend.estado2; 
                 }
             } else { 
+                let horaActual2 = new Date().getHours(); 
+
+                if (dataToSend.turno === "Tarde" && horaActual2 >= 18 && horaActual2 < 19) {
+                    dataToSend.turno = "Salida";
+                }
              
                 if ($.trim(dataToSend.estado).toUpperCase() === 'X') { 
                     Swal.fire({
@@ -274,12 +279,7 @@ $('#formulario-asistencia').on('submit', function(e) {
             }   
 
 
-            let horaActual2 = new Date().getHours(); 
-
-            if (dataToSend.turno === "Tarde" && horaActual2 >= 18 && horaActual2 < 19) {
-                dataToSend.turno = "Salida";
-            }
-         
+           
             delete dataToSend.estado2;
     
             $.ajax({

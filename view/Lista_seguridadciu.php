@@ -154,6 +154,37 @@
 </div>
 
 
+
+<!-- Modal de Registro de Salida -->
+<div class="modal fade" id="registroSalidaModal" tabindex="-1" aria-labelledby="registroSalidaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #0c0c24;">
+        <h5 class="modal-title" id="registroSalidaModalLabel">Registrar Salida</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="registroSalidaForm">
+          <input type="hidden" id="dni_input_salida">
+          
+          <div class="mb-3">
+            <label for="hora_salida" class="form-label">Hora de Salida</label>
+            <input type="time" class="form-control" id="hora_salida">
+          </div>
+
+          <div class="mb-3">
+            <label for="comentario_salida" class="form-label">Comentario</label>
+            <textarea class="form-control" id="comentario_salida" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="guardarSalida">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="lib/jquery-3.6.0.min.js"></script>
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" charset="utf8" src="lib/datatables2/jquery.dataTables.min.js"></script>

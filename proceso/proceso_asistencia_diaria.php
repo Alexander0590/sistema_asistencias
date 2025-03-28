@@ -50,14 +50,14 @@ switch ($accion) {
         LEFT JOIN asistencia_seguridad a 
             ON a.dni = p.dni 
             AND (
-                a.fecha = d.fecha - INTERVAL 1 DAY 
-                OR a.fecha = d.fecha - INTERVAL 2 DAY 
+                (DAYOFWEEK(CURDATE()) = 2 AND (a.fecha = d.fecha - INTERVAL 1 DAY OR a.fecha = d.fecha - INTERVAL 2 DAY)) 
+                OR (DAYOFWEEK(CURDATE()) BETWEEN 3 AND 7 AND a.fecha = d.fecha)
             )
         WHERE p.estado = 'activo'
         AND c.nombre = 'Serenazgo'
-        AND DAYOFWEEK(CURDATE()) = 2 
+        AND DAYOFWEEK(CURDATE()) IN (2,3,4,5,6,7) 
         AND a.horai IS NOT NULL 
-        AND a.horas IS NULL 
+        AND a.horas IS NULL
         ORDER BY a.fecha, a.horai";
 
         $registro5 = mysqli_query($cnn, $sql);
