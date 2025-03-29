@@ -81,10 +81,21 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_de_asistencia.php"); 
     });
+    //serenazgo
+    let cargando = false;
+
     $("#lserena").click(function (e) {
-      e.preventDefault(); 
-      $("#vistas").load("view/Lista_seguridadciu.php"); 
+        e.preventDefault();
+        if (cargando) return; // Evita múltiples cargas
+        cargando = true;
+    
+        $("#vistas").load("view/Lista_seguridadciu.php", function () {
+            cargando = false; // Permitir nueva carga después de completar la anterior
+        });
     });
+    
+  
+  
     $("#cerrarsesion").click(function(){
       Swal.fire({
           title: "¿Estás seguro de que quieres salir?",

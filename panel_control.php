@@ -32,7 +32,11 @@ if($_SESSION['rol']==="1"){
 <div class="container-tp" id="bhoriz">
         <div class="perfil" data-bs-toggle="modal" data-bs-target="#perfilModal">
             <div id="foto">
-                <img src="img/usuariodefecto.png" alt="Foto de perfil">
+                <img src="img/usuariodefecto.png" alt="Foto de perfil" style="draggable: false;  pointer-events: none; user-drag: none; -webkit-user-drag: none; 
+                user-select: none; 
+                -webkit-user-select: none; 
+                -moz-user-select: none; 
+                -ms-user-select: none;">
             </div>
             <div id="nombre">
                 <h5>
@@ -51,9 +55,17 @@ if($_SESSION['rol']==="1"){
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body ">
-        <div id="foto-modal " class="text-center mb-3">
-          <img src="img/usuariodefecto.png" alt="Foto de perfil" class="img-fluid rounded-circle" style="width: 150px; height: 150px; margin-bottom: 10px ;">
-        </div>
+      <div id="foto-modal" class="text-center mb-3">
+          <img src="img/usuariodefecto.png" alt="Foto de perfil" class="img-fluid rounded-circle" 
+              style="width: 150px; height: 150px; margin-bottom: 10px; draggable: false; 
+                pointer-events: none; 
+                user-drag: none; 
+                -webkit-user-drag: none; 
+                user-select: none; 
+                -webkit-user-select: none; 
+                -moz-user-select: none; 
+                -ms-user-select: none;" >
+      </div>
         <div text-fill>
         <p><strong>Nombre:</strong> <?php echo htmlspecialchars($_SESSION['nombre']); ?></p>
         <p><strong>Usuario:</strong> <?php echo htmlspecialchars($_SESSION['usuario']); ?></p>
@@ -128,10 +140,13 @@ if($_SESSION['rol']==="1"){
 </div>
 
 <div id="vistas">
-  <div id="imagenprin">
-  <img src="img/muni.png" alt="" id="img2">
-  </div>
-
+    <div id="imagenprin">
+        <img src="img/muni.png" alt="" id="img2" draggable="false" style="draggable: false;  pointer-events: none; user-drag: none; -webkit-user-drag: none; 
+                user-select: none; 
+                -webkit-user-select: none; 
+                -moz-user-select: none; 
+                -ms-user-select: none;">
+    </div>
 </div>
 
 <script src="lib/jquery-3.6.0.min.js"></script>
@@ -141,8 +156,6 @@ if($_SESSION['rol']==="1"){
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
 <script src="javascrip/usuariosmante.js"></script>
 <script src="javascrip/personalmante.js"></script>
-
-
 </body>
 </html>
 

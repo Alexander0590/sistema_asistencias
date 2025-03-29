@@ -35,6 +35,9 @@ switch ($accion) {
 
         $sql = "WITH ultimo_dia AS (
             SELECT CURDATE() - INTERVAL 1 DAY AS fecha 
+        ),
+        hoy AS (
+            SELECT CURDATE() AS fecha
         )
         SELECT 
             p.dni, 
@@ -47,11 +50,12 @@ switch ($accion) {
         FROM personal p
         JOIN cargos c ON p.idcargo = c.idcargo
         CROSS JOIN ultimo_dia d
+        CROSS JOIN hoy h
         LEFT JOIN asistencia_seguridad a 
             ON a.dni = p.dni 
             AND (
-                (DAYOFWEEK(CURDATE()) = 2 AND (a.fecha = d.fecha - INTERVAL 1 DAY OR a.fecha = d.fecha - INTERVAL 2 DAY)) 
-                OR (DAYOFWEEK(CURDATE()) BETWEEN 3 AND 7 AND a.fecha = d.fecha)
+                (DAYOFWEEK(CURDATE()) = 2 AND (a.fecha = d.fecha - INTERVAL 1 DAY OR a.fecha = d.fecha - INTERVAL 2 DAY OR a.fecha = h.fecha)) 
+                OR (DAYOFWEEK(CURDATE()) BETWEEN 3 AND 7 AND (a.fecha = d.fecha OR a.fecha = h.fecha))
             )
         WHERE p.estado = 'activo'
         AND c.nombre = 'Serenazgo'

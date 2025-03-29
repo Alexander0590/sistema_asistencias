@@ -130,6 +130,7 @@ function actualizarFechaHora() {
         sistemaCerrado = true;
         tiempoRestante = Math.floor((salidaseret1 - ahora) / 60000); 
         mensaje = `Sistema cerrado. Faltan ${tiempoRestante} minutos para la Salida de Serenos`;
+        mensaje2=" ";
 
     } else if (ahora >= salidaseret1 && ahora <  limitesalidaseret1) {
         estado="x";
@@ -232,6 +233,7 @@ $('#formulario-asistencia').on('submit', function(e) {
             timer: 3000,
             timerProgressBar: true
         });
+        $('#adni').val('');
         return; 
     }
     

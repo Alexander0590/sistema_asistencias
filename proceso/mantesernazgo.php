@@ -48,10 +48,95 @@ switch ($action) {
 }
         
         break;
-    
-    default:
+    case "registrsali":
+        $dni = $_POST['dni'];
+        $horasa = $_POST['horasa'];
+        $fecha = $_POST['fecha'];
+        $estado = $_POST['estado'];
+
+         $sql = "UPDATE asistencia_seguridad SET horas = '$horasa', estado_salida = '$estado', minutos_descu = 0 , descuento_dia = 0 WHERE dni = '$dni' and fecha =' $fecha'";
+
+
+         if ($cnn->query($sql) === TRUE) {
+            echo "success";
+        } else {
+            echo "error: No se pudo actualizar el registro";
+        }
+
+       
+    break;
+
+    case "registrsalijusti":
+      
+        $dni = $_POST['dni'];
+        $horasa = $_POST['horas'];
+        $fecha = $_POST['fecha2'];
+        $justi = $_POST['justificar'];
+        $comen = $_POST['comen'];
+
+        date_default_timezone_set('America/Lima');
+
+        if ($justi == "No") {
+            
+            $fechaActual = date('Y-m-d');
+            
+            if($fecha==$fechaActual){
+            $limite = strtotime("16:00:00");
+            }else{
+                $limite = strtotime("02:00:00");
+            }
+             
+            $horaIngresada = strtotime($horasa);
         
-        break;
+            $diferenciaSegundos = $limite - $horaIngresada;
+            $diferenciaMinutos = $diferenciaSegundos / 60; 
+            $minutosdes = $diferenciaMinutos;
+            
+            $sql = "SELECT p.sueldo, a.descuento_dia, a.minutos_descu
+                    FROM personal p
+                    JOIN asistencia_seguridad a ON p.dni = a.dni
+                    WHERE p.dni = '$dni' and a.fecha = '$fecha'";
+        
+            $result = $cnn->query($sql);
+        
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $sueldo = $row["sueldo"];
+                $minutos_descu2 = $row["minutos_descu"];
+                $montodes = $row["descuento_dia"];
+                $total_minu = $minutosdes + $minutos_descu2;
+                $gaxminuto = $sueldo / (30 * 8 * 60);
+                $montodescu = round($minutosdes * $gaxminuto, 2);
+                $total_montodes = $montodes + $montodescu;
+            }
+        } else {
+            $sql = "SELECT p.sueldo, a.descuento_dia, a.minutos_descu
+                    FROM personal p
+                    JOIN asistencia_seguridad a ON p.dni = a.dni
+                    WHERE p.dni = '$dni' and a.fecha = '$fecha'";
+        
+            $result = $cnn->query($sql);
+        
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $minutos_descu2 = !empty($row["minutos_descu"]) ? $row["minutos_descu"] : 0;
+                $montodes = !empty($row["descuento_dia"]) ? $row["descuento_dia"] : 0;
+                $total_minu = $minutos_descu2;
+                $total_montodes = $montodes;
+            }
+        }
+        
+        $sql = "UPDATE asistencia_seguridad SET horas = '$horasa', estado_salida = 'Anticipada', justificado_salida = '$justi', comentario_salida = '$comen', minutos_descu = $total_minu, descuento_dia = $total_montodes WHERE dni = '$dni' and fecha = '$fecha'";
+        
+        if ($cnn->query($sql) === TRUE) {
+            echo "success";
+        } else {
+            echo "error: No se pudo actualizar el registro";
+        }
+    break;
+    default:
+
+    break;
 }
 
 

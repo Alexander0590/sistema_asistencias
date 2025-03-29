@@ -160,16 +160,26 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header text-white" style="background-color: #0c0c24;">
-        <h5 class="modal-title" id="registroSalidaModalLabel">Registrar Salida</h5>
+        <h5 class="modal-title" id="registroSalidaModalLabel">Justificar Salida</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="registroSalidaForm">
           <input type="hidden" id="dni_input_salida">
+          <input type="hidden" id="fecha_input_salida">
           
           <div class="mb-3">
             <label for="hora_salida" class="form-label">Hora de Salida</label>
             <input type="time" class="form-control" id="hora_salida">
+          </div>
+
+          <div class="mb-3">
+            <label for="justificar" class="form-label">Justificar</label>
+            <select class="form-control" id="justificar_salida">
+            <option value="">Seleccione</option>
+              <option value="Si">Si</option>
+              <option value="No">No</option>
+            </select>
           </div>
 
           <div class="mb-3">
