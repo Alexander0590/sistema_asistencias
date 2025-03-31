@@ -34,35 +34,31 @@ switch ($accion) {
         mysqli_query($cnn, "SET lc_time_names = 'es_ES'");
 
         $sql = "WITH ultimo_dia AS (
-            SELECT CURDATE() - INTERVAL 1 DAY AS fecha 
-        ),
-        hoy AS (
-            SELECT CURDATE() AS fecha
-        )
-        SELECT 
-            p.dni, 
-            p.nombres, 
-            p.apellidos, 
-            a.fecha AS fecha_asistencia, 
-            DATE_FORMAT(a.fecha, '%W') AS dia_semana, 
-            a.horai,
-            COALESCE(a.horas, 'Falta salida') AS hora_salida
-        FROM personal p
-        JOIN cargos c ON p.idcargo = c.idcargo
-        CROSS JOIN ultimo_dia d
-        CROSS JOIN hoy h
-        LEFT JOIN asistencia_seguridad a 
-            ON a.dni = p.dni 
-            AND (
-                (DAYOFWEEK(CURDATE()) = 2 AND (a.fecha = d.fecha - INTERVAL 1 DAY OR a.fecha = d.fecha - INTERVAL 2 DAY OR a.fecha = h.fecha)) 
-                OR (DAYOFWEEK(CURDATE()) BETWEEN 3 AND 7 AND (a.fecha = d.fecha OR a.fecha = h.fecha))
-            )
-        WHERE p.estado = 'activo'
-        AND c.nombre = 'Serenazgo'
-        AND DAYOFWEEK(CURDATE()) IN (2,3,4,5,6,7) 
-        AND a.horai IS NOT NULL 
-        AND a.horas IS NULL
-        ORDER BY a.fecha, a.horai";
+                    SELECT CURDATE() - INTERVAL 1 DAY AS fecha 
+                )
+                SELECT 
+                    p.dni, 
+                    p.nombres, 
+                    p.apellidos, 
+                    a.fecha AS fecha_asistencia, 
+                    DATE_FORMAT(a.fecha, '%W') AS dia_semana, 
+                    a.horai,
+                    COALESCE(a.horas, 'Falta salida') AS hora_salida
+                FROM personal p
+                JOIN cargos c ON p.idcargo = c.idcargo
+                CROSS JOIN ultimo_dia d
+                LEFT JOIN asistencia_seguridad a 
+                    ON a.dni = p.dni 
+                    AND (
+                        (DAYOFWEEK(CURDATE()) = 2 AND (a.fecha = d.fecha - INTERVAL 1 DAY OR a.fecha = d.fecha - INTERVAL 2 DAY)) 
+                        OR (DAYOFWEEK(CURDATE()) BETWEEN 3 AND 7 AND a.fecha = d.fecha)
+                    )
+                WHERE p.estado = 'activo'
+                AND c.nombre = 'Serenazgo'
+                AND DAYOFWEEK(CURDATE()) IN (2,3,4,5,6,7) 
+                AND a.horai IS NOT NULL 
+                AND a.horas IS NULL
+                ORDER BY a.fecha, a.horai";
 
         $registro5 = mysqli_query($cnn, $sql);
         $cantidad = mysqli_num_rows($registro5);
@@ -71,10 +67,11 @@ switch ($accion) {
         if ($cantidad > 0) {
             $json = mysqli_fetch_all($registro5, MYSQLI_ASSOC); 
         } else {
-            $json = 'sin_data'; 
-        };
-
+            $json = []; 
+        }
+        
         echo json_encode($json, JSON_UNESCAPED_UNICODE);
+        
 break;
        
 case "listar_serenazgoentrada":
@@ -131,19 +128,26 @@ case "listarfaltaseguri":
 break;
 case"listarasistenciaseguri":
     
-    $sql = "SELECT 
+        $sql = "SELECT 
                 personal.*, 
-                asistencia_seguridad.fecha as fecha_asistencia,
+                asistencia_seguridad.fecha AS fecha_asistencia,
                 asistencia_seguridad.horai,
+                asistencia_seguridad.turno,
                 asistencia_seguridad.horas,
-                DAYNAME(asistencia_seguridad.fecha) as dia_semana
+                DAYNAME(asistencia_seguridad.fecha) AS dia_semana,
+                CASE 
+                    WHEN asistencia_seguridad.horas IS NULL AND asistencia_seguridad.estado != 'Falto' THEN 'Falta salida'
+                    ELSE 'Registro completo'
+                END AS estado_asis
             FROM personal 
             JOIN cargos ON personal.idcargo = cargos.idcargo
             JOIN asistencia_seguridad ON personal.dni = asistencia_seguridad.dni
-            WHERE asistencia_seguridad.fecha = CURDATE()
-            AND personal.estado = 'activo'
-            AND cargos.nombre = 'Serenazgo'
-            ORDER BY personal.apellidos ASC";
+                AND asistencia_seguridad.fecha = CURDATE()
+                AND asistencia_seguridad.horai IS NOT NULL
+            WHERE 
+                personal.estado = 'activo'
+                AND cargos.nombre = 'Serenazgo'
+            ORDER BY personal.apellidos ASC";   
     
     $registros = mysqli_query($cnn, $sql);
     

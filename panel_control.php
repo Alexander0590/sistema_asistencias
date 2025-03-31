@@ -90,13 +90,11 @@ if($_SESSION['rol']==="1"){
 <div class="sidebar v-a" id="mySidebar">
     <i class="bi bi-list menu-btn" onclick="toggleSidebar()" id="xd"></i>
     <a href="#" id="inicio"><i class="bi bi-house-door"></i><span>Inicio</span></a>
-    <a href="#"><i class="bi bi-bar-chart-line"></i><span>Dashboard</span></a>
     <div class="menu-item">
         <a href="#"><i class="bi bi-calendar-check"></i><span>Asistencia</span></a>
         <div class="submenu">
             <a href="#" id="x2">Registrar Manual</a>
             <a href="#" id="ver_asistencia">Ver asistencia actual</a>
-            <a href="#" id="reporteas">Reportes de asistencia</a>
         </div>
     </div>
     <div class="menu-item">
@@ -113,6 +111,13 @@ if($_SESSION['rol']==="1"){
         </div>
     </div>
     <div class="menu-item">
+        <a href="#"><i class="bi bi-graph-up"></i><span>Reportes</span></a>
+        <div class="submenu">
+            <a href="#" id="reporteas">Reporte de asistencia personal</a>
+            <a href="#" id="reporteaseguridad">Reporte de asistencia serenazgo</a>
+        </div>
+    </div>
+    <div class="menu-item">
         <a href="#"><i class="bi bi-person-circle"></i><span>Usuarios</span></a>
         <div class="submenu">
             <a href="#" id="lisusu">Ver usuarios</a>
@@ -120,23 +125,10 @@ if($_SESSION['rol']==="1"){
         </div>
     </div>
     <div class="menu-item">
-        <a href="#"><i class="bi bi-gear"></i><span>Configuraciones</span></a>
-        <div class="submenu">
-            <a href="#">Configurar lector</a>
-            <a href="#">Parámetros de asistencia</a>
-        </div>
-    </div>
-    <div class="menu-item">
         <a href="#" id="copia"><i class="bi bi-database-down"></i><span>Copia de Seguridad</span></a>
     </div>
-    <div class="menu-item">
-        <a href="#"><i class="bi bi-graph-up"></i><span>Reportes</span></a>
-        <div class="submenu">
-            <a href="#">Resumen mensual</a>
-            <a href="#">Asistencia por empleado</a>
-        </div>
-    </div>
-    <a href="#" id="cerrarsesion"><i class="bi bi-box-arrow-left"></i><span>Cerrar Sesión</span></a>
+   
+    <a href="proceso/cerrar_sesion.php"><i class="bi bi-box-arrow-left"></i><span>Cerrar Sesión</span></a>
 </div>
 
 <div id="vistas">

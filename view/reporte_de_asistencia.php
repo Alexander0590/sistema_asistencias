@@ -97,5 +97,6 @@
 <!-- DataTables Buttons HTML5 JS -->
 <script type="text/javascript" charset="utf8" src="lib/botones-excel-pdf/buttons.html5.min.js"></script>
 <script src="javascrip/Tablas.js"></script>
+<script src="javascrip/asistenciamante.js"></script>
 </body>
 </html>

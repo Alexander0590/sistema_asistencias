@@ -71,7 +71,8 @@
                         <th>DNI</th>
                         <th>Apellido</th>
                         <th>Nombre</th>
-                     
+                        <th>Turno</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -227,7 +228,7 @@
               <label for="estado" class="form-label"><i class="bi bi-person-check"></i> Estado</label>
               <select class="form-control" id="estadoingreso">
                 <option value="">Seleccione</option>
-                <option value="Presente">Puntual</option>
+                <option value="Puntual">Puntual</option>
                 <option value="Tardanza">Tardanza</option>
               </select>
             </div>
@@ -244,7 +245,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="hora_salida" class="form-label"><i class="bi bi-door-open"></i> Hora de Salida</label>
-              <input type="time" class="form-control" id="hora_salida">
+              <input type="time" class="form-control" id="horas">
             </div>
             <div class="col-md-6 mb-3">
               <label for="estado_salida" class="form-label"><i class="bi bi-arrow-right-circle"></i> Estado de Salida</label>

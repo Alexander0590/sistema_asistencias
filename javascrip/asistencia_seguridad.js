@@ -102,13 +102,7 @@ function cargarSalidas(entradaData) {
                 var salidaData = response === 'sin_data' ? [] : 
                 (typeof response === 'string' ? JSON.parse(response) : response);
                 
-                // Obtener la fecha de hoy en zona horaria de Perú (GMT-5)
-                let fechaHoy = new Intl.DateTimeFormat('es-PE', {
-                    timeZone: 'America/Lima',
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                }).format(new Date()).split('/').reverse().join('-'); 
+         
 
                 if (entradaData.length === 0 && salidaData.length > 0) {
                     entradaData = salidaData.map((item, index) => ({
@@ -121,11 +115,10 @@ function cargarSalidas(entradaData) {
                         "estado": "Falta Salida",
                         "acciones": `
                             <div class="d-flex justify-content-center gap-1">
-                                ${item.fecha_asistencia !== fechaHoy ? `
                                 <button class="btn btn-success btn-sm registrarsa d-block" 
-                                        data-id="${item.dni}"> 
+                                        data-id="${item.dni}" data-fecha="${item.fecha_asistencia}"> 
                                     <i class="bi bi-check-circle"></i> Registrar Salida
-                                </button>` : ''}
+                                </button>
                                 <button class="btn btn-primary btn-sm rejustifisa d-block" 
                                         data-id="${item.dni}"
                                         data-fecha="${item.fecha_asistencia}">
@@ -144,18 +137,17 @@ function cargarSalidas(entradaData) {
                             "dia": item.dia_semana,
                             "estado": "Salida",
                             "acciones": `
-                                <div class="d-flex justify-content-center gap-1">
-                                    ${item.fecha_asistencia !== fechaHoy ? `
-                                    <button class="btn btn-success btn-sm registrarsa d-block" 
-                                            data-id="${item.dni}"> 
-                                        <i class="bi bi-check-circle"></i> Registrar Salida
-                                    </button>` : ''}
-                                    <button class="btn btn-primary btn-sm rejustifisa d-block" 
-                                            data-id="${item.dni}"
-                                            data-fecha="${item.fecha_asistencia}">
-                                        <i class="bi bi-file-earmark"></i> Justificar
-                                    </button>
-                                </div>`
+                            <div class="d-flex justify-content-center gap-1">
+                                <button class="btn btn-success btn-sm registrarsa d-block" 
+                                        data-id="${item.dni}" data-fecha="${item.fecha_asistencia}"> 
+                                    <i class="bi bi-check-circle"></i> Registrar Salida
+                                </button>
+                                <button class="btn btn-primary btn-sm rejustifisa d-block" 
+                                        data-id="${item.dni}"
+                                        data-fecha="${item.fecha_asistencia}">
+                                    <i class="bi bi-file-earmark"></i> Justificar
+                                </button>
+                            </div>`
                         });
                     });
                 }
@@ -260,14 +252,14 @@ function cargarSalidas(entradaData) {
             var fecha3 = $('#fecha_input3').length ? $('#fecha_input3').val().trim() : '';
             var turno = $('#turnodomingo').val().trim();
             var horai = $('#hora_ingreso').val();
-            var horas = $('#hora_salida').val();
+            var horas = $('#horas').val();
             var estadoing = $('#estadoingreso').val();
             var justifiingreso = $('#justiingreso').val();
             var estadosalida = $('#estado_salida').val();
             var justisalida = $('#justisalida').val();
             var comentario = $('#comentariore').val().trim();
         
-            if (!dni || !turno || !comentario || !horai|| !estadoing || !estadosalida ) {
+            if (!dni || !turno || !comentario ||  !horai|| !horas||!estadoing || !estadosalida ) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Campos vacíos',
@@ -542,23 +534,44 @@ function cargarSalidas(entradaData) {
                         console.error("Error del servidor:", json.error);
                         return [];
                     }
-        
+            
                     if (!json.data || json.data.length === 0) {
+                        console.log("No se encontraron datos");
                         return []; 
                     }
-        
-                    return json.data.map((item, index) => ({
-                        "nro": index + 1,
-                        "dni": item.dni,
-                        "apellidos": item.apellidos,
-                        "nombres": item.nombres,
-                        "acciones": `
-                            <div class="d-flex justify-content-center gap-1">
-                                <button class="btn btn-warning btn-sm editar-registro" data-id="${item.dni}">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </button>
-                            </div>`
-                    }));
+            
+                    return json.data.map((item, index) => {
+                        // Determinar qué botones mostrar según el estado
+                        const mostrarEditar = item.estado_asis !== 'Falta salida';
+                        const mostrarJustificar = item.estado_asis !== 'Registro completo';
+                        
+                        return {
+                            "nro": index + 1,
+                            "dni": item.dni,
+                            "apellidos": item.apellidos,
+                            "nombres": item.nombres,
+                            "Turno": item.turno,
+                            "Estado": item.estado_asis,
+                            "acciones": `
+                                <div class="d-flex justify-content-center gap-1">
+                                    ${mostrarEditar ? `
+                                    <button class="btn btn-warning btn-sm editar-registro" data-id="${item.dni}">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </button>
+                                    ` : ''}
+                                    
+                                    ${mostrarJustificar ? `
+                                    <button class="btn btn-primary btn-sm justificar-registro" 
+                                            data-id="${item.dni}" 
+                                            data-fecha="${item.fecha_asistencia}" 
+                                            data-turno="${item.turno}">
+                                        <i class="bi bi-file-earmark-text"></i> Justificar
+                                    </button>
+                                    ` : ''}
+                                </div>
+                            `
+                        };
+                    });
                 }
             },
             "columns": [
@@ -566,6 +579,8 @@ function cargarSalidas(entradaData) {
                 { "data": "dni" },
                 { "data": "apellidos" },
                 { "data": "nombres" },
+                { "data": "Turno" },
+                { "data": "Estado" },
                 { 
                     "data": "acciones",
                     "className": "text-center",
@@ -627,6 +642,99 @@ function cargarSalidas(entradaData) {
         });
         
        
+    //boton de justificacion serenazgo para el dia de hoy
+    $('#tperasissegu').on('click', '.justificar-registro', function() {
+        var dni = $(this).data('id');
+        var fechasa = $(this).data('fecha');
+        var turno= $(this).data('turno');
+        $('#dni_input_salida').val(dni); 
+        $('#fecha_input_salida').val(fechasa); 
+        $('#registroSalidaModal').modal('show'); 
+    
+        $('#guardarSalida').off('click').on('click', function() {
+            var $btnGuardar = $(this);
+            $btnGuardar.prop('disabled', true); 
+    
+            var dni = $('#dni_input_salida').val().trim();
+            var horas = $('#hora_salida').val().trim();
+            var comen = $('#comentario_salida').val().trim();
+            var justificar = $('#justificar_salida').val().trim();
+            var fecha2 = $('#fecha_input_salida').val().trim();      
+    
+            if (!dni || !horas || !justificar || !comen) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos vacíos',
+                    text: 'Todos los campos son obligatorios.',
+                    confirmButtonText: 'OK'
+                });
+                $btnGuardar.prop('disabled', false);
+                return;
+            }
+     
+    
+            // Definir el límite de hora
+            let limiteHora = fecha2 === fechaHoy ? '16:00:00' : '02:00:00';
+            let [limiteH, limiteM, limiteS] = limiteHora.split(':').map(Number);
+    
+            // Convertir la hora ingresada a Date para comparar
+            let horasIngresada = new Date();
+            let [h, m, s] = horas.split(':').map(Number);
+            horasIngresada.setHours(h, m, s || 0, 0);
+    
+            let horasLimite = new Date();
+            horasLimite.setHours(limiteH, limiteM, limiteS, 0);
+    
+            // Verificar si la hora ingresada es mayor al límite
+            if (horasIngresada > horasLimite) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hora incorrecta',
+                    text: `La hora debe ser menor a las ${limiteHora}`,
+                    confirmButtonText: 'OK'
+                });
+                $btnGuardar.prop('disabled', false);
+                return;
+            }
+    
+            // Enviar datos por AJAX
+            $.ajax({
+                url: 'proceso/mantesernazgo.php?action=registrsalijusti',
+                type: 'POST', 
+                data: {
+                    dni: dni,
+                    fecha2: fecha2,
+                    horas: horas,
+                    justificar: justificar,
+                    comen: comen
+                },
+                success: function(response) {
+                    $('#registroSalidaModal').modal('hide'); 
+    
+                    $("#vistas").load("view/Lista_seguridadciu.php", function () {
+                        $(this).fadeIn(200);
+                    });
+    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Registro guardado!',
+                        text: 'El registro se ha guardado correctamente.',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        $('#registroSalidaModal').modal('hide'); 
+                    });
+                },
+                complete: function() {
+                    $btnGuardar.prop('disabled', false); 
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    alert("Hubo un problema al guardar el registro");
+                    $btnGuardar.prop('disabled', false);
+                }
+            });
+        });
+    });
     
         $('#tperasissegu').on('click', '.editar-registro', function() {
             var dni = $(this).data('id');

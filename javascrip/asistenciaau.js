@@ -106,10 +106,12 @@ function actualizarFechaHora() {
         mensaje2="";
         document.getElementById("turno-actual").style.display = "none";
         mensaje = "Sistema cerrado. Fuera del horario de tolerancia del Turno-Diurno.";
+        mensaje2=" ";
     } else if (ahora > salidaTurno1 && ahora < inicioTurno2) {
         sistemaCerrado = true;
         document.getElementById("turno-actual").style.display = "none";
         mensaje = "Sistema cerrado. El Sitema se habilitara a las 1:45 PM -Turno - Tarde";
+        mensaje2=" ";
     } else if (ahora >= inicioTurno2 && ahora < cierreTurno2) {
         // Turno 2: Tarde (1:45 PM - 2:15 PM)
         estado="Puntual";
