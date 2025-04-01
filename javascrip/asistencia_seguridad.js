@@ -20,8 +20,8 @@ $(document).ready(function () {
                 "previous": "Anterior"
             }
         },
-      "processing": true,  // Muestra la barra de carga
-    "serverSide": true,  // Cambiar a true si se usa AJAX
+      "processing": true,  
+    "serverSide": false,  
         "ajax": {
             "url": "proceso/proceso_asistencia_diaria.php",
             "type": "GET",
@@ -50,21 +50,21 @@ $(document).ready(function () {
                             "estado": "Entrada y Salida",
                             "acciones": `
                                 <div class="d-flex justify-content-center gap-1">
-                                    <button class="btn btn-danger btn-sm registrarfse d-block" data-id="${item.dni}">
+                                    <button class="btn btn-danger btn-sm registrarfse d-block" data-id="${item.dni}"  data-fecha="${item.fecha_asistencia}">
                                         <i class="bi bi-x-circle"></i> Registrar falta
                                     </button>
-                                    <button class="btn btn-success btn-sm registrartc d-block" data-id="${item.dni}">
+                                    <button class="btn btn-success btn-sm registrardom d-block" data-id="${item.dni}" data-fecha="${item.fecha_asistencia}">
                                         <i class="bi bi-check-circle"></i> Registrar 
                                     </button>
                                 </div>`
                         });
                     });
     
-                    // Si hay datos de entrada, cargar también las salidas
+                    // Si hay datos de entrada cargar también las salidas
                     if (processedData.length > 0) {
                         cargarSalidas(processedData);
                     } else {
-                        cargarSalidas([]); // Si no hay entradas, solo cargar salidas
+                        cargarSalidas([]); 
                     }
                     
                     return processedData;
@@ -172,19 +172,90 @@ function cargarSalidas(entradaData) {
     });
 }
 
-
+//registrar falta domingo
     $('#tper_sn_t2').on('click', '.registrarfse', function() {
         var dni = $(this).data('id');
-      
+        var fechafa = $(this).data('fecha');
+        $('#dni_input1').val(dni); 
+        $('#fecha_input1').val(fechafa); 
+
+        $('#registroModal').modal('show'); 
+        
+        $('#guardarRegistro').off('click').on('click', function() {
+            var dni = $('#dni_input1').val().trim();
+            var fecha3 = $('fecha_input1').val().trim();
+            var turno = $('#turno').val().trim();
+            var justi = $('#justificar').val().trim();
+            var comentario = $('#comentario').val().trim();
+        
+            if (!dni || !turno || !justi || !comentario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos vacíos',
+                    text: 'Todos los campos son obligatorios.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            $.ajax({
+                url: 'proceso/mantesernazgo.php?action=regisfdomingo',
+                type: 'POST', 
+                data: {
+                    dni: dni,
+                    fecha3:fecha3,
+                    justi: justi,
+                    turno: turno,
+                    comentario: comentario
+                },
+                success: function(response) {
+                    $('#registroModal').modal('hide'); 
+                    
+                    $("#vistas").load("view/Lista_seguridadciu.php", function () {
+                        $(this).fadeIn(200);
+                    });
+    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Registro guardado!',
+                        text: 'El registro se ha guardado correctamente.',
+                        confirmButtonText: 'Aceptar'
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    alert("Hubo un problema al guardar el registro");
+                }
+            });
+        });
         
     });
-
-    $('#tper_sn_t2').on('click', '.registrartc', function() {
+//boton registrar domingo
+    $('#tper_sn_t2').on('click', '.registrardom', function() {
         var dni = $(this).data('id');
-        console.log("Registrar asistencia para DNI:", dni);
+        var fechafa = $(this).data('fecha');
         
-    });
+        $('#dni_input3').val(dni); 
+        $('#fecha_input3').val(fechafa); 
+    
+        $('#registrore2').modal('show'); 
 
+        $("#estado").change(function() {
+            if ($(this).val() === "Tardanza") { 
+                $("#justiingreso").closest(".mb-3").show();
+            } else {
+                $("#justiingreso").closest(".mb-3").hide();
+            }
+        });
+    
+        $("#estado_salida").change(function() {
+            if ($(this).val() === "Salida Anticipada") {
+                $("#justisalida").closest(".mb-3").show();
+            } else {
+                $("#justisalida").closest(".mb-3").hide();
+            }
+        });
+   
+    });
 //boton de registrar salida serenazgo
     $('#tper_sn_t2').on('click', '.registrarsa', function() {
         var $this = $(this);

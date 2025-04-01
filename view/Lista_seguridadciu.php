@@ -116,51 +116,50 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header text-white" style="background-color: #0c0c24;">
-        <h5 class="modal-title" id="registroModalLabel">Registrar Falta</h5>
-        <button type="button" class="btn-close btn-close-white " data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="registroModalLabel"><i class="bi bi-person-x"></i> Registrar Falta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="registroForm">
           <input type="hidden" id="dni_input1">
+          <input type="hidden" id="fecha_input1">
           <div class="mb-3">
-            <label for="turno" class="form-label">Turno</label>
+            <label for="turno" class="form-label"><i class="bi bi-clock"></i> Turno</label>
             <select class="form-control" id="turno">
-            <option value="">Seleccione</option>
+              <option value="">Seleccione</option>
               <option value="mañana">Mañana</option>
               <option value="tarde">Tarde</option>
             </select>
           </div>
 
           <div class="mb-3">
-            <label for="justificar" class="form-label">Justificar</label>
+            <label for="justificar" class="form-label"><i class="bi bi-question-circle"></i> Justificar</label>
             <select class="form-control" id="justificar">
-            <option value="">Seleccione</option>
+              <option value="">Seleccione</option>
               <option value="Si">Si</option>
               <option value="No">No</option>
             </select>
           </div>
           <div class="mb-3">
-            <label for="comentario" class="form-label">Comentario</label>
+            <label for="comentario" class="form-label"><i class="bi bi-chat-dots"></i> Comentario</label>
             <textarea class="form-control" id="comentario" rows="3"></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" id="guardarRegistro">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Cerrar</button>
+        <button type="button" class="btn btn-primary" id="guardarRegistro"><i class="bi bi-save"></i> Guardar</button>
       </div>
     </div>
   </div>
 </div>
-
-
 
 <!-- Modal de Registro de Salida -->
 <div class="modal fade" id="registroSalidaModal" tabindex="-1" aria-labelledby="registroSalidaModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header text-white" style="background-color: #0c0c24;">
-        <h5 class="modal-title" id="registroSalidaModalLabel">Justificar Salida</h5>
+        <h5 class="modal-title" id="registroSalidaModalLabel"><i class="bi bi-door-open"></i> Justificar Salida</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -169,32 +168,118 @@
           <input type="hidden" id="fecha_input_salida">
           
           <div class="mb-3">
-            <label for="hora_salida" class="form-label">Hora de Salida</label>
+            <label for="hora_salida" class="form-label"><i class="bi bi-clock"></i> Hora de Salida</label>
             <input type="time" class="form-control" id="hora_salida">
           </div>
 
           <div class="mb-3">
-            <label for="justificar" class="form-label">Justificar</label>
+            <label for="justificar" class="form-label"><i class="bi bi-question-circle"></i> Justificar</label>
             <select class="form-control" id="justificar_salida">
-            <option value="">Seleccione</option>
+              <option value="">Seleccione</option>
               <option value="Si">Si</option>
               <option value="No">No</option>
             </select>
           </div>
 
           <div class="mb-3">
-            <label for="comentario_salida" class="form-label">Comentario</label>
+            <label for="comentario_salida" class="form-label"><i class="bi bi-chat-dots"></i> Comentario</label>
             <textarea class="form-control" id="comentario_salida" rows="3"></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" id="guardarSalida">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Cerrar</button>
+        <button type="button" class="btn btn-primary" id="guardarSalida"><i class="bi bi-save"></i> Guardar</button>
       </div>
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="registrore2" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #0c0c24;">
+        <h5 class="modal-title" id="registroModalLabel"><i class="bi bi-calendar-check"></i> Registrar Asistencia</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="registroForm">
+          <input type="hidden" id="dni_input3">
+          <input type="hidden" id="fecha_input3">
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="turno" class="form-label"><i class="bi bi-clock"></i> Turno</label>
+              <select class="form-control" id="turno">
+                <option value="">Seleccione</option>
+                <option value="mañana">Mañana</option>
+                <option value="tarde">Tarde</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="hora_ingreso" class="form-label"><i class="bi bi-alarm"></i> Hora de Ingreso</label>
+              <input type="time" class="form-control" id="hora_ingreso">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="estado" class="form-label"><i class="bi bi-person-check"></i> Estado</label>
+              <select class="form-control" id="estado">
+                <option value="">Seleccione</option>
+                <option value="Presente">Puntual</option>
+                <option value="Tardanza">Tardanza</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3" style="display: none;">
+              <label for="justificacion" class="form-label"><i class="bi bi-file-earmark-text"></i> Justificación</label>
+              <select class="form-control" id="justiingreso">
+                <option value="">Seleccione</option>
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="hora_salida" class="form-label"><i class="bi bi-door-open"></i> Hora de Salida</label>
+              <input type="time" class="form-control" id="hora_salida">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="estado_salida" class="form-label"><i class="bi bi-arrow-right-circle"></i> Estado de Salida</label>
+              <select class="form-control" id="estado_salida">
+                <option value="">Seleccione</option>
+                <option value="Salida Normal">Salida Normal</option>
+                <option value="Salida Anticipada">Salida Anticipada</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3" style="display: none;">
+              <label for="justificacion_salida" class="form-label"><i class="bi bi-file-earmark-text"></i> Justificación de Salida</label>
+              <select class="form-control" id="justisalida">
+                <option value="">Seleccione</option>
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="comentario" class="form-label"><i class="bi bi-chat-left-text"></i> Comentario</label>
+              <textarea class="form-control" id="comentario" rows="2"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Cerrar</button>
+        <button type="button" class="btn btn-primary" id="guardarRegistro"><i class="bi bi-save"></i> Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="lib/jquery-3.6.0.min.js"></script>
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" charset="utf8" src="lib/datatables2/jquery.dataTables.min.js"></script>
