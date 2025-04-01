@@ -31,7 +31,7 @@ $(document).ready(function () {
             },
             "dataSrc": function (json) {
                 if (json === 'sin_data') {
-                    cargarSalidas([]); // Si no hay datos de entrada, cargar solo salida
+                    cargarSalidas([]); 
                     return [];
                 }
                 
@@ -183,7 +183,7 @@ function cargarSalidas(entradaData) {
         
         $('#guardarRegistro').off('click').on('click', function() {
             var dni = $('#dni_input1').val().trim();
-            var fecha3 = $('fecha_input1').val().trim();
+            var fecha3 = $('#fecha_input1').length ? $('#fecha_input1').val().trim() : '';
             var turno = $('#turno').val().trim();
             var justi = $('#justificar').val().trim();
             var comentario = $('#comentario').val().trim();
@@ -232,14 +232,14 @@ function cargarSalidas(entradaData) {
 //boton registrar domingo
     $('#tper_sn_t2').on('click', '.registrardom', function() {
         var dni = $(this).data('id');
-        var fechafa = $(this).data('fecha');
+        var fechare = $(this).data('fecha');
         
         $('#dni_input3').val(dni); 
-        $('#fecha_input3').val(fechafa); 
+        $('#fecha_input3').val(fechare); 
     
         $('#registrore2').modal('show'); 
 
-        $("#estado").change(function() {
+        $("#estadoingreso").change(function() {
             if ($(this).val() === "Tardanza") { 
                 $("#justiingreso").closest(".mb-3").show();
             } else {
@@ -254,7 +254,63 @@ function cargarSalidas(entradaData) {
                 $("#justisalida").closest(".mb-3").hide();
             }
         });
-   
+
+        $('#guardarredomingo').off('click').on('click', function() {
+            var dni = $('#dni_input3').val().trim();
+            var fecha3 = $('#fecha_input3').length ? $('#fecha_input3').val().trim() : '';
+            var turno = $('#turnodomingo').val().trim();
+            var horai = $('#hora_ingreso').val();
+            var horas = $('#hora_salida').val();
+            var estadoing = $('#estadoingreso').val();
+            var justifiingreso = $('#justiingreso').val();
+            var estadosalida = $('#estado_salida').val();
+            var justisalida = $('#justisalida').val();
+            var comentario = $('#comentariore').val().trim();
+        
+            if (!dni || !turno || !comentario || !horai|| !estadoing || !estadosalida ) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos vacíos',
+                    text: 'Todos los campos son obligatorios.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            $.ajax({
+                url: 'proceso/mantesernazgo.php?action=regisregidomingo',
+                type: 'POST', 
+                data: {
+                    dni: dni,
+                    fecha3:fecha3,
+                    horai:horai,
+                    horas:horas,
+                    estadoing:estadoing,
+                    justifiingreso:justifiingreso,
+                    estadosalida:estadosalida,
+                    justisalida:justisalida,
+                    turno: turno,
+                    comentario: comentario
+                },
+                success: function(response) {
+                    $('#registrore2').modal('hide'); 
+                    
+                    $("#vistas").load("view/Lista_seguridadciu.php", function () {
+                        $(this).fadeIn(200);
+                    });
+    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Registro guardado!',
+                        text: 'El registro se ha guardado correctamente.',
+                        confirmButtonText: 'Aceptar'
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    alert("Hubo un problema al guardar el registro");
+                }
+            });
+        });
     });
 //boton de registrar salida serenazgo
     $('#tper_sn_t2').on('click', '.registrarsa', function() {
@@ -428,7 +484,7 @@ function cargarSalidas(entradaData) {
                 }
             },
            "processing": true,  
-            "serverSide": true,  
+            "serverSide": false,  
         };
     
         //  Tabla de Faltas de serenazgo

@@ -180,6 +180,95 @@ switch ($action) {
 
         
     break;
+
+    case "regisregidomingo":
+
+        $dni = $_POST['dni'];
+        $fecha3 = $_POST['fecha3'];
+        $horai = $_POST['horai'];
+        $estadoing = $_POST['estadoing'];
+        $justifiingreso = $_POST['justifiingreso'];
+        $estadosalida = $_POST['estadosalida'];
+        $justisalida = $_POST['justisalida'];
+        $turno = $_POST['turno'];
+        $comentario = $_POST['comentario'];
+        $hora_salida = strtotime($_POST['horas']); 
+
+        $timestamp = strtotime($fecha3);
+        
+        $dia_semana_es = date("N", $timestamp);
+        
+        $dias_espanol = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+        
+        $dia_es = $dias_espanol[$dia_semana_es];
+
+        $query = "SELECT sueldo FROM personal WHERE dni = '$dni'";
+        $result = mysqli_query($cnn, $query);
+        $row = mysqli_fetch_assoc($result);
+        $sueldo = $row['sueldo'];
+
+        $gaxminuto = $sueldo / (30 * 8 * 60); 
+        $descuento = 0;
+
+        if (empty($justifiingreso) || empty($justisalida) || $justifiingreso == 'si' && $justisalida == 'si') {
+            $minutos_tarde = 0;
+            $descuento = 0;
+        } else if ($justifiingreso == 'no' || $justisalida == 'no') {
+            if ($turno == 'mañana') {
+                $hora_permitida_ingreso = strtotime('08:15:59');
+                $hora_permitida_salida = strtotime('16:00:00');
+            } else if ($turno == 'tarde') {
+                $hora_permitida_ingreso = strtotime('18:10:00');
+                $hora_permitida_salida = strtotime('02:00:00');
+            }
+        
+            $hora_ingreso = strtotime($horai);
+            
+            if ($hora_ingreso > $hora_permitida_ingreso) {
+                $minutos_tarde = ($hora_ingreso - $hora_permitida_ingreso) / 60;
+                $descuento += $minutos_tarde * $gaxminuto;
+            }
+            
+            if ($estadosalida == 'no') {
+                $hora_salida = strtotime($_POST['horas']); 
+                if ($hora_salida > $hora_permitida_salida) {
+                    $minutos_tarde_salida = ($hora_salida - $hora_permitida_salida) / 60;
+                    $descuento += $minutos_tarde_salida * $gaxminuto;
+                }
+            }
+        }
+        if (empty($justifiingreso) || empty($justisalida) || $justifiingreso == 'si' && $justisalida == 'si') {
+            $minutos_tarde = 0;
+            $descuento = 0;
+        } else if ($justifiingreso == 'no' || $justisalida == 'no') {
+            if ($turno == 'mañana') {
+                $hora_permitida_ingreso = strtotime('08:15:59');
+                $hora_permitida_salida = strtotime('16:00:00');
+            } else if ($turno == 'tarde') {
+                $hora_permitida_ingreso = strtotime('18:10:00');
+                $hora_permitida_salida = strtotime('02:00:00');
+            }
+        
+            $hora_ingreso = strtotime($horai);
+            
+            if ($hora_ingreso > $hora_permitida_ingreso) {
+                $minutos_tarde = ($hora_ingreso - $hora_permitida_ingreso) / 60;
+                $descuento += $minutos_tarde * $gaxminuto;
+            }
+            
+            if ($estadosalida == 'no') {
+                $hora_salida = strtotime($_POST['horas']); 
+                if ($hora_salida > $hora_permitida_salida) {
+                    $minutos_tarde_salida = ($hora_salida - $hora_permitida_salida) / 60;
+                    $descuento += $minutos_tarde_salida * $gaxminuto;
+                }
+            }
+        }
+        $sql_insert = "INSERT INTO asistencia_seguridad (dni, fecha, dia, turno, estado, estado_salida, justificado, justificado_salida, minutos_descu, comentario, descuento_dia , horai, horas) 
+        VALUES ('$dni', '$fecha3', '$dia_es', '$turno', '$estadoing', '$estadosalida', '$justificado', '$justificado_salida', '$minutosdes', '$comentario', '$montodescu' , '$horai', '$hora_salida')";
+        mysqli_query($cnn, $sql_insert);
+                
+    break;
     default:
 
     break;

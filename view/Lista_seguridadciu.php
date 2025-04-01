@@ -194,7 +194,7 @@
     </div>
   </div>
 </div>
-
+<!-- moda registrar serenazgo -->
 <div class="modal fade" id="registrore2" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -210,7 +210,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="turno" class="form-label"><i class="bi bi-clock"></i> Turno</label>
-              <select class="form-control" id="turno">
+              <select class="form-control" id="turnodomingo">
                 <option value="">Seleccione</option>
                 <option value="mañana">Mañana</option>
                 <option value="tarde">Tarde</option>
@@ -225,7 +225,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="estado" class="form-label"><i class="bi bi-person-check"></i> Estado</label>
-              <select class="form-control" id="estado">
+              <select class="form-control" id="estadoingreso">
                 <option value="">Seleccione</option>
                 <option value="Presente">Puntual</option>
                 <option value="Tardanza">Tardanza</option>
@@ -267,14 +267,14 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="comentario" class="form-label"><i class="bi bi-chat-left-text"></i> Comentario</label>
-              <textarea class="form-control" id="comentario" rows="2"></textarea>
+              <textarea class="form-control" id="comentariore" rows="2"></textarea>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Cerrar</button>
-        <button type="button" class="btn btn-primary" id="guardarRegistro"><i class="bi bi-save"></i> Guardar</button>
+        <button type="button" class="btn btn-primary" id="guardarredomingo"><i class="bi bi-save"></i> Guardar</button>
       </div>
     </div>
   </div>
