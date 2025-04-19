@@ -128,8 +128,8 @@
             <label for="turno" class="form-label"><i class="bi bi-clock"></i> Turno</label>
             <select class="form-control" id="turno">
               <option value="">Seleccione</option>
-              <option value="mañana">Mañana</option>
-              <option value="tarde">Tarde</option>
+              <option value="Mañana">Mañana</option>
+              <option value="Tarde">Tarde</option>
             </select>
           </div>
 
@@ -167,6 +167,7 @@
         <form id="registroSalidaForm">
           <input type="hidden" id="dni_input_salida">
           <input type="hidden" id="fecha_input_salida">
+          <input type="hidden" id="turnosa">
           
           <div class="mb-3">
             <label for="hora_salida" class="form-label"><i class="bi bi-clock"></i> Hora de Salida</label>
@@ -213,8 +214,8 @@
               <label for="turno" class="form-label"><i class="bi bi-clock"></i> Turno</label>
               <select class="form-control" id="turnodomingo">
                 <option value="">Seleccione</option>
-                <option value="mañana">Mañana</option>
-                <option value="tarde">Tarde</option>
+                <option value="Mañana">Mañana</option>
+                <option value="Tarde">Tarde</option>
               </select>
             </div>
             <div class="col-md-6 mb-3">
@@ -276,6 +277,93 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Cerrar</button>
         <button type="button" class="btn btn-primary" id="guardarredomingo"><i class="bi bi-save"></i> Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal editar serenazgo -->
+<div class="modal fade" id="editarre2" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #0c0c24;">
+        <h5 class="modal-title" id="editarModalLabel"><i class="bi bi-pencil-square"></i> Editar Asistencia</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editarForm">
+          <input type="hidden" id="dni_edit">
+          <input type="hidden" id="fecha_edit">
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="turno_edit" class="form-label"><i class="bi bi-clock"></i> Turno</label>
+              <select class="form-control" id="turno_edit">
+                <option value="">Seleccione</option>
+                <option value="Mañana">Mañana</option>
+                <option value="Tarde">Tarde</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="hora_ingreso_edit" class="form-label"><i class="bi bi-alarm"></i> Hora de Ingreso</label>
+              <input type="time" class="form-control" id="hora_ingreso_edit">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="estado_ingreso_edit" class="form-label"><i class="bi bi-person-check"></i> Estado</label>
+              <select class="form-control" id="estado_ingreso_edit">
+                <option value="">Seleccione</option>
+                <option value="Puntual">Puntual</option>
+                <option value="Tardanza">Tardanza</option>
+                <option value="Falto">Falto</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3" >
+              <label for="justificacion_ingreso_edit" class="form-label"><i class="bi bi-file-earmark-text"></i> Justificación</label>
+              <select class="form-control" id="justificacion_ingreso_edit">
+                <option value="">Seleccione</option>
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="hora_salida_edit" class="form-label"><i class="bi bi-door-open"></i> Hora de Salida</label>
+              <input type="time" class="form-control" id="hora_salida_edit">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="estado_salida_edit" class="form-label"><i class="bi bi-arrow-right-circle"></i> Estado de Salida</label>
+              <select class="form-control" id="estado_salida_edit">
+                <option value="">Seleccione</option>
+                <option value="Salida Normal">Salida Normal</option>
+                <option value="Salida Anticipada">Salida Anticipada</option>
+                <option value="Falto">Falto</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3" >
+              <label for="justificacion_salida_edit" class="form-label"><i class="bi bi-file-earmark-text"></i> Justificación de Salida</label>
+              <select class="form-control" id="justificacion_salida_edit">
+                <option value="">Seleccione</option>
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="comentario_edit" class="form-label"><i class="bi bi-chat-left-text"></i> Comentario</label>
+              <textarea class="form-control" id="comentario_edit" rows="2"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Cancelar</button>
+        <button type="button" class="btn btn-success" id="guardar_edicion"><i class="bi bi-save2"></i> Guardar Cambios</button>
       </div>
     </div>
   </div>

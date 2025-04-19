@@ -12,37 +12,37 @@
    <!-- Formulario de filtro -->
 <div class="card shadow-lg mb-4">
     <div class="card-header text-white d-flex justify-content-center align-items-center">
-        <h4 class="mb-0"><i class="bi bi-filter"></i> Filtro de Asistencia</h4>
+        <h4 class="mb-0"><i class="bi bi-filter"></i> Filtro de Asistencia Serenazgo</h4>
     </div>
     <div class="card-body">
-        <form id="filtroForm" class="row g-3">
+        <form id="filtroserenazgo" class="row g-3">
 
             <div class="col-md-4">
                 <label for="dni" class="form-label">
                     <i class="bi bi-person-badge"></i> DNI
                 </label>
-                <input type="number" class="form-control" id="dnire" placeholder="Ingrese DNI" min="10000000" max="99999999">
+                <input type="number" class="form-control" id="dnireporte" placeholder="Ingrese DNI" min="10000000" max="99999999">
             </div>
 
             <div class="col-md-4">
                 <label for="fechain" class="form-label">
                     <i class="bi bi-calendar"></i> Fecha de Inicio
                 </label>
-                <input type="date" class="form-control" id="fechain" required>
+                <input type="date" class="form-control" id="fechainrepor" required>
             </div>
 
             <div class="col-md-4">
                 <label for="fechafi" class="form-label">
                     <i class="bi bi-calendar-check"></i> Fecha de Fin
                 </label>
-                <input type="date" class="form-control" id="fechafi" required>
+                <input type="date" class="form-control" id="fechafirepor" required>
             </div>
 
             <div class="col-12 text-center">
-                <button type="submit" class="btn btn-primary" id="filtraras">
+                <button type="submit" class="btn btn-primary" id="filtrarrepor">
                     <i class="bi bi-search"></i> Filtrar
                 </button>
-                <button type="reset" class="btn btn-secondary" id="limpiarfil">
+                <button type="reset" class="btn btn-secondary" id="limpiarreporte">
                     <i class="bi bi-arrow-repeat"></i> Limpiar
                 </button>
             </div>
@@ -55,26 +55,28 @@
     <!-- Tabla de asistencia -->
     <div class="card shadow-lg">
         <div class="card-header text-white d-flex justify-content-center align-items-center ">
-            <h4 class="mb-0"><i class="bi bi-file-earmark-person"></i> Reporte de asistencia</h4>
+            <h4 class="mb-0"><i class="bi bi-shield"></i> Reporte de Asistencia Serenazgo</h4>
         </div>
         <div class="card-body">
-            <table class="table table-striped table-bordered table-hover" id="tasis" style="width:100%">
+            <table class="table table-striped table-bordered table-hover" id="treposeguri" style="width:100%">
                 <thead id="tabla1">
-                    <tr>
-                        <th>Nº</th>
-                        <th>Dni</th>
-                        <th>Fecha</th>
-                        <th>Dia</th>
-                        <th>Hora de entrada Turno-Mañana</th>
-                        <th>Estado de Mañana</th>
-                        <th>Hora de entrada Turno-Tarde</th>
-                        <th>Estado de Tarde</th>
-                        <th>Hora de salida Turno-Tarde </th>
-                     
-                        <th>Minutos de descuento</th>
-                        <th>Monto de descuento</th>
-                        <th>Comentario</th>
-                    </tr>
+                <tr>
+                <th>#</th>
+                <th>DNI</th>
+                <th>Fecha</th>
+                <th>Día</th>
+                <th>Turno</th>
+                <th>Hora Entrada</th>
+                <th>Estado Entrada</th>
+                <th>Justificado Entrada</th>
+                <th>Comentario Entrada</th>
+                <th>Hora Salida</th>
+                <th>Estado Salida</th>
+                <th>Justificado Salida</th>
+                <th>Comentario Salida</th>
+                <th>Minutos Descuento</th>
+                <th>Descuento Día</th>
+                </tr>
                 </thead>
                 <tbody>
                   
@@ -98,6 +100,6 @@
 <!-- DataTables Buttons HTML5 JS -->
 <script type="text/javascript" charset="utf8" src="lib/botones-excel-pdf/buttons.html5.min.js"></script>
 <script src="javascrip/Tablas.js"></script>
-<script src="javascrip/asistenciamante.js"></script>
+<script src="javascrip/asistencia_seguridad.js"></script>
 </body>
 </html>

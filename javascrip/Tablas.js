@@ -1,6 +1,18 @@
 
 //TABLAS
 $(document).ready(function () { 
+    if ($.fn.DataTable.isDataTable('#tusu')) {
+        $('#tusu').DataTable().clear().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('#tasis')) {
+        $('#tasis').DataTable().clear().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('#tper')) {
+        $('#tper').DataTable().clear().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('#tsalidas')) {
+        $('#tsalidas').DataTable().clear().destroy();
+    }
     // Inicializar tabla usuario
 $('#tusu').DataTable({
     "paging": true,
@@ -27,14 +39,106 @@ $('#tusu').DataTable({
     
 });
 
+if ($.fn.DataTable.isDataTable('#treposeguri')) {
+    $('#treposeguri').DataTable().clear().destroy();
+}
+//reporte de serenazgo
+$('#treposeguri').DataTable({
+    "paging": false, 
+    "searching": true, 
+    "ordering": false, 
+    "info": true, 
+    "autoWidth": false, 
+    "scrollX": true, 
+    "responsive": true, 
+    "language": {
+        "search": "Buscar:",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + 
+           '<"row"<"col-sm-12"tr>>' + 
+           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', 
+    "buttons": [
+        {
+            extend: 'excelHtml5', 
+            text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+            className: 'btn btn-success',
+            title: 'Reporte_de_Serenazgo' 
+        },
+        {
+            extend: 'pdfHtml5', 
+            text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
+            className: 'btn btn-danger',
+            title: 'reporte_de_Serenazgo', 
+            customize: function (doc) {
+                // Personalización del PDF
+                doc.defaultStyle.fontSize = 10;
+                doc.styles.tableHeader.fontSize = 10;
+                doc.styles.title.fontSize = 14;
+                doc.pageOrientation = 'landscape';  
+            }
+        }
+    ]
+});
+//reporte de salidas
+$('#treportesalida').DataTable({
+    "paging": false, 
+    "searching": true, 
+    "ordering": false, 
+    "info": true, 
+    "autoWidth": false, 
+    "scrollX": true, 
+    "responsive": true, 
+    "language": {
+        "search": "Buscar:",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + 
+           '<"row"<"col-sm-12"tr>>' + 
+           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', 
+    "buttons": [
+        {
+            extend: 'excelHtml5', 
+            text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+            className: 'btn btn-success',
+            title: 'Reporte_de_Salidas' 
+        },
+        {
+            extend: 'pdfHtml5', 
+            text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
+            className: 'btn btn-danger',
+            title: 'reporte_de_Salidas', 
+            customize: function (doc) {
+                // Personalización del PDF
+                doc.defaultStyle.fontSize = 10;
+                doc.styles.tableHeader.fontSize = 10;
+                doc.styles.title.fontSize = 14;
+                doc.pageOrientation = 'landscape';  
+            }
+        }
+    ]
+});
+//reporte de asistencia
 $('#tasis').DataTable({
-    "paging": false, // Deshabilitar paginación (muestra todos los registros)
-    "searching": true, // Habilitar búsqueda
-    "ordering": false, // Deshabilitar ordenamiento
-    "info": true, // Mostrar información de registros
-    "autoWidth": false, // Deshabilitar ajuste automático de ancho
-    "scrollX": true, // Habilitar desplazamiento horizontal
-    "responsive": true, // Habilitar responsividad
+    "paging": false, 
+    "searching": true, 
+    "ordering": false, 
+    "info": true, 
+    "autoWidth": false, 
+    "scrollX": true, 
+    "responsive": true, 
     "language": {
         "search": "Buscar:",
         "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
@@ -92,6 +196,30 @@ $('#tper').DataTable({
     },
     "columnDefs": [
         { "width": "100px", "targets": 9 } 
+    ]
+});
+//inicializar tabla salidas
+$('#tsalidas').DataTable({
+    "paging": false,
+    "searching": true,
+    "ordering": false,
+    "info": true,
+    "autoWidth": false,
+    "scrollX": true, 
+    "responsive": true,
+    "language": {
+        "search": "Buscar:",
+        "lengthMenu": "Mostrar _MENU_ registros por página",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    "columnDefs": [
+        { "width": "100px", "targets": 8 } 
     ]
 });
 
@@ -229,12 +357,12 @@ function obtenerUsuarios() {
                         asistencia.fecha,
                         asistencia.dia,
                         asistencia.horaim ? `${asistencia.horaim} AM` : "No hay registro",
-                        asistencia.horasm ? `${asistencia.horasm} PM` : "No hay registro",
                         asistencia.estadom || "No hay registro",
                         asistencia.horait ? `${asistencia.horait} PM` : "No hay registro",
-                        asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
                         estado,
+                        asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
                         minutosdes,
+                        "S/."+asistencia.descuento_dia,
                         asistencia.comentario || "Sin comentarios"
                     ]).draw(false);
                 });
@@ -246,14 +374,173 @@ function obtenerUsuarios() {
     }
 
 
+    //reporte de serenazgo
+    function obtenerreporsere() {
+
+      
+        $.ajax({
+            url: 'proceso/mantesernazgo.php?action=readreporte',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                const tabla = $('#treposeguri').DataTable();
+    
+                // Limpiar y preparar la tabla
+                tabla.clear();
+                console.log("DATA COMPLETA:", data);
+                data.forEach(function (serenazgo, index) {
+                    let horaiFormatted = "No hay registro";
+                    let horasFormatted = "No hay registro";
+                    let minutosDesc = serenazgo.minutos_descu ? `${serenazgo.minutos_descu} minutos` : "0 minutos";
+                    let descuentoDia = serenazgo.descuento_dia ? `S/. ${serenazgo.descuento_dia}` : "S/. 0";
+                
+                    if (serenazgo.turno === "Mañana") {
+                        horaiFormatted = serenazgo.horai ? `${serenazgo.horai} AM` : "No hay registro";
+                        horasFormatted = serenazgo.horas ? `${serenazgo.horas} PM` : "No hay registro";
+                    } else if (serenazgo.turno === "Tarde") {
+                        horaiFormatted = serenazgo.horai ? `${serenazgo.horai} PM` : "No hay registro";
+                        horasFormatted = serenazgo.horas ? `${serenazgo.horas} AM` : "No hay registro";
+                    }
+                    tabla.row.add([
+                        index + 1,
+                        serenazgo.dni,
+                        serenazgo.fecha,
+                        serenazgo.dia,
+                        serenazgo.turno,
+                        horaiFormatted,
+                        serenazgo.estado || "No registrado",
+                        serenazgo.Justificado || "No hay registro",
+                        serenazgo.comentario || "Sin comentarios",
+                        horasFormatted,
+                        serenazgo.estado_salida || "No registrado",
+                        serenazgo.Justificado_salida || "No hay registro",
+                        serenazgo.comentario_salida || "Sin comentarios",
+                        minutosDesc,
+                        descuentoDia
+                    ]);
+                });
+    
+                tabla.draw();
+            },
+            error: function (error) {
+                console.error('Error al obtener los datos:', error);
+            }
+        });
+    }
+    
+    function obtenersalidas() {
+        $.ajax({
+            url: 'proceso/mantesalidas.php?action=readhoysal',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                const tabla = $('#tsalidas').DataTable();
+    
+                // Limpiar y preparar la tabla
+                tabla.clear();
+                data.forEach(function (salidas, index) {
+                    tabla.row.add([
+                        index + 1,
+                        salidas.dni || "",
+                        (salidas.apellidos || "") + " " + (salidas.nombres || ""),
+                        salidas.turno || "",
+                        salidas.hora_salida || "No registrado",
+                        salidas.hora_reingreso || "No hay registro",
+                        salidas.motivo || "Sin motivo",
+                        salidas.comentario || "Sin comentarios",
+                        `<div class="btn-group" role="group">
+                        <button class="btn btn-primary btn-sm saleditar" data-id="${salidas.id_sali || ''}">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn btn-warning btn-sm usuSalidaFinal" data-id="${salidas.id_sali || ''}">
+                            <i class="bi bi-door-open"></i> Salida Final
+                        </button>
+                    </div>`
+                    ]);
+                });
+    
+                tabla.draw();
+            },
+            error: function (error) {
+                console.error('Error al obtener los datos:', error);
+            }
+        });
+    }
+    
+    function reportesalidas() {
+        $.ajax({
+            url: 'proceso/mantesalidas.php?action=reportesalidas',
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                const tabla = $('#treportesalida').DataTable();
+    
+                tabla.clear();
+    
+                data.forEach(function (salida, index) {
+                    // hora_salida con AM/PM
+                    let horaSalida = salida.hora_salida || '';
+                    if (horaSalida !== '') {
+                        const hora = parseInt(horaSalida.split(':')[0]);
+                        const ampm = hora < 12 ? 'AM' : 'PM';
+                        horaSalida += ' ' + ampm;
+                    } else {
+                        horaSalida = 'No registrado';
+                    }
+    
+                    // hora_reingreso con AM/PM
+                    let horaReingreso = salida.hora_reingreso || '';
+                    if (horaReingreso !== '') {
+                        const hora = parseInt(horaReingreso.split(':')[0]);
+                        const ampm = hora < 12 ? 'AM' : 'PM';
+                        horaReingreso += ' ' + ampm;
+                    } else {
+                        horaReingreso = 'No registrado';
+                    }
+    
+                    tabla.row.add([
+                        index + 1,
+                        salida.dni || '',
+                        salida.fecha_salida || '',
+                        salida.dia || '',
+                        salida.turno || '',
+                        horaSalida,
+                        horaReingreso,
+                        salida.motivo || 'Sin motivo',
+                        salida.comentario || 'Sin comentarios'
+                    ]);
+                });
+    
+                tabla.draw();
+            },
+            error: function (error) {
+                console.error('error al obtener el reporte de salidas:', error);
+            }
+        });
+    }
+    
     
     $(document).on('click', '#limpiarfil', function (e) {
         setTimeout(() => {
             obtenerlistadoasis(); 
         }, 100); 
     });
+    $(document).on('click', '#limpiarsalida', function (e) {
+        setTimeout(() => {
+            reportesalidas();
+        }, 100); 
+    });
+
+    $(document).on('click', '#limpiarreporte', function (e) {
+        setTimeout(() => {
+            obtenerreporsere();
+        }, 100); 
+    });
+    reportesalidas();
+    obtenersalidas();
     obtenerUsuarios();
     obtenerpersonal();
+    obtenerreporsere();
     obtenerlistadoasis();
 
 

@@ -236,6 +236,40 @@ $(document).on('click', '#filtraras', function (e) {
     var fechaf = $('#fechafi').val();
     var dnire = $('#dnire').val();
 
+    var fechaInicio = new Date(fechai);
+    var fechaFin = new Date(fechaf);
+
+    if (!fechai || !fechaf) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Fechas incompletas',
+            text: 'Debes ingresar ambas fechas',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    if (fechaInicio > fechaFin) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Fechas incorrectas',
+            text: 'La fecha de inicio no puede ser mayor que la fecha final',
+            confirmButtonText: 'Aceptar'
+        });
+        return; 
+    }
+    
+    var dniValido = /^\d{8}$/.test(dnire);
+    if (!dniValido) {
+        Swal.fire({
+            icon: 'error',
+            title: 'DNI inválido',
+            text: 'El DNI debe contener exactamente 8 dígitos numéricos',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
     $.ajax({
         url: 'proceso/asistenciaman.php?action=readfil',
         type: 'POST',
@@ -277,6 +311,7 @@ $(document).on('click', '#filtraras', function (e) {
                     asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
                     estado,
                     minutosdes,
+                    "S/."+asistencia.descuento_dia,
                     asistencia.comentario || "Sin comentarios"
                 ]);
             });
@@ -358,6 +393,7 @@ $(document).on('click', '#btnregistraras', function (e) {
         });
         return;
     }
+
 
 
     $('#btnregistraras').prop('disabled', true);

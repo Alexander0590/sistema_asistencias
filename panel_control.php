@@ -76,7 +76,7 @@ if($_SESSION['rol']==="1"){
      
       </div>
         <div class="modal-footer" style="border-top: 1px solid #8773e7;">
-       <a href="#" id="cerrarsesion" class="btn btn-secondary" style="background-color: #8773e7; color: #ffffff;">
+       <a href="proceso/cerrar_sesion.php"  class="btn btn-secondary" style="background-color: #8773e7; color: #ffffff;">
           <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
       </a>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #8773e7; color: #ffffff;">
@@ -97,6 +97,14 @@ if($_SESSION['rol']==="1"){
             <a href="#" id="ver_asistencia">Ver asistencia actual</a>
         </div>
     </div>
+
+    <div class="menu-item">
+        <a href="#"><i class="bi bi-box-arrow-right"></i><span>Salidas</span></a>
+        <div class="submenu">
+            <a href="#" id="resa">Registrar Salidas</a>
+            <a href="#" id="lisa">Lista de Salidas</a>
+        </div>
+    </div>
     <div class="menu-item">
         <a href="#" ><i class="bi bi-people"></i><span>Personal</span></a>
         <div class="submenu">
@@ -115,6 +123,7 @@ if($_SESSION['rol']==="1"){
         <div class="submenu">
             <a href="#" id="reporteas">Reporte de asistencia personal</a>
             <a href="#" id="reporteaseguridad">Reporte de asistencia serenazgo</a>
+            <a href="#" id="reportesalidas">Reporte de Salidas</a>
         </div>
     </div>
     <div class="menu-item">
@@ -125,7 +134,7 @@ if($_SESSION['rol']==="1"){
         </div>
     </div>
     <div class="menu-item">
-        <a href="#" id="copia"><i class="bi bi-database-down"></i><span>Copia de Seguridad</span></a>
+        <a href="#" id="copia"><i class="bi bi-database-down"></i><span>Respaldo</span></a>
     </div>
    
     <a href="proceso/cerrar_sesion.php"><i class="bi bi-box-arrow-left"></i><span>Cerrar Sesión</span></a>

@@ -42,7 +42,7 @@ CREATE TABLE `asistencia` (
   PRIMARY KEY (`idasis`),
   KEY `asistencia_personal` (`dni`),
   CONSTRAINT `asistencia_personal` FOREIGN KEY (`dni`) REFERENCES `personal` (`dni`)
-) ENGINE=InnoDB AUTO_INCREMENT=238 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=239 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -51,7 +51,7 @@ CREATE TABLE `asistencia` (
 
 LOCK TABLES `asistencia` WRITE;
 /*!40000 ALTER TABLE `asistencia` DISABLE KEYS */;
-INSERT INTO `asistencia` VALUES (203,'45690213','2025-03-12','Miércoles','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(204,'45690213','2025-03-13','Jueves',NULL,NULL,'Falta',240,NULL,NULL,'Falta',240,'',NULL,114.78,NULL),(220,'77784121','2025-03-25','Sábado','08:00:00','13:00:00','Puntual',0,'14:55:00','18:14:37','Tardanza',44,'','',7.64,44),(221,'45690213','2025-03-15','Sábado','08:55:00','13:00:00','Tardanza',39,'00:00:00','00:00:00','',0,'','',6.22,NULL),(222,'45690213','2025-03-17','Lunes','08:00:00','13:00:00','Puntual',0,'14:55:00','18:00:00','Tardanza',44,'','',7.01,NULL),(224,'77784121','2025-03-18','Martes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(232,'45690213','2025-03-22','Sábado','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(233,'77784121','2025-03-28','Viernes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(234,'45690213','2025-03-29','Sábado','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(235,'77784121','2025-03-31','Lunes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(236,'45690213','2025-03-31','Lunes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(237,'77777555','2025-03-31','Lunes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL);
+INSERT INTO `asistencia` VALUES (203,'45690213','2025-03-12','Miércoles','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(204,'45690213','2025-03-13','Jueves',NULL,NULL,'Falta',240,NULL,NULL,'Falta',240,'',NULL,114.78,NULL),(220,'77784121','2025-03-25','Sábado','08:00:00','13:00:00','Puntual',0,'14:55:00','18:14:37','Tardanza',44,'','',7.64,44),(221,'45690213','2025-03-15','Sábado','08:55:00','13:00:00','Tardanza',39,'00:00:00','00:00:00','',0,'','',6.22,NULL),(222,'45690213','2025-03-17','Lunes','08:00:00','13:00:00','Puntual',0,'14:55:00','18:00:00','Tardanza',44,'','',7.01,NULL),(224,'77784121','2025-03-18','Martes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(232,'45690213','2025-03-22','Sábado','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(233,'77784121','2025-03-28','Viernes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(234,'45690213','2025-03-29','Sábado','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(235,'77784121','2025-03-31','Lunes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(236,'45690213','2025-03-31','Lunes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(237,'77777555','2025-03-31','Lunes','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL),(238,'45690213','2025-04-09','Miércoles','08:00:00','13:00:00','Trabajo en Campo',0,'14:00:00','18:00:00','Trabajo en Campo',0,NULL,NULL,0,NULL);
 /*!40000 ALTER TABLE `asistencia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,7 +81,7 @@ CREATE TABLE `asistencia_seguridad` (
   PRIMARY KEY (`idasisse`) USING BTREE,
   KEY `asistencia_personal` (`dni`),
   CONSTRAINT `asistencia_seguridad_ibfk_1` FOREIGN KEY (`dni`) REFERENCES `personal` (`dni`)
-) ENGINE=InnoDB AUTO_INCREMENT=259 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=285 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,7 +90,7 @@ CREATE TABLE `asistencia_seguridad` (
 
 LOCK TABLES `asistencia_seguridad` WRITE;
 /*!40000 ALTER TABLE `asistencia_seguridad` DISABLE KEYS */;
-INSERT INTO `asistencia_seguridad` VALUES (251,'77777555','2025-03-28','viernes','Tarde','18:00:46','Puntual',NULL,NULL,'01:50:00','Anticipada','No','hg',10,1.74),(252,'74747474','2025-03-31','viernes','Tarde','18:00:46','Tardanza',NULL,NULL,NULL,'Anticipada','No','asdd',34,6.1),(253,'77784121','2025-03-29','Sábado','mañana',NULL,'Falto  ','Si','xc',NULL,NULL,NULL,NULL,0,0),(254,'74747474','0000-00-00','Martes','mañana',NULL,'Falto','No','7878',NULL,'Falto','No',NULL,480,83.33),(255,'74747474','0000-00-00','Martes','tarde',NULL,'Falto','No','777',NULL,'Falto','No',NULL,480,83.33),(256,'74747474','2025-03-30','Domingo','mañana',NULL,'Falto','No','sada',NULL,'Falto','No',NULL,480,83.33),(257,'77784121','2025-03-30','Domingo','mañana',NULL,'Falto','Si','sd',NULL,'Falto','Si',NULL,0,0),(258,'77777555','2025-03-30','Domingo','mañana','08:00:00','Presente','','cvc','00:00:00','Salida Normal','',NULL,0,0);
+INSERT INTO `asistencia_seguridad` VALUES (280,'77777555','2025-04-06','domingo','Tarde','18:18:48','Tardanza',NULL,NULL,'01:55:00','Anticipada','No','sdf',12,2.09),(281,'74747474','2025-04-06','domingo','Tarde','18:24:30','Tardanza',NULL,NULL,NULL,NULL,NULL,NULL,13,2.26),(282,'74747474','2025-04-05','sábado','Tarde','18:25:28','Tardanza',NULL,NULL,NULL,'','',NULL,15,5.94),(283,'77784121','2025-04-06','Domingo','Mañana','08:00:00','Tardanza','Si','c','16:12:00','Salida Normal','',NULL,0,0),(284,'77777555','2025-04-09','Miércoles','Tarde','00:00:00','Falto','No','gf','00:00:00','Falto',NULL,NULL,480,83.34);
 /*!40000 ALTER TABLE `asistencia_seguridad` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -264,4 +264,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-31 22:34:45
+-- Dump completed on 2025-04-10 23:06:10

@@ -81,6 +81,27 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_de_asistencia.php"); 
     });
+    $("#reporteaseguridad").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/reporte_serenazgo.php"); 
+    });
+    $("#reportesalidas").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/reporte_salidas.php"); 
+    });
+    //salidas 
+    $("#resa").click(function (e) {
+      e.preventDefault();
+      $("#vistas").load("view/salidas.php", function () {
+        const modal = new bootstrap.Modal(document.getElementById('modalSalida'));
+        modal.show();
+      });
+    });
+    //listar salidas
+    $("#lisa").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/lista_salidas.php"); 
+    });
     //serenazgo
     let cargando = false;
 
