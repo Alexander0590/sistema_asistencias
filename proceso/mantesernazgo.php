@@ -192,73 +192,71 @@ switch ($action) {
         $justisalida = $_POST['justisalida'];
         $turno = $_POST['turno'];
         $comentario = $_POST['comentario'];
-        $hora_salida = ($_POST['horas']); 
+        $hora_salida = $_POST['horas'];
         
-        // Convertir fecha a timestamp
+        // Verificar si ya existe un registro con ese DNI y esa fecha
+        $sql = "SELECT * FROM asistencia_seguridad WHERE dni = ? AND fecha = ?";
+        $stmt = $cnn->prepare($sql);
+        $stmt->bind_param("ss", $dni, $fecha3);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
+        if ($resultado->num_rows > 0) {
+            http_response_code(400); 
+            echo "Ya existe un registro con ese DNI y esa fecha.";
+            exit;
+        } else {
+
+        // Configuración inicial
         $timestamp = strtotime($fecha3);
+        $dia_es = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"][date("N", $timestamp)];
         
-        // Calcular el día de la semana en español
-        $dia_semana_es = date("N", $timestamp);
-        $dias_espanol = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-        $dia_es = $dias_espanol[$dia_semana_es];
+        // Obtener sueldo
+        $sueldo = mysqli_fetch_assoc(mysqli_query($cnn, "SELECT sueldo FROM personal WHERE dni = '$dni'"))['sueldo'];
+        $gaxminuto = $sueldo / (30 * 8 * 60); // Costo por minuto
         
-        // Obtener sueldo del personal
-        $query = "SELECT sueldo FROM personal WHERE dni = '$dni'";
-        $result = mysqli_query($cnn, $query);
-        $row = mysqli_fetch_assoc($result);
-        $sueldo = $row['sueldo'];
-        
-        // Calcular el costo por minuto
-        $gaxminuto = $sueldo / (30 * 8 * 60); 
-        $descuento = 0;
-        
-        // Inicialización de variables
-        $justificado = isset($justifiingreso) ? $justifiingreso : 'no';
-        $justificado_salida = isset($justisalida) ? $justisalida : 'no';
-        $minutosdes = 0;
+        // Inicializar variables
+        $minutos_tarde = 0;
+        $minutos_salida_anticipada = 0;
         $montodescu = 0;
         
-        if (empty($justifiingreso) || empty($justisalida) || $justifiingreso == 'si' && $justisalida == 'si') {
-            $minutos_tarde = 0;
-            $descuento = 0;
-        } else if ($justifiingreso == 'no' || $justisalida == 'no') {
-            // Determinar las horas permitidas de acuerdo al turno
-            if ($turno == 'Mañana') {
-                $hora_permitida_ingreso = strtotime('08:15:59');
-                $hora_permitida_salida = strtotime('16:00:00');
-            } else if ($turno == 'Tarde') {
-                $hora_permitida_ingreso = strtotime('18:10:00');
-                $hora_permitida_salida = strtotime('02:00:00');
-            }
         
-            // Calcular minutos de retraso en el ingreso
-            $hora_ingreso = strtotime($horai);
-            if ($hora_ingreso > $hora_permitida_ingreso) {
-                $minutos_tarde = ($hora_ingreso - $hora_permitida_ingreso) / 60;
-                $descuento += $minutos_tarde * $gaxminuto;
-            }
         
-            // Si el estado de salida es 'no', calcular minutos de retraso en la salida
-            if ($estadosalida == 'no') {
-                $hora_salida = strtotime($_POST['horas']); 
-                if ($hora_salida > $hora_permitida_salida) {
-                    $minutos_tarde_salida = ($hora_salida - $hora_permitida_salida) / 60;
-                    $descuento += $minutos_tarde_salida * $gaxminuto;
-                }
-            }
+        // Cálculo para INGRESO (Tardanza)
+        if ($estadoing == "Tardanza" && $justifiingreso != "Si") {
+            $hora_permitida = ($turno == 'Mañana') ? '08:15:59' : '18:10:00';
+            $minutos_tarde = max(0, (strtotime($horai) - strtotime($hora_permitida)) / 60);
         }
         
-        // Asignar las variables calculadas
-        $minutosdes = $minutos_tarde; // O el valor calculado que corresponda
-        $montodescu = $descuento; // O el valor calculado que corresponda
+        //  Cálculo para SALIDA 
+        if ($estadosalida == "Salida Anticipada" && $justisalida != "Si") {
+            $hora_permitida = ($turno == 'Mañana') ? '16:00:00' : '02:00:00';
+            if ($turno == 'Tarde' && strtotime($hora_salida) < strtotime('12:00:00')) {
+                $hora_permitida = strtotime('+1 day', strtotime($hora_permitida));
+            }
+            $minutos_salida_anticipada = max(0, (strtotime($hora_permitida) - strtotime($hora_salida)) / 60);
+        }
         
-        // Consulta SQL para insertar los datos
-        $sql_insert = "INSERT INTO asistencia_seguridad (dni, fecha, dia, turno, estado, estado_salida, justificado, justificado_salida, minutos_descu, comentario, descuento_dia, horai, horas) 
-        VALUES ('$dni', '$fecha3', '$dia_es', '$turno', '$estadoing', '$estadosalida', '$justificado', '$justificado_salida', '$minutosdes', '$comentario', '$montodescu', '$horai', '$hora_salida')";
+      // Suma total de minutos sin redondear
+        $minutosdes = intval($minutos_tarde) + intval($minutos_salida_anticipada);
+        // Cálculo del descuento con 2 decimales
+        $montodescu = number_format($minutosdes * $gaxminuto, 2, '.', '');
+
         
-        // Ejecutar la consulta
-        mysqli_query($cnn, $sql_insert);
-                
+        $sql = "INSERT INTO asistencia_seguridad (
+            dni, fecha, dia, turno, estado, estado_salida, 
+            justificado, justificado_salida, minutos_descu, 
+            comentario, descuento_dia, horai, horas
+        ) VALUES (
+            '$dni', '$fecha3', '$dia_es', '$turno', 
+            '$estadoing', '$estadosalida', 
+            '".($justifiingreso ?? '')."', 
+            '".($justisalida ?? '')."', 
+            $minutosdes, '$comentario', $montodescu, '$horai', '$hora_salida'
+        )";
+        
+        mysqli_query($cnn, $sql);
+    }       
     break;
     case"readreporte";
     $query = "SELECT * FROM asistencia_seguridad";
@@ -452,7 +450,7 @@ if (!$stmt) {
 }
 
 $stmt->bind_param(
-    "sssssssddssss",  
+    "ssssssssddsss",  
     $turno,
     $estadoIngreso,
     $estadoSalida,

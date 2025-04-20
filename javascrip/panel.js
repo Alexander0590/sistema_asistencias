@@ -81,13 +81,24 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_de_asistencia.php"); 
     });
+    //reporte serenazgo
     $("#reporteaseguridad").click(function (e) {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_serenazgo.php"); 
     });
+
+    //reportesalidas
     $("#reportesalidas").click(function (e) {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_salidas.php"); 
+    });
+
+    $("#reserena").click(function (e) {
+      e.preventDefault();
+      $("#vistas").load("view/modalresegu.php", function () {
+        const modal = new bootstrap.Modal(document.getElementById('regisserengo'));
+        modal.show();
+      });
     });
     //salidas 
     $("#resa").click(function (e) {

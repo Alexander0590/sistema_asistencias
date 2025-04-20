@@ -97,7 +97,14 @@ if($_SESSION['rol']==="1"){
             <a href="#" id="ver_asistencia">Ver asistencia actual</a>
         </div>
     </div>
-
+    <div class="menu-item">
+        <a href="#"><i class="bi bi-shield"></i><span>Seguridad Ciudadana</span></a>
+        <div class="submenu">
+        <a href="#" id="reserena">Registrar Asistencia Serenazgo</a>
+            <a href="#" id="lserena">Lista de Serenazgo</a>
+        </div>
+    </div>
+    
     <div class="menu-item">
         <a href="#"><i class="bi bi-box-arrow-right"></i><span>Salidas</span></a>
         <div class="submenu">
@@ -112,10 +119,12 @@ if($_SESSION['rol']==="1"){
             <a href="#" id="x4">Agregar personal</a>
         </div>
     </div>
+
     <div class="menu-item">
-        <a href="#"><i class="bi bi-shield"></i><span>Seguridad Ciudadana</span></a>
+        <a href="#"><i class="bi bi-person-circle"></i><span>Usuarios</span></a>
         <div class="submenu">
-            <a href="#" id="lserena">Lista de Serenazgo</a>
+            <a href="#" id="lisusu">Ver usuarios</a>
+            <a href="#" id="usuario">Agregar usuario</a>
         </div>
     </div>
     <div class="menu-item">
@@ -126,13 +135,7 @@ if($_SESSION['rol']==="1"){
             <a href="#" id="reportesalidas">Reporte de Salidas</a>
         </div>
     </div>
-    <div class="menu-item">
-        <a href="#"><i class="bi bi-person-circle"></i><span>Usuarios</span></a>
-        <div class="submenu">
-            <a href="#" id="lisusu">Ver usuarios</a>
-            <a href="#" id="usuario">Agregar usuario</a>
-        </div>
-    </div>
+   
     <div class="menu-item">
         <a href="#" id="copia"><i class="bi bi-database-down"></i><span>Respaldo</span></a>
     </div>

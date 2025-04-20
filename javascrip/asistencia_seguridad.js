@@ -279,6 +279,60 @@ function cargarSalidas(entradaData) {
                 });
                 return;
             }
+
+            // Validar que la hora de salida no sea menor que la de ingreso (salvo si el estado es "Falto")
+            const hi = new Date(`1970-01-01T${horai}`);
+            const hs = new Date(`1970-01-01T${horas}`);
+            if (hs <= hi && estadosalida !== "Falto") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Horas incorrectas',
+                    text: 'La hora de salida debe ser mayor a la de ingreso.',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+
+            // Validar justificación si el estado de ingreso es "Tardanza"
+            if (estadoing === "Tardanza" && justifiingreso.trim() === "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Justificación requerida',
+                    text: 'Debe ingresar una justificación para la tardanza.',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+
+            // Validar estado de salida y justificación
+            if (estadosalida === "Falto" && horas !== "00:00:00") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error en hora de salida',
+                    text: 'Si el estado es "Falto", la hora de salida debe ser 00:00:00.',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+            if ((estadosalida === "Salida Normal" || estadosalida === "Salida Anticipada") && horas === "00:00:00") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Hora de salida incorrecta',
+                    text: 'La hora de salida no puede ser 00:00:00 con ese estado.',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+            if (estadosalida === "Salida Anticipada" && justisalida.trim() === "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Justificación requerida',
+                    text: 'Debe ingresar una justificación para la salida anticipada.',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+
             $.ajax({
                 url: 'proceso/mantesernazgo.php?action=regisregidomingo',
                 type: 'POST', 
@@ -796,123 +850,7 @@ var dni = $(this).data('id');
 });
 
 
-$(document).off('click', '#guardar_edicion').on('click', '#guardar_edicion', function (e) {
-    e.preventDefault();
 
- // Obtener los valores
-var dni = $('#dni_edit').val();
-var fecha = $('#fecha_edit').val();
-var turno = $('#turno_edit').val();
-var horaIngreso = $('#hora_ingreso_edit').val();
-var estadoIngreso = $('#estado_ingreso_edit').val();
-var justificacionIngreso = $('#justificacion_ingreso_edit').val();
-var horaSalida = $('#hora_salida_edit').val();
-var estadoSalida = $('#estado_salida_edit').val();
-var justificacionSalida = $('#justificacion_salida_edit').val();
-var comentario = $('#comentario_edit').val();
-
-// Normalizar horas 00:00 a 00:00:00
-if (horaIngreso === "00:00") {
-    horaIngreso = "00:00:00";
-    $('#hora_ingreso_edit').val(horaIngreso); 
-}
-
-if (horaSalida === "00:00") {
-    horaSalida = "00:00:00";
-    $('#hora_salida_edit').val(horaSalida);
-}
-
-// Validaciones para hora de ingreso
-if (estadoIngreso === "Falto" && horaIngreso !== "00:00:00") {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Advertencia',
-        text: 'La hora de ingreso debe ser 00:00:00 si el estado es Falto'
-    });
-    return;
-} else if ((estadoIngreso === "Puntual" || estadoIngreso === "Tardanza") && horaIngreso === "00:00:00") {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Advertencia',
-        text: 'La hora de ingreso no puede ser 00:00:00 si el estado es Puntual o Tardanza'
-    });
-    return;
-}
-
-// Validar justificación si es tardanza
-if (estadoIngreso === "Tardanza" && justificacionIngreso.trim() === "") {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Advertencia',
-        text: 'Debe ingresar una justificación para la tardanza'
-    });
-    return;
-}
-
-// Validaciones para hora de salida
-if (estadoSalida === "Falto" && horaSalida !== "00:00:00") {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Advertencia',
-        text: 'La hora de salida debe ser 00:00:00 si el estado es Falto'
-    });
-    return;
-} else if ((estadoSalida === "Salida Normal" || estadoSalida === "Salida Anticipada") && horaSalida === "00:00:00") {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Advertencia',
-        text: 'La hora de salida no puede ser 00:00:00 si el estado es Salida Normal o Salida Anticipada'
-    });
-    return;
-}
-
-// Validar justificación si es salida anticipada
-if (estadoSalida === "Salida Anticipada" && justificacionSalida.trim() === "") {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Advertencia',
-        text: 'Debe ingresar una justificación para la salida anticipada'
-    });
-    return;
-}
-
-
-    // Enviar por AJAX
-    $.ajax({
-        url: 'proceso/mantesernazgo.php?action=update',
-        type: 'POST',
-        data: {
-            dni: dni,
-            fecha: fecha,
-            turno: turno,
-            horaIngreso: horaIngreso,
-            estadoIngreso: estadoIngreso,
-            justificacionIngreso: justificacionIngreso,
-            horaSalida: horaSalida,
-            estadoSalida: estadoSalida,
-            justificacionSalida: justificacionSalida,
-            comentario: comentario
-        },
-        success: function (response) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Actualización exitosa',
-                text: 'Los datos fueron actualizados correctamente.',
-                confirmButtonText: 'Aceptar'
-            });
-            $('#editarre2').modal('hide');
-        },
-        error: function (xhr, status, error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ocurrió un error al guardar los datos.',
-                confirmButtonText: 'Cerrar'
-            });
-            console.error('Error:', error);
-        }
-    });
-});
 
 
 //reporte de serenazgo
@@ -1020,3 +958,144 @@ if (estadoSalida === "Salida Anticipada" && justificacionSalida.trim() === "") {
 
         
 });
+
+
+//boton de guardar datos de la edicion
+
+$(document).ready(function () {
+    // Solo se registra el evento una vez
+    $(document).off('click', '#guardar_edicion').on('click', '#guardar_edicion', function (e) {
+        e.preventDefault();
+
+        // Obtener los valores
+        var dni = $('#dni_edit').val();
+        var fecha = $('#fecha_edit').val();
+        var turno = $('#turno_edit').val();
+        var horaIngreso = $('#hora_ingreso_edit').val();
+        var estadoIngreso = $('#estado_ingreso_edit').val();
+        var justificacionIngreso = $('#justificacion_ingreso_edit').val();
+        var horaSalida = $('#hora_salida_edit').val();
+        var estadoSalida = $('#estado_salida_edit').val();
+        var justificacionSalida = $('#justificacion_salida_edit').val();
+        var comentario = $('#comentario_edit').val();
+
+        // Validar que el DNI tenga 8 dígitos solo si no está vacío
+        if (dni !== '') {
+            var dniValido = /^\d{8}$/.test(dni);
+            if (!dniValido) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'DNI inválido',
+                    text: 'El DNI debe contener exactamente 8 dígitos numéricos',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+        }
+
+        // Normalizar horas 00:00 a 00:00:00
+        if (horaIngreso === "00:00") {
+            horaIngreso = "00:00:00";
+            $('#hora_ingreso_edit').val(horaIngreso);
+        }
+
+        if (horaSalida === "00:00") {
+            horaSalida = "00:00:00";
+            $('#hora_salida_edit').val(horaSalida);
+        }
+
+        // Validaciones para hora de ingreso
+        if (estadoIngreso === "Falto" && horaIngreso !== "00:00:00") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'La hora de ingreso debe ser 00:00:00 si el estado es Falto'
+            });
+            return;
+        } else if ((estadoIngreso === "Puntual" || estadoIngreso === "Tardanza") && horaIngreso === "00:00:00") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'La hora de ingreso no puede ser 00:00:00 si el estado es Puntual o Tardanza'
+            });
+            return;
+        }
+
+        // Validar justificación si es tardanza
+        if (estadoIngreso === "Tardanza" && justificacionIngreso.trim() === "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'Debe ingresar una justificación para la tardanza'
+            });
+            return;
+        }
+
+        // Validaciones para hora de salida
+        if (estadoSalida === "Falto" && horaSalida !== "00:00:00") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'La hora de salida debe ser 00:00:00 si el estado es Falto'
+            });
+            return;
+        } else if ((estadoSalida === "Salida Normal" || estadoSalida === "Salida Anticipada") && horaSalida === "00:00:00") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'La hora de salida no puede ser 00:00:00 si el estado es Salida Normal o Salida Anticipada'
+            });
+            return;
+        }
+
+        // Validar justificación si es salida anticipada
+        if (estadoSalida === "Salida Anticipada" && justificacionSalida.trim() === "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'Debe ingresar una justificación para la salida anticipada'
+            });
+            return;
+        }
+
+        // Enviar por AJAX
+        $.ajax({
+            url: 'proceso/mantesernazgo.php?action=update',
+            type: 'POST',
+            data: {
+                dni: dni,
+                fecha: fecha,
+                turno: turno,
+                horaIngreso: horaIngreso,
+                estadoIngreso: estadoIngreso,
+                justificacionIngreso: justificacionIngreso,
+                horaSalida: horaSalida,
+                estadoSalida: estadoSalida,
+                justificacionSalida: justificacionSalida,
+                comentario: comentario
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Actualización exitosa',
+                    text: 'Los datos fueron actualizados correctamente.',
+                    confirmButtonText: 'Aceptar'
+                });
+                $('#editarre2').modal('hide');
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error al guardar los datos.',
+                    confirmButtonText: 'Cerrar'
+                });
+                console.error('Error:', error);
+            }
+        });
+    });
+});
+
+
+
+
