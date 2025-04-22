@@ -117,31 +117,111 @@ switch ($action) {
             $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
             $nombreDia = ucfirst($dias[date('w', strtotime($fechare))]);
         
-            // Verificar si ya existe un registro para ese DNI y fecha
-            $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = CURDATE()";
+            $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = '$fechare'";
             $result = mysqli_query($cnn, $dni_query);
-        
+            
             if (mysqli_num_rows($result) > 0) {
                 echo json_encode(["error" => false, "message" => "El personal con DNI $dni ya está registrado"]);
                 mysqli_close($cnn);
                 exit;
-            }
-        
-            $query = "INSERT INTO asistencia (dni, fecha, dia, horaim, horasm, estadom, minutos_descum, horait, horast, estadot, comentario, comentariot, minutos_descut, descuento_dia) 
-                      VALUES ('$dni', '$fechare', '$nombreDia', '$horaim', '13:00:00', '$estadomc', $minutos_descum, '$horait', '$horast', '$estadotc', '$comentariom', '$comentariot', $minutos_descut, $totaldes)";
-        
-            if (mysqli_query($cnn, $query)) {
-                echo json_encode(["success" => true, "message" => "Asistencia registrada correctamente"]);
             } else {
-                echo json_encode(["error" => false , "message" => "Error en la base de datos: " . mysqli_error($cnn)]);
+                
+                $cargo_query = "
+                    SELECT c.nombre AS cargo_nombre
+                    FROM personal p
+                    INNER JOIN cargos c ON p.idcargo = c.idcargo
+                    WHERE p.dni = '$dni'
+                ";
+                $cargo_result = mysqli_query($cnn, $cargo_query);
+            
+                if (mysqli_num_rows($cargo_result) == 0) {
+                    echo json_encode(["error" => true, "message" => "No se encontró información del personal con ese DNI."]);
+                    mysqli_close($cnn);
+                    exit;
+                }
+            
+                $cargo_data = mysqli_fetch_assoc($cargo_result);
+                
+                if (strtolower($cargo_data['cargo_nombre']) == 'serenazgo') {
+                    echo json_encode(["error" => true, "message" => "El trabajador con DNI $dni pertenece a Serenazgo y no puede registrarse en este formulario."]);
+                    mysqli_close($cnn);
+                    exit;
+                }
+            
+                $query = "INSERT INTO asistencia (dni, fecha, dia, horaim, horasm, estadom, minutos_descum, horait, horast, estadot, comentario, comentariot, minutos_descut, descuento_dia) 
+                VALUES ('$dni', '$fechare', '$nombreDia', '$horaim', '13:00:00', '$estadomc', $minutos_descum, '$horait', '$horast', '$estadotc', '$comentariom', '$comentariot', $minutos_descut, $totaldes)";
+            
+                if (mysqli_query($cnn, $query)) {
+                    echo json_encode(["success" => true, "message" => "Asistencia registrada correctamente"]);
+                } else {
+                    echo json_encode(["error" => false , "message" => "Error en la base de datos: " . mysqli_error($cnn)]);
+                }
+            
+
+                mysqli_close($cnn);
             }
         
-
-            mysqli_close($cnn);
+           
         }
-   
     break;
     
+    case'update':
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $dni = $_POST['codigo'];
+            $fecha = $_POST['fecha'];
+            $horaim = $_POST['hentradam'];
+            $horasm = $_POST['hentradam']; 
+            $estadom = $_POST['estadom'];
+            $minutos_descum = $_POST['mdesm'];
+            $horait = $_POST['hentradat'];
+            $horast = $_POST['hsalidat'];
+            $estadot = $_POST['estadot'];
+            $minutos_descut = $_POST['mdest'];
+            $comentario = $_POST['comenm'];
+            $comentariot = $_POST['coment'];
+            $descuento_dia = $_POST['totdescu'];
+            $tiempo_tardanza_dia = $_POST['totminu'];
+        
+            $sql = "UPDATE asistencia SET
+                fecha = ?,
+                horaim = ?,
+                horasm = ?,
+                estadom = ?,
+                minutos_descum = ?,
+                horait = ?,
+                horast = ?,
+                estadot = ?,
+                minutos_descut = ?,
+                comentario = ?,
+                comentariot = ?,
+                descuento_dia = ?,
+                tiempo_tardanza_dia = ?
+                WHERE dni = ?";
+        
+            $stmt = $cnn->prepare($sql);
+        
+            $stmt->bind_param("sssssdsssssdss",
+                $fecha, $horaim, $horasm, $estadom, $minutos_descum,
+                $horait, $horast, $estadot, $minutos_descut,
+                $comentario, $comentariot, $descuento_dia,
+                $tiempo_tardanza_dia, $dni
+            );
+        
+            if ($stmt->execute()) {
+                echo "Registro actualizado correctamente.";
+            } else {
+                echo "Error al actualizar: " . $stmt->error;
+            }
+        
+            $stmt->close();
+            $cnn->close();
+        }
+        
+        
+
+    break;
 
     default:
     echo json_encode(["status" => "error", "message" => "Acción no válida"]);

@@ -162,51 +162,137 @@ $(document).on('click', '.registrara', function (e) {
                                 calculardecuento2();
                             }
                         });
-                        $("#estadom2").on("change", function() {
-                            let valor6 = $(this).val();
-                            if(valor6==="1"){
-                                $('#mdesm2 ,#totaldescuento2').val(0);
-                                sumarminutosdesc2();
-                                $("input[name='justificadom2']").prop("checked", false);
-                                $("#divjusm2, #divcomm2").hide();
+              // Mañana
+$("#estadom2").on("change", function () {
+    let valor6 = $(this).val();
 
-                            }else if(valor6==="2"){
-                            $("#divjusm2, #divcomm2").show();
-                            $('input[name="justificadom2"]').off('change').on('change', function() {
-                                if ($(this).val() === "si") {
-                                    $('#mdesm2').val(0).trigger('input');
-                                    $('#totaldescuento2').val(0).trigger('input');
-                                } else if ($(this).val() === "no") {
-                                    $("#hentradam2").off('input').on("input", calcularMinutosm2);
-                                    calcularMinutosm2();
-                                    calculardecuento2();
-                                }
-                            });
-                            }
-                        });
+    if (valor6 === "1") {
+        $("#divjust2, #divcomt2").hide();
+        $("input[name='justificadom2']").prop("checked", false);
+        $("input[name='justificadot2']").prop("checked", false);
+        $("#estadota2").prop("disabled", false);
+        $("#estadota2").prop("selectedIndex", 1).trigger('change');
+        $("#hentradam2, #hsalidat2, #hentradat2, #estadom2").prop("disabled", false);
+        $('#mdesm2').val("0");
+        $('#mdest2').val("0");
+        $('#mdesm2').trigger('input');
+        $('#mdest2').trigger('input');
+        sumarminutosdesc2();
+        calculardecuento2();
+        $("input[name='justificadom2']").prop("checked", false);
+        $("#divjusm2, #divcomm2").hide();
+    } else if (valor6 === "2") {
+        $("input[name='justificadom2']").prop("checked", false);
+        $("input[name='justificadot2']").prop("checked", false);
+        $("#mdest2, #hentradam2, #hsalidat2, #hentradat2, #estadom2").prop("disabled", false);
+        $("#divjusm2, #divcomm2").show();
 
-                        $("#estadota2").on("change", function() {
-                            let valor7 = $(this).val();
-                            if(valor7==="1"){
-                               $('#totaldescuento2').val(0);
-                               $('#mdest2').val(0).trigger('change');
-                                calcularMinutost2();
-                                $("input[type='justificadot2']").prop("checked", false);
-                                $("#divjust2, #divcomt2").hide();
-                            }else if(valor7==="2"){
-                                $("#divjust2, #divcomt2").show();
-                                $('input[name="justificadot2"]').off('change').on('change', function() {
-                                    if ($(this).val() === "si") {
-                                        $('#mdest2').val(0).trigger('input');
-                                        $('#totaldescuento2').val(0).trigger('input');
-                                    } else if ($(this).val() === "no") {
-                                        $("#hentradat2").off('input').on("input", calcularMinutosm2);
-                                        calcularMinutost2();
-                                        calculardecuento2();
-                                    }
-                                });
-                            }
-                        });
+        $('input[name="justificadom2"]').off('change').on('change', function () {
+            if ($(this).val() === "si") {
+                $('#mdesm2').val("0").trigger('input');
+                $('#totaldescuento2').val("0").trigger('input');
+                sumarminutosdesc2();
+                calculardecuento2();
+            } else if ($(this).val() === "no") {
+                $("#hentradam2").off('input').on("input", calcularMinutosm2);
+                calcularMinutosm2();
+                calculardecuento2();
+            }
+        });
+    }else if(valor6 === "3"){
+        $("#divjusm2, #divcomm2").show();
+    $("#divjust2, #divcomt2").show();
+    $("input[name='justificadom2']").prop("checked", false);
+
+    // Sincronizar ambos inputs (justificadom2 y justificadot2)
+    $('input[name="justificadom2"]').off('change').on('change', function () {
+        let esJustificado = $(this).val();
+
+        // Sincronizar 'justificadot2' con el valor de 'justificadom2'
+        $(`input[name="justificadot2"][value="${esJustificado}"]`).prop("checked", true);
+
+        // Realizar las acciones dependiendo del valor de 'justificadom2'
+        if (esJustificado === "si") {
+            $('#mdesm2').val("0");
+            $('#mdest2').val("0");
+            $('#hentradam2').val("00:00:00");
+            $('#hentradat2').val("00:00:00");
+            $('#hsalidat2').val("00:00:00");
+            $("#estadota2").prop("selectedIndex", 3).trigger('change');
+            $("#mdest2, #hentradam2, #hsalidat2, #hentradat2").prop("disabled", true);
+            $("#estadota2").prop("disabled", true);
+            $('#mdesm2').trigger('input');
+            $('#mdest2').trigger('input');
+            $('#hentradam2').trigger('input');
+            $('#totaldescuento2').val("0").trigger('input');
+            sumarminutosdesc2();
+            calculardecuento2();
+        } else if (esJustificado === "no") {
+            $('#mdesm2').val("240");
+            $('#mdest2').val("240");
+            $('#hentradam2').val("00:00:00");
+            $('#hentradat2').val("00:00:00");
+            $('#hsalidat2').val("00:00:00");
+            $("#estadota2").prop("selectedIndex", 3).trigger('change');
+            $("#mdest2, #hentradam2, #hsalidat2, #hentradat2").prop("disabled", true);
+            $("#estadota2").prop("disabled", true);
+            $('#mdesm2').trigger('input');
+            $('#mdest2').trigger('input');
+            $('#hentradam2').trigger('input');
+            sumarminutosdesc2();
+            calculardecuento2();
+        }
+        });
+    }else if(valor6=="4"){
+        $("#divjusm2, #divcomm2").hide();
+        $("#divjust2, #divcomt2").hide();
+        $("input[name='justificadom2']").prop("checked", false);
+        $("input[name='justificadot2']").prop("checked", false);
+        $('#mdesm2').val("0");
+        $('#mdest2').val("0");
+        $('#hentradam2').val("00:00:00");
+        $('#hentradat2').val("00:00:00");
+        $('#hsalidat2').val("00:00:00");
+        $("#mdest2, #hentradam2, #hsalidat2, #hentradat2").prop("disabled", true);
+        $("#estadota2").prop("disabled", true);
+        $("#estadota2").prop("selectedIndex", 4).trigger('change');
+        $('#mdesm2').trigger('input');
+        $('#mdest2').trigger('input');
+        sumarminutosdesc2();
+        calculardecuento2();
+    }
+});
+
+// Tarde
+$("#estadota2").on("change", function () {
+    let valor7 = $(this).val();
+
+    if (valor7 === "1") {
+        $('#mdest2').val("0").trigger('input');
+        sumarminutosdesc2();
+        calculardecuento2();
+        $("input[name='justificadot2']").prop("checked", false);
+        $("#divjust2, #divcomt2").hide();
+    } else if (valor7 === "2") {
+        $("#divjust2, #divcomt2").show();
+
+        $('input[name="justificadot2"]').off('change').on('change', function () {
+            if ($(this).val() === "si") {
+                $('#mdest2').val("0").trigger('input');
+                $('#totaldescuento2').val("0").trigger('input');
+                calcularMinutost2();
+                calculardecuento2();
+            } else if ($(this).val() === "no") {
+                $("#hentradat2").off('input').on("input", calcularMinutosm2);
+                calcularMinutost2();
+                calculardecuento2();
+            }
+        });
+    }
+    
+});
+
+
                         let estadom;
                         let estadot;
 
@@ -476,4 +562,11 @@ $(document).off('click', '.registrartc').on('click', '.registrartc', function (e
             $btn.data('enviando', false); 
         }
     });
+
+
+   
+    
 });
+
+
+    

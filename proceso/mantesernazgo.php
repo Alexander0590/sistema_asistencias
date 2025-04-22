@@ -205,7 +205,36 @@ switch ($action) {
             http_response_code(400); 
             echo "Ya existe un registro con ese DNI y esa fecha.";
             exit;
-        } else {
+        }
+
+        // Verificar que el trabajador tenga el cargo 'Serenazgo'
+        $sqlCargo = "
+            SELECT c.nombre AS cargo_nombre
+            FROM personal p
+            INNER JOIN cargos c ON p.idcargo = c.idcargo
+            WHERE p.dni = ?
+        ";
+        $stmtCargo = $cnn->prepare($sqlCargo);
+        $stmtCargo->bind_param("s", $dni);
+        $stmtCargo->execute();
+        $resultCargo = $stmtCargo->get_result();
+
+        if ($resultCargo->num_rows == 0) {
+            http_response_code(400); 
+            echo "No se encontró información del personal con ese DNI.";
+            exit;
+        }
+
+        $filaCargo = $resultCargo->fetch_assoc();
+
+        if (strtolower($filaCargo['cargo_nombre']) !== 'serenazgo') {
+            http_response_code(400); 
+            echo "El trabajador no pertenece al área de Serenazgo. Este formulario es exclusivo para Serenazgo.";
+            exit;
+        }
+
+// Aquí ya puedes continuar con el registro de la asistencia
+
 
         // Configuración inicial
         $timestamp = strtotime($fecha3);
@@ -256,7 +285,7 @@ switch ($action) {
         )";
         
         mysqli_query($cnn, $sql);
-    }       
+          
     break;
     case"readreporte";
     $query = "SELECT * FROM asistencia_seguridad";

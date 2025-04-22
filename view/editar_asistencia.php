@@ -38,7 +38,7 @@
                             <label for="fecha" class="form-label">
                                 <i class="bi bi-calendar"></i> Fecha de Registro
                             </label>
-                            <input type="date" class="form-control" id="fechare2">
+                            <input type="date" class="form-control" id="fechare2"disabled>
                         </div>
                        
                         <!-- Sección para el turno de la mañana -->
@@ -186,5 +186,61 @@
         </div>
     </div>
 </div>
+<script>
+     $(document).off('click', '#btacasis').on('click', '#btacasis', function (e) {
+        e.preventDefault(); 
+    
+        $(this).prop('disabled', true);
+    
+        var datos = {
+            codigo: $('#acodigo2').val(),
+            fecha: $('#fechare2').val(),
+            hentradam: $('#hentradam2').val(),
+            estadom: $('#estadom2').val(),
+            mdesm: $('#mdesm2').val(),
+            comenm: $('#comenm2').val(),
+            hentradat: $('#hentradat2').val(),
+            hsalidat: $('#hsalidat2').val(),
+            estadot: $('#estadota2').val(),
+            mdest: $('#mdest2').val(),
+            totminu:$('#totaldescuento2').val(),
+            totdescu:$('#totaldescuento2').val(),
+            coment: $('#coment').val()
+        };
+    
+        $.ajax({
+            url: 'proceso/asistenciaman.php?action=update', 
+            type: 'POST',
+            data: datos,
+            success: function(respuesta) {
+                 
+                $("#vistas").fadeOut(200, function () {
+                        $(this).load("view/asistencia_diaria.php", function () {
+                            $(this).fadeIn(200);
+                        });
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Actualizado!',
+                    text: respuesta, 
+                    confirmButtonText: 'Aceptar'
+                });
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema al enviar los datos.',
+                    confirmButtonText: 'Intentar de nuevo'
+                });
+            },
+            complete: function() {
+                $('#btacasis').prop('disabled', false);
+            }
+        });
+    });
+</script>
+<script src="javascrip/asistencia_diaria.js"></script>
 </body>
 </html>
