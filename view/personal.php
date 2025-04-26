@@ -3,6 +3,8 @@ include '../conecxion/conecxion.php';
 
 $sql = "SELECT nombre,idcargo FROM cargos"; 
 $resultado = $cnn->query($sql);
+$sql2 = "SELECT nombrem,idmodalidad FROM modalidad"; 
+$resultado2 = $cnn->query($sql2);
 
 if (!$resultado) {
     die("Error en la consulta: " . $cnn->error);
@@ -14,6 +16,7 @@ if (!$resultado) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="lib/boostrap-css/bootstrap.min.css">
 </head>
 <body >
 <!-- Modal de foto  -->
@@ -70,31 +73,47 @@ if (!$resultado) {
                     <label for="modalidad" class="form-label" >
                     <i class="bi bi-file-text"></i> Modalidad de Contratacion
                     </label>
-                    <select class="form-select"  id="pmodalidad" required>
-                      <option value="">Seleccione</option>
-                      <option value="1">D.L N°276- Carrera Administrativa</option>
-                      <option value="2">D.L N°728- Obrero</option>
-                    </select>
+                    <div class="input-group">
+                      <select class="form-select" id="pmodalida" required>
+                          <option value="">Seleccione Modalidad</option>
+                          <?php
+                          if ($resultado2->num_rows > 0) {
+                              while ($fila = $resultado2->fetch_assoc()) {
+                                  echo "<option value='" . $fila['nombrem'] . "'>" . $fila['nombrem'] . "</option>";
+                              }
+                          } else {
+                              echo "<option value=''>No hay Modalidades disponibles</option>";
+                          }
+                          ?>
+                      </select>
+                      <button class="btn btn-outline-primary bg-" type="button" id="btnnuemodali" data-bs-toggle="modal" data-bs-target="#modalnuemodali" title="Agregar nueva Modalidad">
+                      <i class="bi bi-plus-square-fill"></i>
+                      </button>
+                  </div>
                   </div>
 
-                <div class="col-md-5" >
-                  <label for="cargo" class="form-label" >
-                  <i class="bi bi-briefcase"></i> Cargo
+                  <div class="col-md-5">
+                  <label for="cargo" class="form-label">
+                      <i class="bi bi-briefcase"></i> Cargo
                   </label>
-                  <select class="form-select" id="pcargo" required>
-                    <option value="">Seleccione un cargo</option>
-                    <?php
-                      if ($resultado->num_rows > 0) {
-                          while ($fila = $resultado->fetch_assoc()) {
-                              echo "<option value='" . $fila['idcargo'] . "'>" . $fila['nombre'] . "</option>";
+                  <div class="input-group">
+                      <select class="form-select" id="pcargo" required>
+                          <option value="">Seleccione un cargo</option>
+                          <?php
+                          if ($resultado->num_rows > 0) {
+                              while ($fila = $resultado->fetch_assoc()) {
+                                  echo "<option value='" . $fila['idcargo'] . "'>" . $fila['nombre'] . "</option>";
+                              }
+                          } else {
+                              echo "<option value=''>No hay cargos disponibles</option>";
                           }
-                      } else {
-                          echo "<option value=''>No hay cargos disponibles</option>";
-                      }
-                      ?>
-                </select>
-                </div>
-                
+                          ?>
+                      </select>
+                      <button class="btn btn-outline-primary bg-" type="button" id="btnNuevoCargo" data-bs-toggle="modal" data-bs-target="#modalNuevoCargo" title="Agregar nuevo cargo">
+                      <i class="bi bi-plus-square-fill"></i>
+                      </button>
+                  </div>
+              </div>
 
                 <div class="col-md-3" >
                   <label for="sueldo" class="form-label" >
@@ -125,7 +144,19 @@ if (!$resultado) {
                       <option value="2">Inactivo</option>
                     </select>
                   </div>
-                
+
+                  <div class="col-md-3"  style="display:none;" id="vaca">
+                    <label for="estado" class="form-label" >
+                    <i class="bi bi-record-circle"></i> Vacaciones
+                    </label>
+                    <select class="form-select"  id="pvaca"  required>
+                      <option value="Sin solicitar">Sin solicitar</option>
+                      <option value="En proceso">En curso</option>
+                      <option value="Dias restantes">Dias restantes</option>
+                      <option value="Finalizadas">Finalizadas</option>
+                    </select>
+                  </div>
+
                 <div class="col-12 text-center" id="buttonContainer">
                   <button type="submit" class="btn btn-success" id="btreper">
                     <i class="bi bi-check-circle"></i> Registrar Personal
@@ -149,6 +180,81 @@ if (!$resultado) {
       </div>
     </div>
   </div>
+
+  <!-- Modal para agregar nuevo cargo -->
+<div class="modal fade" id="modalNuevoCargo" tabindex="-1" aria-labelledby="modalNuevoCargoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-white"style="background-color: #060614; color: #ffffff;">
+                <h5 class="modal-title" id="modalNuevoCargoLabel">
+                    <i class="bi bi-briefcase"></i> Nuevo Cargo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNuevoCargo">
+                    <div class="mb-3">
+                        <label for="nombreCargo" class="form-label">Nombre del Cargo*</label>
+                        <input type="text" class="form-control" id="nombreCargo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcionCargo" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcionCargo" rows="3"></textarea>
+                    </div>
+                    <small class="text-muted">Los campos marcados con * son obligatorios</small>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarCargo">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para modalidad -->
+<div class="modal fade" id="modalnuemodali" tabindex="-1" aria-labelledby="modalNuevaModalidadLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: #060614;">
+                <h5 class="modal-title" id="modalNuevaModalidadLabel">
+                    <i class="bi bi-file-earmark-plus"></i> Agregar Modalidad
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNuevaModalidad">
+                    <div class="mb-3">
+                        <label for="nombreModalidad" class="form-label">Nombre de la Modalidad*</label>
+                        <input type="text" class="form-control" id="nombreModalidad" 
+                               placeholder="Ej: Contrato CAS, Nombramiento, etc." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcionModalidad" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcionModalidad" rows="3"
+                                  placeholder="Detalles adicionales sobre esta modalidad"></textarea>
+                    </div>
+                    <small class="text-muted">Los campos marcados con * son obligatorios</small>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnmodalidad">
+                    <i class="bi bi-check-lg"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="lib/jquery-3.6.0.min.js"></script>
+<script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
   <script>
     //para habilitar el boton ver foto cuando se cargue un archivo
     document.getElementById("pfoto").addEventListener("change", function(event) {

@@ -306,6 +306,7 @@ $("#estadota2").on("change", function () {
                         } else if ( data.estadom === "Trabajo en Campo") {
                             estadom = 4;
                             $("#divjusm2, #divcomm2").hide();
+                            $("#divjust2, #divcomt2").hide();
                         } else {
                             estadom = 0; 
                         }

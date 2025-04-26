@@ -1,5 +1,119 @@
 //Personal
 
+$(document).on('click', '#btnGuardarCargo', function (e) {
+    e.preventDefault();
+
+    let nombre = $('#nombreCargo').val();
+    let descripcion = $('#descripcionCargo').val();
+
+    if (!nombre) {
+        Swal.fire({
+            title: "¡Error!",
+            text: "Por favor, completa el nombre del cargo",
+            icon: "error",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+    $.ajax({
+        url: 'proceso/mantenpersonal.php?action=createcargo',
+        method: 'POST',
+        data: {
+            nombre: nombre,
+            descripcion: descripcion
+        },
+        success: function (response) {
+            Swal.fire({
+                title: "¡Éxito!",
+                text: "Cargo guardado correctamente",
+                icon: "success",
+                confirmButtonText: "OK"
+            }).then(() => {
+                // Limpiar campos
+                $('#nombreCargo').val('');
+                $('#descripcionCargo').val('');
+
+                 
+
+                // // Evento una sola vez para evitar múltiples llamados
+                    $.get('proceso/cargadcombosauto.php?action=reccago', function (data) {
+                        $('#pcargo').html(data);
+                    });
+                
+
+             
+            });
+        },
+        error: function (xhr, status, error) {
+            Swal.fire({
+                title: "¡Error!",
+                text: "Ocurrió un error al guardar el cargo",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            console.error(error);
+        }
+    });
+});
+
+
+
+$(document).on('click', '#btnmodalidad', function (e) {
+    e.preventDefault();
+
+    let nombre = $('#nombreModalidad').val();
+    let descripcion = $('#descripcionModalidad').val();
+
+    if (!nombre) {
+        Swal.fire({
+            title: "¡Error!",
+            text: "Por favor, completa el nombre de la modalidad",
+            icon: "error",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+    $.ajax({
+        url: 'proceso/mantenpersonal.php?action=createmodalidad', 
+        method: 'POST',
+        data: {
+            nombre: nombre,
+            descripcion: descripcion
+        },
+        success: function (response) {
+            Swal.fire({
+                title: "¡Éxito!",
+                text: "Modalidad guardada correctamente",
+                icon: "success",
+                confirmButtonText: "OK"
+            });
+            
+            $('#nombreModalidad').val('');
+            $('#descripcionModalidad').val('');
+
+                // // Evento una sola vez para evitar múltiples llamados
+                $.get('proceso/cargadcombosauto.php?action=recmodalidad', function (data) {
+                    $('#pmodalida').html(data);
+                });
+
+
+        },
+        error: function (xhr, status, error) {
+            Swal.fire({
+                title: "¡Error!",
+                text: "Ocurrió un error al guardar el cargo",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            console.error(error);
+        }
+    });
+
+});
+
+
     //registrar un personal 
     $(document).on('click', '#btreper', function (e) {
         e.preventDefault();
@@ -7,7 +121,7 @@
         let dni = $('#pdni').val();
         let nombres = $('#pnombre').val();
         let apellidos= $('#pape').val();
-        let modalidad = $('#pmodalidad').val();
+        let modalidad = $('#pmodalida').val();
         let cargo = $('#pcargo').val();
         let fechanaci = $('#pfechanaci').val();
         let sueldo = $('#psuel').val();
@@ -178,13 +292,8 @@ $(document).on('click', '.perEditar', function () {
                         $('#pnombre').val(data.nombres);
                         $('#pape').val(data.apellidos);
 
-                        let modalidadnu;
-                        if (data.modalidad_contratacion === "D.L N°276 - Carrera Administrativa") {
-                            modalidadnu = 1;
-                        } else if (data.modalidad_contratacion === "D.L N°728 - Obrero") {
-                            modalidadnu = 2;
-                        }
-                        $('#pmodalidad').val(modalidadnu);
+                        
+                        $('#pmodalida').val(data.modalidad_contratacion);
                         let estado;
                         if (data.estado === "activo") {
                             estado = 1;
@@ -192,17 +301,21 @@ $(document).on('click', '.perEditar', function () {
                             estado = 2;
                         }
 
+                        $('#vaca').css('display', 'block')
+                        
                         $('#pestado').val(estado);
 
                         if ($('#pestado').prop('disabled')) {
                             $('#pestado').prop('disabled', false);
                         }
-
+                        $('#pdni').prop('disabled', true);
                         $('#btreper').hide();  
                         $('#btnLimper').hide(); 
                         $('#ocfoto').hide();  
                         $('#btacuper').show();
                         $('#pcargo').val(data.idcargo); 
+                        $('#pvaca').val(data.vacaciones); 
+                        console.log(data.vacaciones);
                         $('#pfechanaci').val(data.fecha_nacimiento); 
                         $('#psuel').val(data.sueldo); 
                         if (data.foto) {
@@ -230,12 +343,12 @@ $(document).on('click', '#btacuper', function () {
     let dni = $('#pdni').val();
     let nombres = $('#pnombre').val();
     let apellidos = $('#pape').val();
-    let modalidad = $('#pmodalidad').val();
+    let modalidad = $('#pmodalida').val();
     let cargo = $('#pcargo').val();
     let fecha_nacimiento = $('#pfechanaci').val();
     let sueldo = $('#psuel').val();
     let estado = $('#pestado').val();
-
+    let vacacio=$('#pvaca').val();
     let fotoInput = $('#pfoto')[0]; 
     let foto;
     
@@ -268,6 +381,7 @@ $(document).on('click', '#btacuper', function () {
             fecha_nacimiento: fecha_nacimiento,
             sueldo: sueldo,
             foto : foto,
+            vacacio:vacacio,
             estado : estado
         },
        success: function (response) {

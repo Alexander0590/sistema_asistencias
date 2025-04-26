@@ -14,6 +14,20 @@ $tiempotardanzadia=0;
 $comentario="";
 $comentariot="";
 
+if (empty($dni)) {
+    echo "Código no detectado.";
+}
+$queryVacaciones = "SELECT vacaciones FROM personal WHERE dni = '$dni'";
+$resultadoVacaciones = $cnn->query($queryVacaciones);
+
+if ($resultadoVacaciones->num_rows > 0) {
+    $filaVacaciones = $resultadoVacaciones->fetch_assoc();
+    if ($filaVacaciones['vacaciones'] == 'En proceso') {
+        echo "La persona está de vacaciones.";
+        exit;  
+    }
+}
+
 //sql para buscar antes de agregar o actualizar
 $buscar_sql="select * from asistencia where dni='$dni' and fecha='$fecha' ";
 $registro_sql=mysqli_query($cnn,$buscar_sql)or die("Error en buscar asistencia");
@@ -47,6 +61,17 @@ if($respuesta_buscar=="no_registrado" and $turno=="Salida"){
 if ( $turno == ""){
     echo "Sistema fuera de servicio";
     return;
+}
+
+$queryVacaciones = "SELECT vacaciones FROM personal WHERE dni = '$dni'";
+$resultadoVacaciones = $cnn->query($queryVacaciones);
+
+if ($resultadoVacaciones->num_rows > 0) {
+    $filaVacaciones = $resultadoVacaciones->fetch_assoc();
+    if ($filaVacaciones['vacaciones'] == 'En proceso') {
+        echo "La persona está de vacaciones.";
+        exit;  
+    }
 }
 
 if($turno=="Mañana" and $respuesta_buscar=="no_registrado"){

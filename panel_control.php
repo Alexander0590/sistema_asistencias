@@ -113,10 +113,20 @@ if($_SESSION['rol']==="1"){
         </div>
     </div>
     <div class="menu-item">
+        <a href="#"><i class="bi bi-brightness-high"></i><span>Vacaciones</span></a>
+        <div class="submenu">
+        <a href="#" id="gvaca">Generar Vacaciones</a>
+            <a href="#" id="lvaca">Lista de Vacaciones</a>
+        </div>
+    </div>
+    <div class="menu-item">
         <a href="#" ><i class="bi bi-people"></i><span>Personal</span></a>
         <div class="submenu">
-            <a href="#" id="liper">Lista de personal</a>
             <a href="#" id="x4">Agregar personal</a>
+            <a href="#" id="liper">Lista de personal</a>
+            <a href="#" id="licargos">Lista de Cargos</a>
+            <a href="#" id="limodali">Lista de Modalidades</a>
+           
         </div>
     </div>
 
@@ -130,6 +140,7 @@ if($_SESSION['rol']==="1"){
     <div class="menu-item">
         <a href="#"><i class="bi bi-graph-up"></i><span>Reportes</span></a>
         <div class="submenu">
+            <a href="#" id="rgeneral">Reporte General</a>
             <a href="#" id="reporteas">Reporte de asistencia personal</a>
             <a href="#" id="reporteaseguridad">Reporte de asistencia serenazgo</a>
             <a href="#" id="reportesalidas">Reporte de Salidas</a>

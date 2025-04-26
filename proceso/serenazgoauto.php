@@ -3,7 +3,6 @@
 
  $action = $_GET['action'] ?? '';
 
-
  switch ($action) {
     case 'readcargo':
         $adni = $_POST['adni'];
@@ -38,7 +37,20 @@
     } else {
         die("Error: Turno no válido.");
     }
+    if (empty($adni)) {
+        echo "Código no detectado.";
+    }
 
+    $queryVacaciones = "SELECT vacaciones FROM personal WHERE dni = '$adni'";
+    $resultadoVacaciones = $cnn->query($queryVacaciones);
+    
+    if ($resultadoVacaciones->num_rows > 0) {
+        $filaVacaciones = $resultadoVacaciones->fetch_assoc();
+        if ($filaVacaciones['vacaciones'] == 'En proceso') {
+            echo "La persona está de vacaciones.";
+            exit;  
+        }
+    }
 
     if ($estado == "Salida") {
         $query = "SELECT idasisse, horas FROM asistencia_seguridad WHERE dni = '$adni' AND fecha = '$fecha_actual'";

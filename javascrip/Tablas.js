@@ -13,6 +13,12 @@ $(document).ready(function () {
     if ($.fn.DataTable.isDataTable('#tsalidas')) {
         $('#tsalidas').DataTable().clear().destroy();
     }
+    if ($.fn.DataTable.isDataTable('#tvacaciones')) {
+        $('#tvacaciones').DataTable().clear().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('#tper2')) {
+        $('#tper2').DataTable().clear().destroy();
+    }
     // Inicializar tabla usuario
 $('#tusu').DataTable({
     "paging": true,
@@ -174,6 +180,95 @@ $('#tasis').DataTable({
         }
     ]
 });
+
+//reporte general
+$('#rpgene').DataTable({
+    "paging": false, 
+    "searching": true, 
+    "ordering": false, 
+    "info": true, 
+    "autoWidth": false, 
+    "scrollX": true, 
+    "responsive": true, 
+    "language": {
+        "search": "Buscar:",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + 
+           '<"row"<"col-sm-12"tr>>' + 
+           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', 
+    "buttons": [
+        {
+            extend: 'excelHtml5', 
+            text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+            className: 'btn btn-success',
+            title: 'Reporte_de_Asistencia' 
+        },
+        {
+            extend: 'pdfHtml5', 
+            text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
+            className: 'btn btn-danger',
+            title: 'reporte_de_Asistencia', 
+            customize: function (doc) {
+                // Personalización del PDF
+                doc.defaultStyle.fontSize = 10;
+                doc.styles.tableHeader.fontSize = 10;
+                doc.styles.title.fontSize = 14;
+                doc.pageOrientation = 'landscape';  
+            }
+        }
+    ]
+});
+//vaciones tabla
+$('#tvacaciones').DataTable({
+    "paging": false, 
+    "searching": true, 
+    "ordering": false, 
+    "info": true, 
+    "autoWidth": false, 
+    "scrollX": true, 
+    "responsive": true, 
+    "language": {
+        "search": "Buscar:",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + 
+           '<"row"<"col-sm-12"tr>>' + 
+           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', 
+    "buttons": [
+        {
+            extend: 'excelHtml5', 
+            text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+            className: 'btn btn-success',
+            title: 'Reporte_de_Serenazgo' 
+        },
+        {
+            extend: 'pdfHtml5', 
+            text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
+            className: 'btn btn-danger',
+            title: 'reporte_de_Serenazgo', 
+            customize: function (doc) {
+                // Personalización del PDF
+                doc.defaultStyle.fontSize = 10;
+                doc.styles.tableHeader.fontSize = 10;
+                doc.styles.title.fontSize = 14;
+                doc.pageOrientation = 'landscape';  
+            }
+        }
+    ]
+});
 //iniciar tabla personal
 $('#tper').DataTable({
     "paging": false,
@@ -196,6 +291,30 @@ $('#tper').DataTable({
     },
     "columnDefs": [
         { "width": "100px", "targets": 9 } 
+    ]
+});
+//iniciar tabla solicitud de vacaciones
+$('#tper2').DataTable({
+    "paging": false,
+    "searching": true,
+    "ordering": false,
+    "info": true,
+    "autoWidth": false,
+    "scrollX": true, 
+    "responsive": true,
+    "language": {
+        "search": "Buscar:",
+        "lengthMenu": "Mostrar _MENU_ registros por página",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    "columnDefs": [
+        { "width": "100px", "targets": 7 } 
     ]
 });
 //inicializar tabla salidas
@@ -266,6 +385,46 @@ function obtenerUsuarios() {
         });
     }
 
+    function obtenervacaciones() {
+    
+        $.ajax({
+            url: 'proceso/mantenimievacacione.php?action=read',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Limpiar la tabla vaciones
+                $('#tvacaciones').DataTable().clear().draw();
+
+                data.forEach(function (vacaciones, index) {
+                 
+                    $('#tvacaciones').DataTable().row.add([
+                        index + 1,
+                        vacaciones.vacaciones,
+                        vacaciones.dni,
+                        vacaciones.nombres,
+                        vacaciones.apellidos,
+                        vacaciones.nombre,
+                        vacaciones.dias,
+                        vacaciones.fecha_inicio,
+                        vacaciones.fecha_fin,
+                        vacaciones.dias_restantes,
+                        vacaciones.year,
+                        `
+                        <button  class="btn btn-primary usuEditar" data-id="${vacaciones.id_vaca}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button  class="btn btn-danger usuEliminar" data-id="${vacaciones.id_vaca}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        `
+                    ]).draw(false);
+                });
+            },
+            error: function (error) {
+                console.error('Error al obtener los usuarios:', error);
+            }
+        });
+    }
 
     function obtenerpersonal() {
         $.ajax({
@@ -330,6 +489,46 @@ function obtenerUsuarios() {
         });
     }
 
+
+    function obtenerpersonalvaca() {
+        $.ajax({
+            url: 'proceso/mantenpersonal.php?action=readva2',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#tper2').DataTable().clear().draw();
+                data.forEach(function (personal, index) {
+
+                  
+                    var imagen = '';
+                    if (personal.foto && personal.foto.startsWith('data:image')) {
+                        imagen = `<img src="${personal.foto}" alt="Imagen" width="50" height="50">`;
+                    } else {
+                        imagen = '<img src=" img/usuariodefecto.png" alt="Imagen predeterminada" width="50" height="50">';
+                    }
+                    
+                    let btneditar = `<button  class="btn btn-primary vasolicitar" data-id="${personal.dni}">
+                           <i class="bi bi-plus-circle"></i>
+                        </button>`;
+
+
+                    $('#tper2').DataTable().row.add([
+                        index + 1,
+                        imagen,
+                        personal.dni,
+                        personal.apellidos,
+                        personal.nombres,
+                        personal.nombre_cargo,
+                        personal.vacaciones,
+                        btneditar 
+                    ]).draw(false);
+                });
+            },
+            error: function (error) {
+                console.error('Error al obtener los usuarios:', error);
+            }
+        });
+    }
     
     function obtenerlistadoasis() {
     
@@ -373,11 +572,55 @@ function obtenerUsuarios() {
         });
     }
 
+    //reporte general
+    function obtenerrpgene() {
+    
+        $.ajax({
+            url: 'proceso/reportegeneral.php?action=read',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Limpiar la tabla de usuarios
+                $('#rpgene').DataTable().clear().draw();
+
+                data.forEach(function (asistencia, index) {
+                    let minutosTarde = parseInt(asistencia.minutos_descut) || 0;
+                    let minutosManana = parseInt(asistencia.minutos_descum) || 0;
+                    let totalMinutos = minutosTarde + minutosManana;
+    
+                    let minutosdes = totalMinutos === 0 
+                        ? "No hay descuento" 
+                        : `${totalMinutos} minutos ( ${minutosTarde} Tarde + ${minutosManana} Mañana)`;
+    
+                    let estado = asistencia.estadot || "No hay registro";
+                    $('#rpgene').DataTable().row.add([
+                        index + 1,
+                        asistencia.dni,
+                        asistencia.apellidos+' ' +asistencia.nombres,
+                        asistencia.nombre,
+                        asistencia.dias_trabajo+ ' dias',
+                        asistencia.total_tardanza_mes+ ' min',
+                        "S/. "+asistencia.STotaldesdia,
+                        asistencia.suma_tardanza_diurno,
+                        asistencia.suma_tardanza_tarde,
+                    `
+                        <button  class="btn btn-primary usuverificar" data-id="${asistencia.dni}">
+                            <i class="bi bi-patch-check"></i> Verificar
+                        </button>
+                        `
+                    ]).draw(false);
+                });
+            },
+            error: function (error) {
+                console.error('Error al obtener los usuarios:', error);
+            }
+        });
+    }
+
 
     //reporte de serenazgo
     function obtenerreporsere() {
 
-      
         $.ajax({
             url: 'proceso/mantesernazgo.php?action=readreporte',
             type: 'GET',
@@ -542,8 +785,9 @@ function obtenerUsuarios() {
     obtenerpersonal();
     obtenerreporsere();
     obtenerlistadoasis();
-
-
+    obtenervacaciones();
+    obtenerpersonalvaca();
+    obtenerrpgene();
 });
 
 

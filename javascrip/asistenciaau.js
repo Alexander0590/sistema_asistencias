@@ -299,7 +299,10 @@ $('#formulario-asistencia').on('submit', function(e) {
                         response.includes('no ha registrado su ingreso') ||
                         response.includes('Sistema fuera de servicio')||
                         response.includes('Su salida ya fue registrada previamente')||
-                        response.includes('Su entrada ya fue registrada previamente.')
+                        response.includes('Su entrada ya fue registrada previamente.')||
+                        response.includes('La persona está de vacaciones.')||
+                        response.includes('Código no detectado.')
+
 
                     ) {
                         icono = 'error';

@@ -183,6 +183,40 @@ switch ($action) {
             $comentariot = $_POST['coment'];
             $descuento_dia = $_POST['totdescu'];
             $tiempo_tardanza_dia = $_POST['totminu'];
+            switch ($estadom) {
+                case '1':
+                    $estadoTexto = 'Puntual';
+                    break;
+                case '2':
+                    $estadoTexto = 'Tardanza';
+                    break;
+                case '3':
+                    $estadoTexto = 'Falta';
+                    break;
+                case '4':
+                    $estadoTexto = 'Trabajo en campo';
+                    break;
+                default:
+                    $estadoTexto = 'Desconocido';
+                    break;
+            }
+            switch ($estadot) {
+                case '1':
+                    $estadoTextoT = 'Puntual';
+                    break;
+                case '2':
+                    $estadoTextoT = 'Tardanza';
+                    break;
+                case '3':
+                    $estadoTextoT = 'Falta';
+                    break;
+                case '4':
+                    $estadoTextoT = 'Trabajo en campo';
+                    break;
+                default:
+                    $estadoTextoT = 'Desconocido';
+                    break;
+            }
         
             $sql = "UPDATE asistencia SET
                 fecha = ?,
@@ -203,8 +237,8 @@ switch ($action) {
             $stmt = $cnn->prepare($sql);
         
             $stmt->bind_param("sssssdsssssdss",
-                $fecha, $horaim, $horasm, $estadom, $minutos_descum,
-                $horait, $horast, $estadot, $minutos_descut,
+                $fecha, $horaim, $horasm, $estadoTexto, $minutos_descum,
+                $horait, $horast, $estadoTextoT, $minutos_descut,
                 $comentario, $comentariot, $descuento_dia,
                 $tiempo_tardanza_dia, $dni
             );

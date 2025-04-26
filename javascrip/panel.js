@@ -58,6 +58,11 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/listadepersonal.php"); 
     });
+    // lista cargos
+    $("#licargos").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/lista_cargos.php"); 
+    });
     //trabajadores
     $("#x4").click(function (e) {
       e.preventDefault(); 
@@ -92,6 +97,29 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_salidas.php"); 
     });
+    //reporte General
+    $("#rgeneral").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/reporte_general.php"); 
+    });
+//lista de modalidad
+    $("#limodali").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/lista_modalidad.php"); 
+    });
+
+
+    //lista de vacaciones
+    $("#lvaca").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/lis_vacaciones.php"); 
+    });
+    //solicitud de vacaciones
+    $("#gvaca").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/solicitarvacaciones.php"); 
+    });
+
 
     $("#reserena").click(function (e) {
       e.preventDefault();
