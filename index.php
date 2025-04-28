@@ -156,5 +156,6 @@
     <script src="lib/sweetalert2/sweetalert2.min.js"></script>
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
 <script src="javascrip/asistenciaau.js"></script>
+<script src="javascrip/funciones_temp_real.js"></script>
 </body>
 </html>

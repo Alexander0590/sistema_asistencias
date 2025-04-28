@@ -4,7 +4,7 @@
  switch ($action) {
     case 'reccago':
         
-        $sql = "SELECT idcargo, nombre FROM cargos";
+        $sql = "SELECT idcargo, nombre FROM cargos WHERE estado = 'activo'";
         $resultado = $cnn->query($sql);
 
         if ($resultado->num_rows > 0) {
@@ -18,7 +18,7 @@
     break;
     case 'recmodalidad':
         
-        $sql = "SELECT  nombrem FROM modalidad";
+        $sql = "SELECT  nombrem FROM modalidad WHERE estado = 'activo'";
         $resultado = $cnn->query($sql);
 
         if ($resultado->num_rows > 0) {

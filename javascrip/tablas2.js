@@ -3,6 +3,11 @@ $(document).ready(function () {
         $('#tcargos').DataTable().clear().destroy();
     }
 
+    if ($.fn.DataTable.isDataTable('#tmodalidad')) {
+        $('#tmodalidad').DataTable().clear().destroy();
+    }
+
+
     //iniciar tabla cargos
     $('#tcargos').DataTable({
         "paging": false,
@@ -65,13 +70,18 @@ $(document).ready(function () {
                 $('#tcargos').DataTable().clear().draw();
 
                 data.forEach(function (cargos, index) {
-              
+                    let estado;
+                    if (cargos.estado === "activo") {
+                        estado = '<span class="punto punto-activo"></span> Activo';
+                    } else {
+                        estado = '<span class="punto punto-inactivo"></span> Inactivo';
+                    }
                     $('#tcargos').DataTable().row.add([
                         index + 1,
                         cargos.nombre,
                         cargos.descripcion,
                         cargos.fecha_creacion,
-                        cargos.estado,
+                        estado,
                         `
                         <button  class="btn btn-primary cargoEditar" data-id="${cargos.idcargo}">
                             <i class="bi bi-pencil"></i>
@@ -100,13 +110,18 @@ $(document).ready(function () {
                 $('#tmodalidad').DataTable().clear().draw();
 
                 data.forEach(function (modalidad, index) {
-              
+                    let estado;
+                    if (modalidad.estado === "activo") {
+                        estado = '<span class="punto punto-activo"></span> Activo';
+                    } else {
+                        estado = '<span class="punto punto-inactivo"></span> Inactivo';
+                    }
                     $('#tmodalidad').DataTable().row.add([
                         index + 1,
                         modalidad.nombrem,
                         modalidad.descripcion,
                         modalidad.fecha_creacion,
-                        modalidad.estado,
+                        estado,
                         `
                         <button  class="btn btn-primary modaliEditar" data-id="${modalidad.idmodalidad}">
                             <i class="bi bi-pencil"></i>

@@ -280,6 +280,8 @@ $(document).on('click', '.perEditar', function () {
     $("#vistas").fadeOut(200, function () {
         $(this).load("view/personal.php", function () {
             $(this).fadeIn(200); 
+            $('#btnNuevoCargo').remove();
+            $('#btnnuemodali').remove();
             $.ajax({
                 url: 'proceso/mantenpersonal.php?action=readOne', 
                 type: 'GET',

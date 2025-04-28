@@ -71,6 +71,49 @@ switch ($action) {
                 
               
             break;
+        case'updateatodos':
+            $hoy = date('d-m-y');
+            // 1. Buscar los ID de personal que ya terminaron sus vacaciones
+            $sql_vencidos = "SELECT DISTINCT v.dni
+                            FROM vacaciones v
+                            INNER JOIN personal p ON v.dni = p.dni
+                            WHERE v.fecha_fin < '$hoy'
+                            AND p.vacaciones = 'En proceso'";
+            
+            $resultado_vencidos = $cnn->query($sql_vencidos);
+            
+            if ($resultado_vencidos->num_rows > 0) {
+                while ($fila = $resultado_vencidos->fetch_assoc()) {
+                    $id_personal = $fila['dni'];
+            
+                    // 2. Para cada uno, calcular la suma de días
+                    $sql_suma = "SELECT SUM(dias) AS total_dias 
+                                 FROM vacaciones 
+                                 WHERE dni = '$id_personal'";
+            
+                    $resultado_suma = $cnn->query($sql_suma);
+                    $datos = $resultado_suma->fetch_assoc();
+                    $total_dias = $datos['total_dias'];
+            
+                    // 3. Según la suma de días, actualizar personal
+                    if ($total_dias < 31) {
+                        $update = "UPDATE personal SET vacaciones = 'Dias restantes' WHERE dni= '$id_personal'";
+                    } else {
+                        $update = "UPDATE personal SET vacaciones = 'Finalizado' WHERE dni = '$id_personal'";
+                    }
+            
+                    if (!$cnn->query($update)) {
+                        echo "Error actualizando ID $id_personal: " . $cnn->error . "<br>";
+                    }
+                }
+            
+                echo "Actualización de vacaciones finalizada correctamente.";
+            } else {
+                echo "No hay registros de vacaciones vencidas.";
+            }
+            
+            $cnn->close();
+        break;
      default:
          echo json_encode(["status" => "error", "message" => "Acción no válida"]);
  }

@@ -49,12 +49,16 @@ if($respuesta_buscar=="registrado" and $turno=="Mañana"){
     return;
 }
 
-if($respuesta_buscar=="registrado" and $turno=="Tarde" and $estado_tarde<>""){
+if($respuesta_buscar=="registrado" and $turno=="Tarde" and $estado_tarde <>"" and $estado <> "Salida"){
     echo "Usted ya está registrado en el turno de la tarde...!";
     return;
 }
 
-if($respuesta_buscar=="no_registrado" and $turno=="Salida"){
+if($respuesta_buscar=="no_registrado" and $estado=="Salida"and $turno="Mañana"){
+    echo "Usted no ha registrado su ingreso...!";
+    return;
+}
+if($respuesta_buscar=="no_registrado" and $estado=="Salida"and $turno="Tarde"){
     echo "Usted no ha registrado su ingreso...!";
     return;
 }
@@ -131,15 +135,52 @@ if($turno=="Tarde" and $respuesta_buscar=="registrado" and $estado_tarde==""){
 
 }
 
-if($turno=="Salida" and $respuesta_buscar=="registrado"){
+if ($estado == "Salida" and $respuesta_buscar == "registrado" and $turno == "Tarde") {
+    // Consultar primero si ya tiene salida registrada
+    $sql_check = "SELECT horast, dni FROM asistencia WHERE dni = $dni";
+    $result_check = mysqli_query($cnn, $sql_check) or die("Error al verificar la salida");
 
-    $horasalt=$hora;
-    $sql="update asistencia 
-    set horast='$horasalt',tiempo_tardanza_dia=$totalmd
-    where idasis=$codigo_asistencia"; 
-    mysqli_query($cnn,$sql)or die("Error en control de asistencia, salida");
-    echo "Asistencia de: ". $dni." registrada correctamente, en salida...!";
+    $row = mysqli_fetch_assoc($result_check);
+
+    if ($row['horast'] != '00:00:00' && $row['horast'] != '') {
+        echo "Usted ya registró su salida anteriormente.";
+        return;
+    }
+
+    // Si no tiene salida registrada, obtenemos el sueldo mensual del empleado
+    $query_sueldo = "SELECT sueldo FROM personal WHERE dni = '$dni'";
+    $result_sueldo = mysqli_query($cnn, $query_sueldo);
+
+    if ($result_sueldo && mysqli_num_rows($result_sueldo) > 0) {
+        $row_sueldo = mysqli_fetch_assoc($result_sueldo);
+        $sueldo_mensual = $row_sueldo['sueldo'];
+
+        // Calcular sueldo por día (asumiendo 30 días al mes)
+        $sueldo_por_dia = $sueldo_mensual / 30;
+
+        // Calcular sueldo por hora (asumiendo 8 horas de trabajo al día)
+        $sueldo_por_hora = $sueldo_por_dia / 8;
+
+        // Calcular sueldo por minuto (asumiendo 60 minutos por hora)
+        $sueldo_por_minuto = number_format($sueldo_por_hora / 60, 2);
+
+        
+    } else {
+        echo "Empleado no encontrado para el cálculo de sueldo.";
+        return;
+    }
+    $totaldescu= $totalmd * $sueldo_por_minuto;
+    $totaldescu = number_format($totaldescu, 2);
+    // Si no tiene salida registrada, actualizamos
+    $horasalt = $hora;
+    $sql = "UPDATE asistencia 
+            SET horast = '$horasalt', tiempo_tardanza_dia = $totalmd , descuento_dia = $totaldescu
+            WHERE idasis = $codigo_asistencia"; 
+    mysqli_query($cnn, $sql) or die("Error en control de asistencia, salida");
+
+    echo "Salida de: " . $dni . " registrada correctamente...!";
 }
+
 
 // echo "Dni: ".$dni." // ";
 // echo "Fecha: ".$fecha." // ";

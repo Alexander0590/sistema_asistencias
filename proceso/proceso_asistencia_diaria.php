@@ -219,8 +219,8 @@ break;
                     exit;
                 }
 
-                $query = "INSERT INTO asistencia (dni, fecha, dia, estadom, minutos_descum, estadot, minutos_descut, comentario, descuento_dia) 
-                        VALUES ('$dni','$fecha','$nombreDia','$estadac',$minutosdiv,'$estadac',$minutosdiv,'$comentario',$descuento)";
+                $query = "INSERT INTO asistencia (dni, fecha, dia, estadom, minutos_descum, estadot, minutos_descut, comentario, descuento_dia ,tiempo_tardanza_dia) 
+                        VALUES ('$dni','$fecha','$nombreDia','$estadac',$minutosdiv,'$estadac',$minutosdiv,'$comentario',$descuento , $minutos)";
 
                 if (mysqli_query($cnn, $query)) {
                     echo json_encode(["success" => true, "message" => "Falta registrada correctamente"]);

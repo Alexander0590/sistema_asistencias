@@ -1,9 +1,10 @@
 <?php
 include '../conecxion/conecxion.php'; 
 
-$sql = "SELECT nombre,idcargo FROM cargos"; 
+$sql = "SELECT nombre,idcargo FROM cargos WHERE estado = 'activo'"; 
 $resultado = $cnn->query($sql);
-$sql2 = "SELECT nombrem,idmodalidad FROM modalidad"; 
+$sql2 = "SELECT nombrem, idmodalidad FROM modalidad WHERE estado = 'activo'";
+
 $resultado2 = $cnn->query($sql2);
 
 if (!$resultado) {
@@ -223,7 +224,7 @@ if (!$resultado) {
         <div class="modal-content">
             <div class="modal-header text-white" style="background-color: #060614;">
                 <h5 class="modal-title" id="modalNuevaModalidadLabel">
-                    <i class="bi bi-file-earmark-plus"></i> Agregar Modalidad
+                    <i class="bi bi-file-earmark-plus"></i> Agregar Modalidad de Contratacion
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -239,6 +240,7 @@ if (!$resultado) {
                         <textarea class="form-control" id="descripcionModalidad" rows="3"
                                   placeholder="Detalles adicionales sobre esta modalidad"></textarea>
                     </div>
+
                     <small class="text-muted">Los campos marcados con * son obligatorios</small>
                 </form>
             </div>
@@ -255,6 +257,7 @@ if (!$resultado) {
 </div>
 <script src="lib/jquery-3.6.0.min.js"></script>
 <script src="lib/boostrap-js/bootstrap.bundle.min.js"></script>
+<script src="javascrip/cargosymodalidaman.js"></script>
   <script>
     //para habilitar el boton ver foto cuando se cargue un archivo
     document.getElementById("pfoto").addEventListener("change", function(event) {

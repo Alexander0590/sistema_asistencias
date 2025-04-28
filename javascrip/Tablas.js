@@ -343,7 +343,6 @@ $('#tsalidas').DataTable({
 });
 
 function obtenerUsuarios() {
-    
         $.ajax({
             url: 'proceso/mantenusuario.php?action=read',
             type: 'GET',
@@ -386,7 +385,6 @@ function obtenerUsuarios() {
     }
 
     function obtenervacaciones() {
-    
         $.ajax({
             url: 'proceso/mantenimievacacione.php?action=read',
             type: 'GET',
@@ -409,14 +407,10 @@ function obtenerUsuarios() {
                         vacaciones.fecha_fin,
                         vacaciones.dias_restantes,
                         vacaciones.year,
-                        `
-                        <button  class="btn btn-primary usuEditar" data-id="${vacaciones.id_vaca}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button  class="btn btn-danger usuEliminar" data-id="${vacaciones.id_vaca}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        `
+                     `${vacaciones.vacaciones === 'En proceso' || vacaciones.vacaciones === 'Finalizado' 
+                        ? `<button class="btn btn-secondary" disabled><i class="bi bi-check-circle"></i> Dar vacaciones</button>` 
+                        : `<button class="btn btn-success darVacaciones" data-id="${vacaciones.dni}"><i class="bi bi-check-circle"></i> Dar vacaciones</button>`
+                    }`
                     ]).draw(false);
                 });
             },
@@ -489,7 +483,7 @@ function obtenerUsuarios() {
         });
     }
 
-
+//vacaciones
     function obtenerpersonalvaca() {
         $.ajax({
             url: 'proceso/mantenpersonal.php?action=readva2',

@@ -33,7 +33,7 @@
     if ($turno == "Mañana") {
         $hora_tolerancia = "08:15:59";
     } elseif ($turno == "Tarde") {
-        $hora_tolerancia = "18:10:59";
+        $hora_tolerancia = "16:10:59";
     } else {
         die("Error: Turno no válido.");
     }
@@ -62,7 +62,7 @@
             if (!empty($fila['horas'])) {
                 echo "Su salida ya fue registrada previamente.";
             } else {
-                $updateQuery = "UPDATE asistencia_seguridad SET horas = '$ashora' WHERE dni = '$adni' AND fecha = '$fecha_actual'";
+                $updateQuery = "UPDATE asistencia_seguridad SET horas = '$ashora', estado_salida ='Salida Normal' WHERE dni = '$adni' AND fecha = '$fecha_actual'";
 
                 if ($cnn->query($updateQuery) === TRUE) {
                     echo "Hora de salida  de personal de serenazgo registrada correctamente.";

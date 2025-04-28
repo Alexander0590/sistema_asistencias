@@ -61,7 +61,7 @@ function actualizarFechaHora() {
     const limiteTardanzaTarde = new Date(ahora);
     limiteTardanzaTarde.setHours(15, 0, 0, 0); // 3:00 PM
     const salidaseret1 = new Date(ahora);
-    salidaseret1.setHours(16, 0, 0, 0); // 4:00 PM
+    salidaseret1.setHours(16, 30, 0, 0); // 4:30 PM
     
     const limitesalidaseret1 = new Date(ahora);
     limitesalidaseret1.setHours(17, 0, 0, 0);//5:00 PM 
@@ -131,15 +131,15 @@ function actualizarFechaHora() {
         document.getElementById("turno-actual").style.display = "none";
         sistemaCerrado = true;
         tiempoRestante = Math.floor((salidaseret1 - ahora) / 60000); 
-        mensaje = `Sistema cerrado. Faltan ${tiempoRestante} minutos para la Salida de Serenos`;
+        mensaje = `Sistema cerrado. Faltan ${tiempoRestante} minutos para la Salida`;
         mensaje2=" ";
 
     } else if (ahora >= salidaseret1 && ahora <  limitesalidaseret1) {
-        estado="x";
+        estado="Salida";
         estado2="Salida";
-        turnoActual = "Mañana";
+        turnoActual = "Tarde";
         tiempoRestante = Math.floor((limitesalidaseret1- ahora) / 60000); 
-        mensaje = `Sistema abierto para salida del Personal de Serenazgo. Faltan ${tiempoRestante} minutos para el cierre del Sistema`;
+        mensaje = `Sistema abierto para salida del Personal  Faltan ${tiempoRestante} minutos para el cierre del Sistema`;
         mensaje2=" ";
 
     } else if (ahora >=  limitesalidaseret1 && ahora < salidaTurno2) {
@@ -150,15 +150,15 @@ function actualizarFechaHora() {
         mensaje2=" ";
     } else if (ahora >= salidaTurno2 && ahora < toleranciat22se) {
         // Después de la salida (6:00 PM - 7:00 PM)
-        estado="Salida";
+        estado="x";
         estado2='Puntual';
         turnoActual = "Tarde";
-        mensaje = "Sistema abierto para salida del Personal y Entrada de Serenazgo ";
+        mensaje = "Sistema abierto para  Entrada de Serenazgo ";
         mensaje2=" ";
 
     }else if (ahora >= toleranciat22se && ahora < finJornada) {  
         document.getElementById("turno-actual").style.display = "none";
-        estado="Salida";
+        estado="x";
         estado2='Tardanza';
         turnoActual = "Tarde";
         mensaje = "Sistema abierto para salida del Personal  ";
@@ -301,8 +301,9 @@ $('#formulario-asistencia').on('submit', function(e) {
                         response.includes('Su salida ya fue registrada previamente')||
                         response.includes('Su entrada ya fue registrada previamente.')||
                         response.includes('La persona está de vacaciones.')||
-                        response.includes('Código no detectado.')
-
+                        response.includes('Código no detectado.')||
+                        response.includes('Usted ya registró su salida anteriormente.')||
+                        response.includes('No tiene un registro de entrada en el día de hoy.')
 
                     ) {
                         icono = 'error';

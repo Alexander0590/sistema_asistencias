@@ -11,7 +11,7 @@
 <div class="container mt-5 ">
     <div class="card shadow-lg">
         <div class="card-header  text-white tablas-x " style="background-color: #0c0c24;">
-            <h4 class="mb-0"><i class="bi bi-person-lines-fill"></i> Solicitud de Vacaciones</h4>
+            <h4 class="mb-0"><i class="bi bi-cloud-moon"></i> Solicitud de Vacaciones</h4>
         </div>
         <div class="card-body">
             <table class="table table-striped table-bordered table-hover" id="tper2" style="width:100%">
