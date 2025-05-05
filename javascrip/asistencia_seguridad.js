@@ -864,16 +864,18 @@ var dni = $(this).data('id');
             var fechaInicio = new Date(fechai);
             var fechaFin = new Date(fechaf);
             
-            if (!fechai || !fechaf) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Fechas incompletas',
-                    text: 'Debes ingresar ambas fechas',
-                    confirmButtonText: 'Aceptar'
-                });
-                return;
+            if (!dnire) {
+                if (!fechai || !fechaf) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Fechas incompletas',
+                        text: 'Debes ingresar ambas fechas',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
             }
-        
+            
             if (fechaInicio > fechaFin) {
                 Swal.fire({
                     icon: 'error',

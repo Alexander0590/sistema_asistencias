@@ -40,7 +40,7 @@ function actualizarFechaHora() {
     inicioTurno1.setHours(7, 0, 0, 0); // 7:00 AM
     
     const cierreTurno1 = new Date(ahora);
-    cierreTurno1.setHours(8, 10, 59, 0); // 8:15 AM
+    cierreTurno1.setHours(8, 15, 59, 0); // 8:15 AM
     
     const limiteTardanzaManana = new Date(ahora);
     limiteTardanzaManana.setHours(9, 0, 0, 0); // 9:00 AM

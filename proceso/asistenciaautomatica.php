@@ -14,9 +14,11 @@ $tiempotardanzadia=0;
 $comentario="";
 $comentariot="";
 
-if (empty($dni)) {
+if(empty($dni)) {
     echo "Código no detectado.";
+    return;
 }
+
 $queryVacaciones = "SELECT vacaciones FROM personal WHERE dni = '$dni'";
 $resultadoVacaciones = $cnn->query($queryVacaciones);
 
@@ -26,6 +28,9 @@ if ($resultadoVacaciones->num_rows > 0) {
         echo "La persona está de vacaciones.";
         exit;  
     }
+}else{
+    echo "Personal no existe en base de datos...!";
+    return;
 }
 
 //sql para buscar antes de agregar o actualizar
@@ -43,6 +48,7 @@ if($encontrado_sql==0){
     $estado_tarde=$asociado['estadot'];
     $totalmd=$totalmm+$totalmt;
 }
+
 //verificar si ya esta registrado en turno mañana o tarde
 if($respuesta_buscar=="registrado" and $turno=="Mañana"){
     echo "Usted ya está registrado en el turno de la mañana...!";
@@ -54,28 +60,18 @@ if($respuesta_buscar=="registrado" and $turno=="Tarde" and $estado_tarde <>"" an
     return;
 }
 
-if($respuesta_buscar=="no_registrado" and $estado=="Salida"and $turno="Mañana"){
-    echo "Usted no ha registrado su ingreso...!";
+if($respuesta_buscar=="no_registrado" and $estado=="Salida"){
+    echo "Usted no ha registrado su ingreso en ningún turno!";
     return;
 }
-if($respuesta_buscar=="no_registrado" and $estado=="Salida"and $turno="Tarde"){
-    echo "Usted no ha registrado su ingreso...!";
+
+if($respuesta_buscar=="no_registrado" and $turno=="Tarde"){
+    echo "Usted no ha registrado su ingreso en la mañana...!";
     return;
 }
 if ( $turno == ""){
     echo "Sistema fuera de servicio";
     return;
-}
-
-$queryVacaciones = "SELECT vacaciones FROM personal WHERE dni = '$dni'";
-$resultadoVacaciones = $cnn->query($queryVacaciones);
-
-if ($resultadoVacaciones->num_rows > 0) {
-    $filaVacaciones = $resultadoVacaciones->fetch_assoc();
-    if ($filaVacaciones['vacaciones'] == 'En proceso') {
-        echo "La persona está de vacaciones.";
-        exit;  
-    }
 }
 
 if($turno=="Mañana" and $respuesta_buscar=="no_registrado"){
@@ -137,7 +133,7 @@ if($turno=="Tarde" and $respuesta_buscar=="registrado" and $estado_tarde==""){
 
 if ($estado == "Salida" and $respuesta_buscar == "registrado" and $turno == "Tarde") {
     // Consultar primero si ya tiene salida registrada
-    $sql_check = "SELECT horast, dni FROM asistencia WHERE dni = $dni";
+    $sql_check = "SELECT horast, dni FROM asistencia WHERE dni = $dni and fecha='$fecha' ";
     $result_check = mysqli_query($cnn, $sql_check) or die("Error al verificar la salida");
 
     $row = mysqli_fetch_assoc($result_check);
@@ -182,24 +178,4 @@ if ($estado == "Salida" and $respuesta_buscar == "registrado" and $turno == "Tar
 }
 
 
-// echo "Dni: ".$dni." // ";
-// echo "Fecha: ".$fecha." // ";
-// echo "Dia: ".$dia." // ";
-// echo "Turno: ".$turno." // ";
-// echo "Estado general: ".$estado." // ";
-
-// echo "Hora ingreso mañana: ".$horaingresom." // ";
-// echo "Hora salida mañana: ".$horasalm." // ";
-// echo "Estado mañana: ".$estadom." // ";
-// echo "Minutos descuento mañana: ".$minutos_descum." // ";
-// echo "Hora ingreso tarde: ".$horaingresot." // ";
-// echo "Hora salida tarde: ".$horasalt." // ";
-// echo "Estado tarde: ".$estadot." // ";
-// echo "Minutos descuento tarde: ".$minutos_descut." // ";
-// echo "Comentario: ".$comentario." // ";
-// echo "Tiempo de trabajo: ".$tiempotrabajo." // ";
-// echo "Tiempo de tardanza dia: ".$tiempotardanzadia." // ";
-
-
-//FALTA VERIFICAS QUE YA SE REGISTRO EN CUALQUIER TURNO
 ?>

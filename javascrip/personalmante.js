@@ -317,7 +317,6 @@ $(document).on('click', '.perEditar', function () {
                         $('#btacuper').show();
                         $('#pcargo').val(data.idcargo); 
                         $('#pvaca').val(data.vacaciones); 
-                        console.log(data.vacaciones);
                         $('#pfechanaci').val(data.fecha_nacimiento); 
                         $('#psuel').val(data.sueldo); 
                         if (data.foto) {

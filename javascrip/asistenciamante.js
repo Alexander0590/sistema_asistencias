@@ -176,6 +176,14 @@ $(document).on('input', '#acodigo', function () {
             data: { codigo: codigo },
             dataType:'json',
             success: function(data) {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Persona ya fue registrada hoy',
+                        text: 'Modificaciones y alteraciones del registro se realizan en listado de asistencia',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    $('#btnregistraras').prop('disabled', true);
                 document.getElementById("fecha2").innerText = " " + String(data.fecha);
 
                 document.getElementById("entradamd").innerText = 
@@ -188,6 +196,7 @@ $(document).on('input', '#acodigo', function () {
                     data.horast === "00:00:00" ? "No registrado" : String(data.horast + " PM");
             },
             error: function () {
+                $('#btnregistraras').prop('disabled', false);
                 $("#adatos").val(""); 
                 document.getElementById("fecha2").innerText = String(" No registrado");   
                 document.getElementById("entradamd").innerText = String("No registrado");
@@ -239,15 +248,19 @@ $(document).on('click', '#filtraras', function (e) {
     var fechaInicio = new Date(fechai);
     var fechaFin = new Date(fechaf);
 
-    if (!fechai || !fechaf) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Fechas incompletas',
-            text: 'Debes ingresar ambas fechas',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
+    
+    if (!dnire) {
+        if (!fechai || !fechaf) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Fechas incompletas',
+                text: 'Debes ingresar ambas fechas',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
     }
+    
 
     if (fechaInicio > fechaFin) {
         Swal.fire({
@@ -259,16 +272,7 @@ $(document).on('click', '#filtraras', function (e) {
         return; 
     }
     
-    var dniValido = /^\d{8}$/.test(dnire);
-    if (!dniValido) {
-        Swal.fire({
-            icon: 'error',
-            title: 'DNI inválido',
-            text: 'El DNI debe contener exactamente 8 dígitos numéricos',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
-    }
+
 
     $.ajax({
         url: 'proceso/asistenciaman.php?action=readfil',
@@ -305,11 +309,11 @@ $(document).on('click', '#filtraras', function (e) {
                     asistencia.fecha,
                     asistencia.dia,
                     asistencia.horaim ? `${asistencia.horaim} AM` : "No hay registro",
-                    asistencia.horasm ? `${asistencia.horasm} PM` : "No hay registro",
                     asistencia.estadom || "No hay registro",
                     asistencia.horait ? `${asistencia.horait} PM` : "No hay registro",
-                    asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
                     estado,
+                    asistencia.horast ? `${asistencia.horast} PM` : "No hay registro",
+                  
                     minutosdes,
                     "S/."+asistencia.descuento_dia,
                     asistencia.comentario || "Sin comentarios"
@@ -455,4 +459,8 @@ $(document).on('click', '#btnregistraras', function (e) {
             });
         }
     });
+});
+
+$(document).on('click', '#btnLimpiar', function (e) {
+    $('#btnregistraras').prop('disabled', false);
 });

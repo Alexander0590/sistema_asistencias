@@ -6,6 +6,9 @@ $(document).ready(function () {
     if ($.fn.DataTable.isDataTable('#tmodalidad')) {
         $('#tmodalidad').DataTable().clear().destroy();
     }
+    if ($.fn.DataTable.isDataTable('#revacaciones')) {
+        $('#revacaciones').DataTable().clear().destroy();
+    }
 
 
     //iniciar tabla cargos
@@ -58,6 +61,50 @@ $(document).ready(function () {
         ]
     });
 
+//reporte de vacaciones
+$('#revacaciones').DataTable({
+    "paging": false, 
+    "searching": true, 
+    "ordering": false, 
+    "info": true, 
+    "autoWidth": false, 
+    "scrollX": true, 
+    "responsive": true, 
+    "language": {
+        "search": "Buscar:",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        "infoEmpty": "No hay registros disponibles",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
+        }
+    },
+    "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' + 
+           '<"row"<"col-sm-12"tr>>' + 
+           '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', 
+    "buttons": [
+        {
+            extend: 'excelHtml5', 
+            text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+            className: 'btn btn-success',
+            title: 'Reporte_de_Vacaciones' 
+        },
+        {
+            extend: 'pdfHtml5', 
+            text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
+            className: 'btn btn-danger',
+            title: 'reporte_de_Vacaciones', 
+            customize: function (doc) {
+                // Personalización del PDF
+                doc.defaultStyle.fontSize = 10;
+                doc.styles.tableHeader.fontSize = 10;
+                doc.styles.title.fontSize = 14;
+                doc.pageOrientation = 'landscape';  
+            }
+        }
+    ]
+});
 
     function  obtenercargos() {
     

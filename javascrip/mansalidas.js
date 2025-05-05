@@ -189,15 +189,18 @@ $(document).on('click', '#filtrarsalida', function (e) {
     var dnire = $('#dnisalida').val();    
 
     // Validar si las fechas están completas
-    if (!fechai || !fechaf) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Fechas incompletas',
-            text: 'Debes ingresar ambas fechas',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
+    if (!dnire) {
+        if (!fechai || !fechaf) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Fechas incompletas',
+                text: 'Debes ingresar ambas fechas',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
     }
+    
 
     // Convertir las fechas a objetos Date
     var fechaInicio = new Date(fechai);
@@ -214,17 +217,7 @@ $(document).on('click', '#filtrarsalida', function (e) {
         return;
     }
 
-    // Validar el DNI
-    var dniValido = /^\d{8}$/.test(dnire);
-    if (dnire && !dniValido) {
-        Swal.fire({
-            icon: 'error',
-            title: 'DNI inválido',
-            text: 'El DNI debe contener exactamente 8 dígitos numéricos',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
-    }
+    
 
     // Realizar la petición Ajax para obtener los datos filtrados
     $.ajax({

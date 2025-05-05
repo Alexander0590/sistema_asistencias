@@ -91,7 +91,11 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/reporte_serenazgo.php"); 
     });
-
+ //reporte vacaciones
+  $("#reporvacaciones").click(function (e) {
+    e.preventDefault(); 
+    $("#vistas").load("view/reporte_vacaciones.php"); 
+  });
     //reportesalidas
     $("#reportesalidas").click(function (e) {
       e.preventDefault(); 
@@ -120,7 +124,7 @@ $(document).ready(function () {
       $("#vistas").load("view/solicitarvacaciones.php"); 
     });
 
-
+//registrar serenazgo
     $("#reserena").click(function (e) {
       e.preventDefault();
       $("#vistas").load("view/modalresegu.php", function () {

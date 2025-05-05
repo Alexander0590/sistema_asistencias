@@ -401,16 +401,22 @@ function obtenerUsuarios() {
                         vacaciones.dni,
                         vacaciones.nombres,
                         vacaciones.apellidos,
-                        vacaciones.nombre,
-                        vacaciones.dias,
-                        vacaciones.fecha_inicio,
-                        vacaciones.fecha_fin,
-                        vacaciones.dias_restantes,
-                        vacaciones.year,
-                     `${vacaciones.vacaciones === 'En proceso' || vacaciones.vacaciones === 'Finalizado' 
-                        ? `<button class="btn btn-secondary" disabled><i class="bi bi-check-circle"></i> Dar vacaciones</button>` 
-                        : `<button class="btn btn-success darVacaciones" data-id="${vacaciones.dni}"><i class="bi bi-check-circle"></i> Dar vacaciones</button>`
-                    }`
+                        vacaciones.cargo,
+                        vacaciones.total_dias_vacaciones,
+                        vacaciones.ultima_fecha_inicio,
+                        vacaciones.ultima_fecha_fin,
+                        vacaciones.ultimo_dias_restantes,
+                        vacaciones.ultimo_año_registro,
+                    `${vacaciones.vacaciones === 'En proceso' || vacaciones.vacaciones === 'Finalizado' 
+                    ? `<button class="btn btn-secondary" disabled><i class="bi bi-check-circle"></i> Dar vacaciones</button>` 
+                    : `<button class="btn btn-success darVacaciones" data-id="${vacaciones.dni}">
+                        <i class="bi bi-check-circle"></i> Dar vacaciones
+                    </button>`
+                    }
+                    <button class="btn btn-primary verificarVacaciones" data-id="${vacaciones.dni}">
+                        <i class="bi bi-search"></i> Verificar
+                    </button>`
+
                     ]).draw(false);
                 });
             },
@@ -624,7 +630,6 @@ function obtenerUsuarios() {
     
                 // Limpiar y preparar la tabla
                 tabla.clear();
-                console.log("DATA COMPLETA:", data);
                 data.forEach(function (serenazgo, index) {
                     let horaiFormatted = "No hay registro";
                     let horasFormatted = "No hay registro";

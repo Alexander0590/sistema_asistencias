@@ -144,6 +144,7 @@ if($_SESSION['rol']==="1"){
             <a href="#" id="reporteas">Reporte de asistencia personal</a>
             <a href="#" id="reporteaseguridad">Reporte de asistencia serenazgo</a>
             <a href="#" id="reportesalidas">Reporte de Salidas</a>
+            <a href="#" id="reporvacaciones">Reporte de Vacaciones</a>
         </div>
     </div>
    
