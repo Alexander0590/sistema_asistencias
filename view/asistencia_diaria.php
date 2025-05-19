@@ -8,10 +8,19 @@
 </head>
 <body>
 <?php  date_default_timezone_set("America/Lima"); ?>
+<div class="container mt-5">
+    <div class="card-header text-white tablas-x" style="padding:10px;">
+        <h4 class="mb-0">Registro de Asistencias: 
+            <input type="date" name="txtfa" id="txtfa" value="<?php echo date('Y-m-d');?>" 
+                style="border: none; background-color: #f8f9fa; color: #000; padding: 5px 10px; border-radius: 5px; font-size: 18px;">
+        </h4>
+    </div>
+</div>
+
 <div class="container mt-5 ">
     <div class="card shadow-lg">
         <div class="card-header  text-white tablas-x ">
-            <h4 class="mb-0">Faltas de: <?php echo date("d-m-Y"); ?></h4>
+            <h4 class="mb-0">Faltas</h4>
         </div>
         <div class="card-body">
             <table class="table table-striped table-bordered table-hover" id="tper" style="width:100%">
@@ -37,7 +46,7 @@
 <div class="container mt-5 ">
     <div class="card shadow-lg">
         <div class="card-header  text-white tablas-x ">
-            <h4 class="mb-0">Asistencia de: <?php echo date("d-m-Y"); ?></h4>
+            <h4 class="mb-0">Asistencias</h4>
         </div>
         <div class="card-body">
             <table class="table table-striped table-bordered table-hover" id="tper" style="width:100%">

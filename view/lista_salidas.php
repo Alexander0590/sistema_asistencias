@@ -25,7 +25,8 @@
         <table class="table table-striped table-bordered table-hover" id="tsalidas" style="width:100%">
         <thead id="tabla1">
         <tr>
-            <th>#</th>                      
+            <th>#</th>
+            <th>Estado</th>                       
             <th>DNI</th>                    
             <th>Apellidos y Nombres</th>    
             <th>Turno</th>                  
@@ -108,7 +109,10 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-success" id="actualizar_salida">
+            <button type="button" class="btn btn-success" id="ingre_correcta">
+              <i class="bi bi-arrow-right-circle"></i> Ingreso Correctamente
+            </button>
+             <button type="button" class="btn btn-success" id="actualizar_salida">
               <i class="bi bi-save2"></i> Actualizar
             </button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

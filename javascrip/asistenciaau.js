@@ -64,7 +64,7 @@ function actualizarFechaHora() {
     salidaseret1.setHours(16, 30, 0, 0); // 4:30 PM
     
     const limitesalidaseret1 = new Date(ahora);
-    limitesalidaseret1.setHours(17, 0, 0, 0);//5:00 PM 
+    limitesalidaseret1.setHours(17, 45, 0, 0);//5:00 PM 
     const toleranciat22se = new Date(ahora);
     toleranciat22se.setHours(18, 10, 59, 0);//6:15 PM 
    
@@ -143,7 +143,7 @@ function actualizarFechaHora() {
         mensaje2=" ";
 
     } else if (ahora >=  limitesalidaseret1 && ahora < salidaTurno2) {
-        // Sistema cerrado (5:00 PM - 6:00 PM)
+        // Sistema cerrado (5:45 PM - 6:00 PM)
         document.getElementById("turno-actual").style.display = "none";
         sistemaCerrado = true;
         mensaje = "Sistema cerrado Fuera del horario de tolerancia ";
@@ -226,18 +226,27 @@ $('#formulario-asistencia').on('submit', function(e) {
     };
     
     // Verifica si ambos estados están vacíos y muestra alerta
-    if (!formData.estado && !formData.estado2) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Sistema cerrado',
-            text: 'No se permiten registros en este momento.',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
-        $('#adni').val('');
-        return; 
-    }
+  if (!formData.estado && !formData.estado2) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Sistema cerrado',
+        text: 'No se permiten registros en este momento.',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+
+    const errorSound = new Audio('audio/sistemacerrado.mp3');
+    errorSound.play();
+    
+    setTimeout(() => {
+        errorSound.pause();
+        errorSound.currentTime = 0; 
+    }, 4000);
+
+    $('#adni').val('');
+    return; 
+}
     
     $.ajax({
         url: 'proceso/serenazgoauto.php?action=readcargo', 
@@ -303,12 +312,19 @@ $('#formulario-asistencia').on('submit', function(e) {
                         response.includes('La persona está de vacaciones.')||
                         response.includes('Código no detectado.')||
                         response.includes('Usted ya registró su salida anteriormente.')||
-                        response.includes('No tiene un registro de entrada en el día de hoy.')
+                        response.includes('No tiene un registro de entrada en el día de hoy.')||
+                        response.includes('Personal no existe en base de datos...!')
 
                     ) {
                         icono = 'error';
                     }
     
+
+                    if (icono === 'error') {
+                        new Audio('audio/error.mp3').play();
+                    } else {
+                         new Audio('audio/exito.mp3').play();
+                     }
                     Swal.fire({
                         title: response,
                         icon: icono,

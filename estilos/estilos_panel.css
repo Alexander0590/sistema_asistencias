@@ -193,7 +193,14 @@ th, td {
     background-color: red;
     animation-name: brillo-rojo; 
 }
-
+.punto-proceso {
+    background-color: rgb(20, 53, 240);
+    animation-name: brillo-azul; 
+}
+.punto-asignado {
+    background-color: rgba(214, 178, 15, 0.7);
+    animation-name: brillo-amarillo; 
+}
 
 @keyframes brillo-verde {
     0% {
@@ -216,6 +223,29 @@ th, td {
     }
     70% {
         box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.7);
+    }
+}
+
+@keyframes brillo-azul {
+    0% {
+        box-shadow: 0 0 5px 2px rgba(0, 47, 255, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 7px 3px rgba(0, 47, 255, 0.7); 
+    }
+    70% {
+        box-shadow: 0 0 5px 2px rgba(0, 47, 255, 0.7);
+    }
+}
+@keyframes brillo-amarillo {
+    0% {
+        box-shadow: 0 0 5px 2px rgba(251, 255, 0, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 7px 3px rgba(251, 255, 0, 0.7); 
+    }
+    70% {
+        box-shadow: 0 0 5px 2px rgba(251, 255, 0, 0.7);
     }
 }
 /* imagen principal */

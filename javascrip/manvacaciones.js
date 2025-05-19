@@ -75,6 +75,8 @@ $('#vguardar').off('click').on('click', function() {
     var dni = $('#vdni').val().trim();
     var dias = $('#vdias').val().trim();
     var fechaini = $('#vfecha_inicio').val().trim();
+
+
     
     if (!dias || !fechaini) {
         Swal.fire({
@@ -198,7 +200,7 @@ $('#filtrarreva').off('click').on('click', function() {
  // Realizar la petición Ajax para obtener los datos filtrados
  $.ajax({
     url: 'proceso/mantenimievacacione.php?action=filtrovaca',
-    type: 'get',
+    type: 'post',
     dataType: 'json',
     data: { fechai: fechai, fechaf: fechaf, dnire: dnire },  
     success: function (data) {

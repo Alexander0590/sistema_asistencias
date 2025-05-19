@@ -10,6 +10,8 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
     var turno = $('#sa_turno').val().trim();
     var comentario = $('#comentario').val().trim();
 
+  
+
     if (dni === '' || fecha === '' || horaSalida === '' || horaReingreso === '' || motivo === '' || turno === '') {
         Swal.fire({
             icon: 'warning',
@@ -19,6 +21,64 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
         });
         return;
     }
+
+      // Validar formato HH:MM
+    var formatoHora = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (!formatoHora.test(horaSalida) || !formatoHora.test(horaReingreso)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Formato incorrecto',
+            text: 'Las horas deben estar en formato HH:MM (24 horas)',
+            confirmButtonText: 'Entendido'
+        });
+        return;
+    }
+
+    // Comparación directa de strings (funciona para formato HH:MM)
+    if (horaReingreso <= horaSalida) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Horas inválidas',
+            text: 'La hora de reingreso debe ser posterior a la hora de salida',
+            confirmButtonText: 'Entendido'
+        });
+        return;
+    }
+    // 3. Validar coherencia entre turno y horas
+    var horaSalidaNum = parseInt(horaSalida.split(':')[0]);
+    var errorTurno = false;
+    var mensajeError = '';
+
+    switch(turno) {
+        case 'Mañana':
+            if (horaSalidaNum < 6 || horaSalidaNum >= 12) {
+                errorTurno = true;
+                mensajeError = 'Para turno Mañana, la hora de salida debe ser entre 06:00 y 11:59';
+            }
+            break;
+        case 'Tarde':
+            if (horaSalidaNum < 12 || horaSalidaNum >= 18) {
+                errorTurno = true;
+                mensajeError = 'Para turno Tarde, la hora de salida debe ser entre 12:00 y 18:59';
+            }
+            break;
+        default:
+            errorTurno = true;
+            mensajeError = 'Turno no válido. Seleccione Mañana, Tarde o Noche';
+    }
+
+    if (errorTurno) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Inconsistencia en turno',
+            text: mensajeError,
+            confirmButtonText: 'Entendido'
+        });
+        return;
+    }
+
+    // Deshabilitar el botón temporalmente
+    $('#guardar_salida').prop('disabled', true);
 
     $.ajax({
         url: 'proceso/mantesalidas.php?action=resali',
@@ -50,6 +110,7 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
                     text: response,
                     confirmButtonText: 'Cerrar'
                 });
+                $('#guardar_salida').prop('disabled', false); // Habilitar el botón en caso de error
             }
         },
         error: function () {
@@ -59,9 +120,15 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
                 text: 'No se pudo conectar con el servidor.',
                 confirmButtonText: 'Cerrar'
             });
+            $('#guardar_salida').prop('disabled', false); // Habilitar el botón en caso de error
+        },
+        complete: function () {
+            // Habilitar el botón después de la respuesta (solo si fue exitoso)
+            $('#guardar_salida').prop('disabled', false);
         }
     });
 });
+
 //TRAER LOS DATOS PARA LA EDICION
 $(document).on('click', '.saleditar', function () {
     const id = $(this).data('id');
@@ -71,6 +138,11 @@ $(document).on('click', '.saleditar', function () {
       data: { id_salida: id },
       dataType: 'json',
       success: function (data) {
+        if(data.estado==="Ingreso correctamente"){
+         $('#ingre_correcta').prop('disabled',true);
+        }else{
+         $('#ingre_correcta').prop('disabled',false);
+        }
         $('#id_salida').val(data.id_sali);
         $('#dni').val(data.dni);
         $('#fecha_salida').val(data.fecha_salida);
@@ -132,7 +204,7 @@ $(document).ready(function () {
                     comentario: comentario
                 },
                 success: function (response) {
-                    if (response.trim() === "ok") {
+                    if (response === "ok") {
                         Swal.fire({
                             icon: 'success',
                             title: 'Actualizado correctamente',
@@ -275,4 +347,50 @@ $(document).on('click', '#filtrarsalida', function (e) {
             });
         }
     });
+});
+//registra ingreso correcto
+$(document).off('click', '#ingre_correcta').on('click', '#ingre_correcta', function (e) {
+e.preventDefault();
+var id=$('#id_salida').val();
+
+  $.ajax({
+    url: 'proceso/mantesalidas.php?action=updateestado',
+    type: 'POST',
+    data: { id: id },
+   success: function(response) {
+    Swal.fire({
+        icon: 'success',
+        title: response, 
+        confirmButtonText: 'Aceptar'
+    }).then(() => {
+        $('#modaleditar').modal('hide');
+
+        $("#vistas").fadeOut(200, function () {
+            $(this).load("view/lista_salidas.php", function () {
+                $(this).fadeIn(200);
+
+                if ($.fn.DataTable.isDataTable('#tsalidas')) {
+                    $('#tsalidas').DataTable().destroy();
+                }
+
+                $('#tsalidas').DataTable({
+                    destroy: true,
+                    
+                });
+            });
+        });
+    });
+},
+
+
+    error: function(response) {
+        Swal.fire({
+            icon: 'error',
+            title: '¡Error!',
+            text: 'Hubo un problema al registrar el ingreso.',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+});
+
 });

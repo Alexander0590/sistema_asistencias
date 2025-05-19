@@ -25,11 +25,18 @@
         $dia_es = $dias_espanol[$dia_semana_es];
 
         $sql_check_asistencia = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = CURDATE() ";
-            $result_check_asistencia = $cnn->query($sql_check_asistencia);
+        $result_check_asistencia = $cnn->query($sql_check_asistencia);
+        $sql_check_salida = "SELECT * FROM salidas WHERE dni = '$dni' AND estado = 'En proceso'";
+        $result_check_salida = $cnn->query( $sql_check_salida);
+            if ($result_check_salida->num_rows > 0) {
+                    echo "Esta persona ya tiene una salida en proceso.";
+                    exit;
+                }
 
             if ($result_check_asistencia->num_rows == 0) {
                 $sql_check_asistencia_seguridad = "SELECT * FROM asistencia_seguridad WHERE dni = '$dni' AND fecha =CURDATE() ";
                 $result_check_asistencia_seguridad = $cnn->query($sql_check_asistencia_seguridad);
+                
                 
                 // Si tampoco se encuentra ninguna entrada, mostrar un mensaje de error
                 if ($result_check_asistencia_seguridad->num_rows == 0) {
@@ -39,8 +46,8 @@
             }
 
             // Preparar la consulta SQL para insertar la salida
-            $sql_insert = "INSERT INTO salidas (dni, dia , fecha_salida, hora_salida, hora_reingreso, motivo, turno, comentario) 
-                        VALUES ('$dni', '$dia_es','$fecha_salida', '$hora_salida', '$hora_reingreso', '$motivo', '$turno', '$comentario')";
+            $sql_insert = "INSERT INTO salidas (dni, dia , fecha_salida, hora_salida, hora_reingreso, motivo, turno, comentario,estado) 
+                        VALUES ('$dni', '$dia_es','$fecha_salida', '$hora_salida', '$hora_reingreso', '$motivo', '$turno', '$comentario','En proceso')";
 
             // Ejecutar la consulta
             if ($cnn->query($sql_insert) === TRUE) {
@@ -57,7 +64,7 @@
         $sql = "SELECT s.*, p.apellidos, p.nombres 
         FROM salidas s
         INNER JOIN personal p ON s.dni = p.dni
-        WHERE s.fecha_salida = CURDATE()";
+        WHERE s.fecha_salida = CURDATE() ";
         $result = mysqli_query($cnn, $sql);
         
         $salidas = [];
@@ -123,6 +130,7 @@
         } else {
             echo "Error al actualizar la salida.";
         }
+     break;
     case'reportesalidas':
         $query = "SELECT * FROM salidas";
         $result = mysqli_query($cnn, $query);
@@ -174,7 +182,30 @@
         } else {
             echo json_encode(['error' => 'Los campos están vacíos']);
         }
-        
+    case'updateestado':
+   $id = $_POST['id'];
+
+    if (!empty($id)) {
+        $sql = "UPDATE salidas SET estado = 'Ingreso correctamente' WHERE id_sali = ?";
+        $stmt = $cnn->prepare($sql);
+
+        if ($stmt) {
+            $stmt->bind_param("i", $id);
+
+            if ($stmt->execute()) {
+                echo "Ingreso registrado correctamente.";
+            } else {
+                echo "Error al actualizar el estado.";
+            }
+
+            $stmt->close();
+        } else {
+            echo "Error en la preparación de la consulta.";
+        }
+    } else {
+        echo "ID no recibido.";
+    }
+
     break;
     default:
     break;

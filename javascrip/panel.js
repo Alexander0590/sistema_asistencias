@@ -118,6 +118,11 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/lis_vacaciones.php"); 
     });
+    //boton de cierre de dia
+    $("#bcierre").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/cerrar_dia.php"); 
+    });
     //solicitud de vacaciones
     $("#gvaca").click(function (e) {
       e.preventDefault(); 

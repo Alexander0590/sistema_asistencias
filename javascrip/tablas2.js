@@ -186,7 +186,14 @@ $('#revacaciones').DataTable({
         });
     }
 
+ // Llamar las funciones inmediatamente
+obtenercargos();
+obtenermodalidad();
+
+// Actualizarlas cada segundo (1000 ms)
+setInterval(() => {
     obtenercargos();
     obtenermodalidad();
+}, 1000);
 
 });

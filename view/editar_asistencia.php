@@ -203,7 +203,7 @@
             hsalidat: $('#hsalidat2').val(),
             estadot: $('#estadota2').val(),
             mdest: $('#mdest2').val(),
-            totminu:$('#totaldescuento2').val(),
+            totminu:$('#totalminutos2').val(),
             totdescu:$('#totaldescuento2').val(),
             coment: $('#coment').val()
         };

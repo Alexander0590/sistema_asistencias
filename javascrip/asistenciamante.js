@@ -209,7 +209,7 @@ $(document).on('input', '#acodigo', function () {
 });
 
 // //busqueda de la persona
-$(document).on('input', '#acodigo', function () {
+$(document).on('keyup', '#acodigo', function () {
     let codigo = $(this).val();
     
     if (codigo.length > 0) {
@@ -327,7 +327,7 @@ $(document).on('click', '#filtraras', function (e) {
         }
     });
 });
-
+//registrar asistencia
 $(document).on('click', '#btnregistraras', function (e) {
     e.preventDefault();
 
@@ -463,4 +463,22 @@ $(document).on('click', '#btnregistraras', function (e) {
 
 $(document).on('click', '#btnLimpiar', function (e) {
     $('#btnregistraras').prop('disabled', false);
+});
+
+//verificar segun la asistencia general
+$(document).on('click', '.perverificar', function() {
+    let id = $(this).data('id'); 
+
+    $("#vistas").fadeOut(200, function () {
+        $(this).load("view/reporte_de_asistencia.php", function () {
+            $(this).fadeIn(200, function () {
+                $('#dnire').val(id);
+                setTimeout(function () {
+                     $('#filtraras').click();
+                }, 200); 
+            });
+        });
+    });
+    
+
 });

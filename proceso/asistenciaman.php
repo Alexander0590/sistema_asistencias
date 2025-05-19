@@ -172,7 +172,7 @@ switch ($action) {
             $dni = $_POST['codigo'];
             $fecha = $_POST['fecha'];
             $horaim = $_POST['hentradam'];
-            $horasm = $_POST['hentradam']; 
+            $horasm = '13:00:00'; 
             $estadom = $_POST['estadom'];
             $minutos_descum = $_POST['mdesm'];
             $horait = $_POST['hentradat'];
@@ -183,6 +183,9 @@ switch ($action) {
             $comentariot = $_POST['coment'];
             $descuento_dia = $_POST['totdescu'];
             $tiempo_tardanza_dia = $_POST['totminu'];
+
+            
+
             switch ($estadom) {
                 case '1':
                     $estadoTexto = 'Puntual';
@@ -194,7 +197,7 @@ switch ($action) {
                     $estadoTexto = 'Falta';
                     break;
                 case '4':
-                    $estadoTexto = 'Trabajo en campo';
+                    $estadoTexto = 'Trabajo en Campo';
                     break;
                 default:
                     $estadoTexto = 'Desconocido';
@@ -211,7 +214,7 @@ switch ($action) {
                     $estadoTextoT = 'Falta';
                     break;
                 case '4':
-                    $estadoTextoT = 'Trabajo en campo';
+                    $estadoTextoT = 'Trabajo en Campo';
                     break;
                 default:
                     $estadoTextoT = 'Desconocido';
@@ -232,15 +235,15 @@ switch ($action) {
                 comentariot = ?,
                 descuento_dia = ?,
                 tiempo_tardanza_dia = ?
-                WHERE dni = ?";
+                WHERE dni = ? and fecha=?";
         
             $stmt = $cnn->prepare($sql);
         
-            $stmt->bind_param("sssssdsssssdss",
+            $stmt->bind_param("ssssisssissdiss",
                 $fecha, $horaim, $horasm, $estadoTexto, $minutos_descum,
                 $horait, $horast, $estadoTextoT, $minutos_descut,
                 $comentario, $comentariot, $descuento_dia,
-                $tiempo_tardanza_dia, $dni
+                $tiempo_tardanza_dia, $dni,$fecha
             );
         
             if ($stmt->execute()) {
@@ -256,8 +259,179 @@ switch ($action) {
         
 
     break;
+case 'cerrardia':
+// Obtener la fecha de hoy
+$fechaHoy = date('Y-m-d');
+$nombreDia = date('l'); // Devuelve el nombre del día en inglés (Monday, Tuesday, etc.)
 
-    default:
+// Traducir el día al español
+$diasInglesEspanol = [
+    'Monday' => 'Lunes',
+    'Tuesday' => 'Martes',
+    'Wednesday' => 'Miércoles',
+    'Thursday' => 'Jueves',
+    'Friday' => 'Viernes',
+    'Saturday' => 'Sábado',
+    'Sunday' => 'Domingo'
+];
+$nombreDiaEspanol = $diasInglesEspanol[$nombreDia] ?? 'Día no definido';
+
+// 1. Obtener todos los empleados activos
+$sqlPersonal = "SELECT 
+    dni, 
+    sueldo, 
+    p.idcargo, 
+    c.nombre AS nombre_cargo, 
+    c.idcargo 
+FROM 
+    personal p 
+JOIN 
+    cargos c 
+ON 
+    p.idcargo = c.idcargo 
+WHERE 
+    p.estado = 'Activo' 
+    AND p.vacaciones <> 'En proceso' 
+    AND c.nombre <> 'Serenazgo'";
+$resultPersonal = $cnn->query($sqlPersonal);
+
+if (!$resultPersonal) {
+    echo json_encode(['success' => false, 'message' => 'Error al obtener personal: ' . $cnn->error]);
+    $cnn->close();
+    exit;
+}
+
+// 2. Obtener los DNIs con asistencia hoy
+$sqlAsistencia = "SELECT DISTINCT dni FROM asistencia WHERE fecha = ?";
+$stmtAsistencia = $cnn->prepare($sqlAsistencia);
+if (!$stmtAsistencia) {
+    echo json_encode(['success' => false, 'message' => 'Error al preparar consulta: ' . $cnn->error]);
+    $cnn->close();
+    exit;
+}
+
+$stmtAsistencia->bind_param('s', $fechaHoy);
+$stmtAsistencia->execute();
+$resultAsistencia = $stmtAsistencia->get_result();
+$asistenciasHoy = $resultAsistencia->fetch_all(MYSQLI_ASSOC);
+$stmtAsistencia->close();
+
+// 3. Identificar quienes faltaron (no tienen registro de asistencia)
+$dnisConAsistencia = array_column($asistenciasHoy, 'dni');
+$personalActivo = $resultPersonal->fetch_all(MYSQLI_ASSOC);
+$faltantes = array_filter($personalActivo, 
+    function($empleado) use ($dnisConAsistencia) {
+        return !in_array($empleado['dni'], $dnisConAsistencia);
+    }
+);
+
+// 4. Registrar las faltas
+$filasInsertadas = 0;
+$filasActualizadas = 0;
+
+// Configuración de descuentos
+$minutosPorMes = 30 * 8 * 60; // 30 días * 8 horas * 60 minutos
+$minutosFalta = 8 * 60; // 8 horas en minutos
+$minutosMediaFalta = 180; // 3 horas en minutos
+
+foreach ($faltantes as $empleado) {
+    $valorPorMinuto = $empleado['sueldo'] / $minutosPorMes;
+    $descuento = round($minutosFalta * $valorPorMinuto, 2);
+    
+    $sqlInsert = "INSERT INTO asistencia 
+                 (dni, fecha, dia, horaim,horasm,horait, horast, estadom,estadot,  minutos_descum,minutos_descut, descuento_dia, tiempo_tardanza_dia,comentario,comentariot) 
+                 VALUES (?,?,'$nombreDiaEspanol','00:00:00','00:00:00', '00:00:00', '00:00:00','Falta', 'Falta', 300,180, ?, ?,'Generado por el boton de cierre de dia','Generado por el boton de cierre de dia')";
+    
+    $stmt = $cnn->prepare($sqlInsert);
+    if (!$stmt) {
+        error_log("Error al preparar inserción para DNI: {$empleado['dni']} - " . $cnn->error);
+        continue;
+    }
+    
+    $stmt->bind_param('ssdi', 
+        $empleado['dni'], 
+        $fechaHoy,
+        $descuento,
+        $minutosFalta
+    );
+    
+    if ($stmt->execute()) {
+        $filasInsertadas++;
+    }
+    $stmt->close();
+}
+
+// 5. Actualizar asistencias incompletas (horait y horasm vacíos)
+$sqlIncompletos = "SELECT a.*, p.sueldo 
+                  FROM asistencia a
+                  JOIN personal p ON a.dni = p.dni
+                  WHERE a.fecha = ?
+                  AND (a.horait = '00:00:00' OR a.horast = '00:00:00') and(a.horaim  <>'00:00:00' OR a.horasm <> '00:00:00')";
+$stmtIncompletos = $cnn->prepare($sqlIncompletos);
+if ($stmtIncompletos) {
+    $stmtIncompletos->bind_param('s', $fechaHoy);
+    $stmtIncompletos->execute();
+    $resultIncompletos = $stmtIncompletos->get_result();
+    $incompletos = $resultIncompletos->fetch_all(MYSQLI_ASSOC);
+    $stmtIncompletos->close();
+    
+    foreach ($incompletos as $empleado) {
+        $valorPorMinuto = $empleado['sueldo'] / $minutosPorMes;
+        $descuento = round($minutosMediaFalta * $valorPorMinuto, 2);
+        $descuento2=round($empleado['minutos_descum'] * $valorPorMinuto, 2);
+        $totalminutos= $minutosMediaFalta+$empleado['minutos_descum'];
+        $totaldescu= round($descuento+ $descuento2,2);
+        
+        $sqlUpdate = "UPDATE asistencia 
+                     SET estadot = 'Falta', 
+                         minutos_descut = ?,
+                         descuento_dia = ?,
+                         tiempo_tardanza_dia = ?
+                         comentariot='Generado por el boton de cierre de dia'
+                     WHERE dni = ? AND fecha = ?";
+        
+        $stmtUpdate = $cnn->prepare($sqlUpdate);
+        if ($stmtUpdate) {
+            $stmtUpdate->bind_param('idiss', 
+                $minutosMediaFalta,
+                $totaldescu,
+                $totalminutos,
+                $empleado['dni'],
+                $fechaHoy
+            );
+            
+            if ($stmtUpdate->execute()) {
+                $filasActualizadas++;
+            }
+            $stmtUpdate->close();
+        }
+    }
+}
+
+// Resultado final
+$mensajes = [];
+if ($filasInsertadas > 0) {
+    $mensajes[] = "Faltas registradas: {$filasInsertadas} empleados marcados como faltantes";
+}
+if ($filasActualizadas > 0) {
+    $mensajes[] = "Asistencias incompletas actualizadas: {$filasActualizadas} empleados con descuento de 180 minutos";
+}
+
+if (count($mensajes) > 0) {
+    echo json_encode([
+        'success' => true, 
+        'message' => implode('. ', $mensajes)
+    ]);
+} else {
+    echo json_encode([
+        'success' => true, 
+        'message' => 'No se encontraron registros para actualizar o insertar'
+    ]);
+}
+
+$cnn->close();
+    break;
+  default:
     echo json_encode(["status" => "error", "message" => "Acción no válida"]);
         break;
 }

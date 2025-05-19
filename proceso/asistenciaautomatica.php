@@ -173,7 +173,15 @@ if ($estado == "Salida" and $respuesta_buscar == "registrado" and $turno == "Tar
             SET horast = '$horasalt', tiempo_tardanza_dia = $totalmd , descuento_dia = $totaldescu
             WHERE idasis = $codigo_asistencia"; 
     mysqli_query($cnn, $sql) or die("Error en control de asistencia, salida");
+//para registrar horas extras
 
+
+if($horasalt>='17:31:00'){ 
+$idrec=0;
+    $queryrec = "INSERT INTO  dias_recuperados values($idrec,$codigo_asistencia,60)";
+mysqli_query($cnn,$queryrec)or die ("error en registrar extra");
+}
+//----
     echo "Salida de: " . $dni . " registrada correctamente...!";
 }
 

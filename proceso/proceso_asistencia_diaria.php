@@ -6,10 +6,11 @@ date_default_timezone_set('America/Lima');
 
 switch ($accion) {
     case "listar_faltas":
+        $fecha_fa=$_GET['fecha'];
         $sql = "SELECT personal.* FROM personal JOIN cargos ON personal.idcargo = cargos.idcargo
-                WHERE personal.dni NOT IN (SELECT dni FROM asistencia WHERE fecha = CURDATE()) 
+                WHERE personal.dni NOT IN (SELECT dni FROM asistencia WHERE fecha = '$fecha_fa') 
                 AND personal.estado = 'activo'
-                AND cargos.nombre <> 'Serenazgo'";
+                AND cargos.nombre <> 'Serenazgo'and personal.vacaciones <> 'En proceso'";
         $registros = mysqli_query($cnn, $sql);
         $cantidad = mysqli_num_rows($registros);
         $json = ($cantidad > 0) ? mysqli_fetch_all($registros, MYSQLI_ASSOC) : "sin_data";
@@ -17,7 +18,10 @@ switch ($accion) {
         break;
     
     case "listar_registrados":
-        $sql2 = "SELECT * FROM personal p, asistencia a WHERE p.dni = a.dni AND a.fecha = CURDATE()";
+        $fecha_la=$_GET['fecha'];
+        $sql2 = "SELECT * FROM personal p, asistencia a 
+        WHERE p.dni = a.dni 
+        AND a.fecha = '$fecha_la'";
         $registros2 = mysqli_query($cnn, $sql2);
         $cantidad2 = mysqli_num_rows($registros2);
         if($cantidad2 <= 0){
@@ -166,10 +170,11 @@ break;
     case "readOne":
         //traer la asistencia
         $dni= $_GET['id'];
+        $fecha= $_GET['fecha'];
         $sql = "SELECT a.*, p.nombres ,p.apellidos,p.sueldo
         FROM asistencia a
         JOIN personal p ON a.dni = p.dni
-        WHERE a.dni = '$dni' AND a.fecha = CURDATE()";
+        WHERE a.dni = '$dni' AND a.fecha = '$fecha'";
         $result = mysqli_query($cnn, $sql);
 
         if ($result && mysqli_num_rows($result) > 0) {
@@ -183,7 +188,7 @@ break;
     break;
     case "readonef":
         $dni= $_GET['id'];
-        $sql = "SELECT dni , nombres ,apellidos ,sueldo FROM personal WHERE dni = '$dni' ";
+        $sql = "SELECT dni , nombres ,apellidos ,sueldo  FROM personal WHERE dni = '$dni'";
         $result = mysqli_query($cnn, $sql);
     
         if ($result && mysqli_num_rows($result) > 0) {
@@ -205,13 +210,13 @@ break;
                 $minutos = $_POST['minutos'];
                 $comentario = $_POST['comentario'];
 
-                $estadac = ($estador == "3") ? "Falta" : "Presente";
-                $minutosdiv = ($minutos == 480) ? 240 : 0;
+                $estadac = ($estador == "3") ? "Falta" : "Puntual";
+                
 
                 $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
                 $nombreDia = ucfirst($dias[date('w', strtotime($fecha))]);
 
-                $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = CURDATE()";
+                $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha'";
                 $result = mysqli_query($cnn, $dni_query);
 
                 if (mysqli_num_rows($result) > 0) {
@@ -219,8 +224,8 @@ break;
                     exit;
                 }
 
-                $query = "INSERT INTO asistencia (dni, fecha, dia, estadom, minutos_descum, estadot, minutos_descut, comentario, descuento_dia ,tiempo_tardanza_dia) 
-                        VALUES ('$dni','$fecha','$nombreDia','$estadac',$minutosdiv,'$estadac',$minutosdiv,'$comentario',$descuento , $minutos)";
+                $query = "INSERT INTO asistencia (dni, fecha, dia,horaim,horasm,horait,horast ,estadom, minutos_descum, estadot, minutos_descut, comentario, descuento_dia ,tiempo_tardanza_dia) 
+                        VALUES ('$dni','$fecha','$nombreDia','00:00:00','00:00:00','00:00:00','00:00:00','$estadac',300,'$estadac',180,'$comentario',$descuento , $minutos)";
 
                 if (mysqli_query($cnn, $query)) {
                     echo json_encode(["success" => true, "message" => "Falta registrada correctamente"]);
@@ -234,6 +239,7 @@ break;
         case "createtc":
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $dni = $_POST['id'];
+                $fecha = $_POST['fecha'];
                 $estado = $_POST['estador'];
                 $horaim = $_POST['horaim'];
                 $horait = $_POST['horait'];
@@ -244,13 +250,12 @@ break;
 
                 date_default_timezone_set('America/Lima');
 
-                $fecha = date("Y-m-d");
 
 
                 $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
                 $nombreDia = ucfirst($dias[date('w', strtotime($fecha))]);
 
-                $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = CURDATE()";
+                $dni_query = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha'";
                 $result = mysqli_query($cnn, $dni_query);
 
                 if (mysqli_num_rows($result) > 0) {

@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-12 text-center">
-                <button type="submit" class="btn btn-primary" id="filtraras">
+                <button type="submit" class="btn btn-primary" id="filtrageneral">
                     <i class="bi bi-search"></i> Filtrar
                 </button>
                 <button type="reset" class="btn btn-secondary" id="limpiarfil">

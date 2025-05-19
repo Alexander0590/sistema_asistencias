@@ -1,3 +1,6 @@
+<?php 
+date_default_timezone_set('America/Lima'); 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,7 +64,7 @@
 
           <div class="mb-3">
             <label for="fecha_inicio" class="form-label"><i class="bi bi-calendar-event-fill me-2"></i>Fecha de Inicio</label>
-            <input type="date" class="form-control" name="fecha_inicio" id="vfecha_inicio" required>
+      <input type="date" class="form-control" name="fecha_inicio" id="vfecha_inicio" required min="<?php echo date('Y-m-d'); ?>">
           </div>
 
         </div>

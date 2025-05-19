@@ -95,6 +95,7 @@ if($_SESSION['rol']==="1"){
         <div class="submenu">
             <a href="#" id="x2">Registrar Manual</a>
             <a href="#" id="ver_asistencia">Ver asistencia actual</a>
+            <a href="#" id="bcierre">Cerrar Dia</a>
         </div>
     </div>
     <div class="menu-item">

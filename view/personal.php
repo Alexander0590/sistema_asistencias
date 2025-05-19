@@ -152,7 +152,8 @@ if (!$resultado) {
                     </label>
                     <select class="form-select"  id="pvaca"  required>
                       <option value="Sin solicitar">Sin solicitar</option>
-                      <option value="En proceso">En curso</option>
+                      <option value="En proceso">En proceso</option>
+                      <option value="Asignado">Asignado</option>
                       <option value="Dias restantes">Dias restantes</option>
                       <option value="Finalizadas">Finalizadas</option>
                     </select>

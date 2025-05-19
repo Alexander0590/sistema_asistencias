@@ -338,7 +338,7 @@ $('#tsalidas').DataTable({
         }
     },
     "columnDefs": [
-        { "width": "100px", "targets": 8 } 
+        { "width": "100px", "targets": 9 } 
     ]
 });
 
@@ -394,10 +394,18 @@ function obtenerUsuarios() {
                 $('#tvacaciones').DataTable().clear().draw();
 
                 data.forEach(function (vacaciones, index) {
-                 
+                    if (vacaciones.vacaciones === "Dias restantes") {
+                        estado = '<span class="punto punto-activo"></span> Dias restantes';
+                    } else if(vacaciones.vacaciones === "En proceso") {
+                        estado = '<span class="punto punto-proceso"></span> En proceso';
+                    }else if (vacaciones.vacaciones === "Asignado"){
+                        estado = '<span class="punto punto-asignado"></span> Asignado';
+                    }else{
+                        estado = '<span class="punto punto-inactivo"></span> Finalizado';
+                    }
                     $('#tvacaciones').DataTable().row.add([
                         index + 1,
-                        vacaciones.vacaciones,
+                        estado,
                         vacaciones.dni,
                         vacaciones.nombres,
                         vacaciones.apellidos,
@@ -407,7 +415,7 @@ function obtenerUsuarios() {
                         vacaciones.ultima_fecha_fin,
                         vacaciones.ultimo_dias_restantes,
                         vacaciones.ultimo_año_registro,
-                    `${vacaciones.vacaciones === 'En proceso' || vacaciones.vacaciones === 'Finalizado' 
+                    `${vacaciones.vacaciones === 'En proceso' || vacaciones.vacaciones === 'Finalizado'|| vacaciones.vacaciones === 'Asignado'
                     ? `<button class="btn btn-secondary" disabled><i class="bi bi-check-circle"></i> Dar vacaciones</button>` 
                     : `<button class="btn btn-success darVacaciones" data-id="${vacaciones.dni}">
                         <i class="bi bi-check-circle"></i> Dar vacaciones
@@ -604,7 +612,7 @@ function obtenerUsuarios() {
                         asistencia.suma_tardanza_diurno,
                         asistencia.suma_tardanza_tarde,
                     `
-                        <button  class="btn btn-primary usuverificar" data-id="${asistencia.dni}">
+                        <button  class="btn btn-primary perverificar" data-id="${asistencia.dni}">
                             <i class="bi bi-patch-check"></i> Verificar
                         </button>
                         `
@@ -681,8 +689,16 @@ function obtenerUsuarios() {
                 // Limpiar y preparar la tabla
                 tabla.clear();
                 data.forEach(function (salidas, index) {
+                    if(salidas.estado==="En proceso"){
+                     estado = '<span class="punto punto-proceso"></span> En Proceso';
+                    }else if(salidas.estado==="Finalizado"){
+                    estado = '<span class="punto punto-inactivo"></span> Finalizado';
+                    }else{
+                        estado = '<span class="punto punto-activo"></span> Ingreso correcto';
+                    }
                     tabla.row.add([
                         index + 1,
+                        estado,
                         salidas.dni || "",
                         (salidas.apellidos || "") + " " + (salidas.nombres || ""),
                         salidas.turno || "",
@@ -778,6 +794,7 @@ function obtenerUsuarios() {
             obtenerreporsere();
         }, 100); 
     });
+//  setInterval(() => {
     reportesalidas();
     obtenersalidas();
     obtenerUsuarios();
@@ -787,6 +804,7 @@ function obtenerUsuarios() {
     obtenervacaciones();
     obtenerpersonalvaca();
     obtenerrpgene();
+// }, 1000); 
 });
 
 
