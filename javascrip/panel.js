@@ -111,6 +111,10 @@ $(document).ready(function () {
       e.preventDefault(); 
       $("#vistas").load("view/lista_modalidad.php"); 
     });
+   $("#diasrecu").click(function (e) {
+      e.preventDefault(); 
+      $("#vistas").load("view/reporte_horasrecu.php"); 
+    });
 
 
     //lista de vacaciones

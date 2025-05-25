@@ -28,16 +28,24 @@
             </div>
             <div class="col-md-6">
               <label for="fecha_salida" class="form-label"><i class="bi bi-calendar-check"></i> Fecha</label>
-              <input type="date" class="form-control" id="fecha_salida" name="fecha_salida" value="<?php echo date('Y-m-d'); ?>" disabled>
+              <input type="date" class="form-control" id="fecha_salida" name="fecha_salida" value="<?php echo date('Y-m-d'); ?>" >
             </div>
           </div>
 
           <div class="row mb-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-2">
               <label for="hora_salida" class="form-label"><i class="bi bi-clock"></i> Hora de salida</label>
               <input type="time" class="form-control" id="hora_salida" name="hora_salida" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" id="alterna">
+              <label for="motivo" class="form-label"><i class="bi bi-check-square"></i> Tiene Reingreso</label>
+              <select class="form-select" id="alternativa" name="alternativa" required>
+                <option value="" selected disabled>Seleccione</option>
+                <option value="si">Si</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div class="col-md-6" style="display: none;" id="reingre">
               <label for="hora_reingreso" class="form-label"><i class="bi bi-clock-history"></i> Reingreso</label>
               <input type="time" class="form-control" id="hora_reingreso" name="hora_reingreso">
             </div>
@@ -63,7 +71,8 @@
               </select>
             </div>
           </div>
-
+          
+          
           <div class="mb-3">
             <label for="comentario" class="form-label"><i class="bi bi-clipboard"></i> Observaciones</label>
             <textarea class="form-control" id="comentario" name="observaciones" rows="2"></textarea>

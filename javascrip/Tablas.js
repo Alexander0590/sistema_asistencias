@@ -677,54 +677,58 @@ function obtenerUsuarios() {
             }
         });
     }
-    
-    function obtenersalidas() {
-        $.ajax({
-            url: 'proceso/mantesalidas.php?action=readhoysal',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                const tabla = $('#tsalidas').DataTable();
-    
-                // Limpiar y preparar la tabla
-                tabla.clear();
-                data.forEach(function (salidas, index) {
-                    if(salidas.estado==="En proceso"){
-                     estado = '<span class="punto punto-proceso"></span> En Proceso';
-                    }else if(salidas.estado==="Finalizado"){
+
+            $('#txtfasali').on('change', function() {
+            var fechaSeleccionada = $(this).val(); 
+            obtenersalidas(fechaSeleccionada);     
+            });
+
+   function obtenersalidas(fecha = '') {
+    $.ajax({
+        url: 'proceso/mantesalidas.php?action=readhoysal',
+        type: 'GET',
+        dataType: 'json',
+        data: { 
+            fecha: fecha  // Envía la fecha como parámetro GET
+        },
+        success: function(data) {
+            const tabla = $('#tsalidas').DataTable();
+            tabla.clear();
+            
+            data.forEach(function(salidas, index) {
+                if(salidas.estado === "En proceso") {
+                    estado = '<span class="punto punto-proceso"></span> En Proceso';
+                } else if(salidas.estado === "Finalizado") {
                     estado = '<span class="punto punto-inactivo"></span> Finalizado';
-                    }else{
-                        estado = '<span class="punto punto-activo"></span> Ingreso correcto';
-                    }
-                    tabla.row.add([
-                        index + 1,
-                        estado,
-                        salidas.dni || "",
-                        (salidas.apellidos || "") + " " + (salidas.nombres || ""),
-                        salidas.turno || "",
-                        salidas.hora_salida || "No registrado",
-                        salidas.hora_reingreso || "No hay registro",
-                        salidas.motivo || "Sin motivo",
-                        salidas.comentario || "Sin comentarios",
-                        `<div class="btn-group" role="group">
+                } else {
+                    estado = '<span class="punto punto-activo"></span> Ingreso correcto';
+                }
+                
+                tabla.row.add([
+                    index + 1,
+                    estado,
+                    salidas.dni || "",
+                    (salidas.apellidos || "") + " " + (salidas.nombres || ""),
+                    salidas.turno || "",
+                    salidas.hora_salida || "No registrado",
+                    salidas.hora_reingreso || "No hay registro",
+                    salidas.motivo || "Sin motivo",
+                    salidas.comentario || "Sin comentarios",
+                    `<div class="btn-group" role="group">
                         <button class="btn btn-primary btn-sm saleditar" data-id="${salidas.id_sali || ''}">
                             <i class="bi bi-pencil"></i> Editar
                         </button>
-                        <button class="btn btn-warning btn-sm usuSalidaFinal" data-id="${salidas.id_sali || ''}">
-                            <i class="bi bi-door-open"></i> Salida Final
-                        </button>
                     </div>`
-                    ]);
-                });
-    
-                tabla.draw();
-            },
-            error: function (error) {
-                console.error('Error al obtener los datos:', error);
-            }
-        });
-    }
-    
+                ]);
+            });
+            
+            tabla.draw();
+        },
+        error: function(error) {
+            console.error('Error al obtener los datos:', error);
+        }
+    });
+}
     function reportesalidas() {
         $.ajax({
             url: 'proceso/mantesalidas.php?action=reportesalidas',
@@ -755,6 +759,14 @@ function obtenerUsuarios() {
                     } else {
                         horaReingreso = 'No registrado';
                     }
+                      let horaReingresoreal = salida.hora_ingreso_real || '';
+                    if (horaReingresoreal !== '') {
+                        const hora = parseInt(horaReingresoreal.split(':')[0]);
+                        const ampm = hora < 12 ? 'AM' : 'PM';
+                        horaReingresoreal += ' ' + ampm;
+                    } else {
+                        horaReingresoreal = 'No registrado';
+                    }
     
                     tabla.row.add([
                         index + 1,
@@ -765,7 +777,10 @@ function obtenerUsuarios() {
                         horaSalida,
                         horaReingreso,
                         salida.motivo || 'Sin motivo',
+                        salida.tiene_reingreso,
+                        horaReingresoreal,
                         salida.comentario || 'Sin comentarios'
+                        
                     ]);
                 });
     

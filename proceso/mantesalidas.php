@@ -3,7 +3,7 @@
 
  $action = $_GET['action'] ?? '';
 
-
+ date_default_timezone_set('America/Lima');
  switch ($action) {
     case 'resali':
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -14,7 +14,24 @@
         $hora_reingreso = $_POST['hora_reingreso'] ?? '';
         $motivo = $_POST['motivo'] ?? '';
         $turno = $_POST['turno'] ?? '';
+        $alterna = $_POST['alterna'] ?? '';
         $comentario = $_POST['comentario'] ?? '';
+       $hoy= date('Y-m-d');
+        //si retonra o no
+        if($alterna=="no"){
+            $hora="16:30:00";
+            if($turno=="Mañana"){
+            $sql = "UPDATE asistencia SET horast = '$hora', horait='14:00:00',horasm='13:00:00', estadot='Puntual',tiempo_tardanza_dia=0 WHERE dni = '$dni' AND fecha = '$fecha_salida'";
+            $stmt = $cnn->prepare($sql);
+            $stmt->execute();
+            }else{
+                $sql = "UPDATE asistencia SET horast = '$hora', estadot='Puntual',tiempo_tardanza_dia=0 WHERE dni = '$dni' AND fecha = '$fecha_salida'";
+            $stmt = $cnn->prepare($sql);
+            $stmt->execute();
+            }
+        }else{
+            $hora=$hora_reingreso;
+        }
 
       // Convertir fecha a timestamp
         $timestamp = strtotime($fecha_salida);
@@ -24,17 +41,26 @@
         $dias_espanol = ["", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
         $dia_es = $dias_espanol[$dia_semana_es];
 
-        $sql_check_asistencia = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = CURDATE() ";
+        $sql_check_asistencia = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha_salida'  ";
         $result_check_asistencia = $cnn->query($sql_check_asistencia);
-        $sql_check_salida = "SELECT * FROM salidas WHERE dni = '$dni' AND estado = 'En proceso'";
+
+        $sql_check_asistencia2 = "SELECT * FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha_salida' and estadot='Falta'";
+        $result_check_asistencia2 = $cnn->query($sql_check_asistencia2);
+
+        $sql_check_salida = "SELECT * FROM salidas WHERE dni = '$dni' AND estado = 'En proceso' ";
         $result_check_salida = $cnn->query( $sql_check_salida);
             if ($result_check_salida->num_rows > 0) {
                     echo "Esta persona ya tiene una salida en proceso.";
                     exit;
                 }
+            if ($result_check_asistencia2->num_rows > 0) {
+                    echo "Esta persona esta registrado como faltante el dia de hoy.";
+                    exit;
+            }
+
 
             if ($result_check_asistencia->num_rows == 0) {
-                $sql_check_asistencia_seguridad = "SELECT * FROM asistencia_seguridad WHERE dni = '$dni' AND fecha =CURDATE() ";
+                $sql_check_asistencia_seguridad = "SELECT * FROM asistencia_seguridad WHERE dni = '$dni' AND fecha ='$fecha_salida' ";
                 $result_check_asistencia_seguridad = $cnn->query($sql_check_asistencia_seguridad);
                 
                 
@@ -44,11 +70,15 @@
                     exit;
                 }
             }
-
+          if($alterna=="si" ){
             // Preparar la consulta SQL para insertar la salida
-            $sql_insert = "INSERT INTO salidas (dni, dia , fecha_salida, hora_salida, hora_reingreso, motivo, turno, comentario,estado) 
-                        VALUES ('$dni', '$dia_es','$fecha_salida', '$hora_salida', '$hora_reingreso', '$motivo', '$turno', '$comentario','En proceso')";
-
+            $sql_insert = "INSERT INTO salidas (dni, dia , fecha_salida, hora_salida, hora_reingreso, motivo, turno, comentario,estado,tiene_reingreso) 
+                        VALUES ('$dni', '$dia_es','$fecha_salida', '$hora_salida', '$hora', '$motivo', '$turno', '$comentario','En proceso','$alterna')";
+          }else{
+// Preparar la consulta SQL para insertar la salida
+            $sql_insert = "INSERT INTO salidas (dni, dia , fecha_salida, hora_salida, hora_reingreso, motivo, turno, comentario,estado,tiene_reingreso,hora_ingreso_real) 
+                        VALUES ('$dni', '$dia_es','$fecha_salida', '$hora_salida', '$hora', '$motivo', '$turno', '$comentario','Ingreso correctamente','$alterna','$hora')";
+          }
             // Ejecutar la consulta
             if ($cnn->query($sql_insert) === TRUE) {
                 echo "ok";
@@ -58,13 +88,13 @@
             } else {
             echo "Método no permitido.";
             }
-
     break;
     case 'readhoysal':
+        $fecha = $_GET['fecha'] ?? date('Y-m-d');
         $sql = "SELECT s.*, p.apellidos, p.nombres 
         FROM salidas s
         INNER JOIN personal p ON s.dni = p.dni
-        WHERE s.fecha_salida = CURDATE() ";
+        WHERE s.fecha_salida = '$fecha'";
         $result = mysqli_query($cnn, $sql);
         
         $salidas = [];
@@ -182,11 +212,13 @@
         } else {
             echo json_encode(['error' => 'Los campos están vacíos']);
         }
-    case'updateestado':
+break;
+ case'updateestado':
    $id = $_POST['id'];
+   $reingreso = $_POST['reingreso'];
 
     if (!empty($id)) {
-        $sql = "UPDATE salidas SET estado = 'Ingreso correctamente' WHERE id_sali = ?";
+        $sql = "UPDATE salidas SET estado = 'Ingreso correctamente',hora_ingreso_real='$reingreso' WHERE id_sali = ?";
         $stmt = $cnn->prepare($sql);
 
         if ($stmt) {
@@ -207,6 +239,211 @@
     }
 
     break;
+ case 'updatenoingre':
+    $id = $_POST['id'];
+    $dni = $_POST['dni'];
+    $fecha = $_POST['fecha'];
+    $turno = $_POST['turno'];
+    $reingreso = $_POST['reingreso'];
+
+    if (!empty($id) && $dni != '' && $fecha != '') {
+        // Actualizar estado de la salida
+        $sql = "UPDATE salidas SET estado = 'Finalizado' ,comentario='No ingreso en la hora coordinada de reingreso' WHERE id_sali = $id";
+        $cnn->query($sql);
+
+        if ($turno == "Mañana") {
+            $horaSalidaEsperada = new DateTime('16:30:00');
+            $horaSalidaReal = new DateTime($reingreso);
+
+           $diffSegundos =  $horaSalidaEsperada->getTimestamp() -  $horaSalidaReal->getTimestamp();
+           $minutos = intval($diffSegundos / 60);
+            $minutos_descuento_nuevo2  = $minutos- 60;
+
+
+                $sqlSueldo = "SELECT sueldo FROM personal WHERE dni = '$dni'";
+                $resSueldo = $cnn->query($sqlSueldo);
+                $filaSueldo = $resSueldo->fetch_assoc();
+                $sueldo = $filaSueldo['sueldo'];
+
+                if ($sueldo) {
+                    $totalMinutosMes = 30 * 8 * 60;
+                    $pagoPorMinuto = $sueldo / $totalMinutosMes;
+                    $monto_descuento_nuevo = round($minutos_descuento_nuevo2 * $pagoPorMinuto, 2);
+
+   
+                
+                    $sqlDesc = "SELECT minutos_descum FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha'";
+                    $resDesc = $cnn->query($sqlDesc);
+                    $filaDesc = $resDesc->fetch_assoc();
+
+                    $minutodescum = isset($filaDesc['minutos_descum']) ? (int)$filaDesc['minutos_descum'] : 0;
+                    $monto_descuento=round($minutodescum  * $pagoPorMinuto,2);
+
+                    $minutos_descuento_total = $minutodescum + $minutos_descuento_nuevo2;
+                    $monto_descuento_total = $monto_descuento + $monto_descuento_nuevo;
+
+                    $sql2 = "UPDATE asistencia 
+                             SET horait = '$reingreso', 
+                                 horast = '$reingreso', 
+                                 estadot='Falta',
+                                 minutos_descut = $minutos_descuento_nuevo2,
+                                 descuento_dia=  $monto_descuento_total, 
+                                 comentariot='EL DESCUENTO TARDE GENERADO POR LA INACISTENCIA DE LA SALIDA',
+                                 tiempo_tardanza_dia = $minutos_descuento_total 
+                             WHERE dni = '$dni' AND fecha = '$fecha'";
+                    $cnn->query($sql2);
+                }
+        
+              
+              
+          
+      } else {
+    // Validar que el reingreso sea una hora válida
+    if (strtotime($reingreso) !== false) {
+        $horaSalidaEsperada = new DateTime('16:30:00');
+        $horaSalidaReal = new DateTime($reingreso);
+
+        // Calcular minutos de diferencia, solo si se salió antes
+        $diffSegundos = $horaSalidaEsperada->getTimestamp() - $horaSalidaReal->getTimestamp();
+        $minutos = intval($diffSegundos / 60);
+        $minutos_descuento_nuevo2 =  $minutos; 
+
+        // Obtener sueldo del empleado
+        $sqlSueldo = "SELECT sueldo FROM personal WHERE dni = '$dni'";
+        $resSueldo = $cnn->query($sqlSueldo);
+
+        if ($resSueldo && $filaSueldo = $resSueldo->fetch_assoc()) {
+            $sueldo = $filaSueldo['sueldo'];
+
+            if ($sueldo > 0) {
+                $totalMinutosMes = 30 * 8 * 60; 
+                $pagoPorMinuto = $sueldo / $totalMinutosMes;
+
+                $monto_descuento_nuevo = round($minutos_descuento_nuevo2 * $pagoPorMinuto, 2);
+
+                $sqlDesc = "SELECT minutos_descum, minutos_descut FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha'";
+                $resDesc = $cnn->query($sqlDesc);
+
+                if ($resDesc && $filaDesc = $resDesc->fetch_assoc()) {
+                    $minutodescum = isset($filaDesc['minutos_descum']) ? (int)$filaDesc['minutos_descum'] : 0;
+                    $minutodescut = isset($filaDesc['minutos_descut']) ? (int)$filaDesc['minutos_descut'] : 0;
+
+                    $totalmit = $minutodescum + $minutodescut + $minutos_descuento_nuevo2;
+                    $minutos_descuento_total = $totalmit;
+                    $monto_descuento_total = round($minutos_descuento_total * $pagoPorMinuto, 2);
+
+                    $sql2 = "UPDATE asistencia 
+                             SET horast = '$reingreso', 
+                                 descuento_dia = $monto_descuento_total,
+                                 comentariot = 'EL DESCUENTO TARDE GENERADO POR LA INASISTENCIA DE LA SALIDA',
+                                 tiempo_tardanza_dia = $minutos_descuento_total 
+                             WHERE dni = '$dni' AND fecha = '$fecha'";
+                    $cnn->query($sql2);
+                }
+            }
+        }
+    } else {
+        // Error: hora de reingreso no válida
+        // Puedes registrar el error o mostrar una notificación
+    }
+}
+
+
+        echo "El no ingreso ha sido registrado correctamente.";
+    } else {
+        echo "ID no recibido.";
+    }
+    break;
+    case 'ingretarde':
+        $horaingreso = $_POST['horaIngreso'];
+        $minutosdecu = $_POST['minutosdescu'];
+        $turno = $_POST['turno'];
+        $dni = $_POST['dni'];
+        $fecha = $_POST['fecha'];
+        $id = $_POST['id'];
+        $hoy=date('Y-m-d');
+
+            if ($hoy < $fecha) {
+                // 1. Obtener el sueldo del empleado y los minutos totales de asistencia
+                $query_personal = "SELECT sueldo FROM personal WHERE dni = '$dni'";
+                $result_personal = mysqli_query($cnn, $query_personal);
+                
+                if (!$result_personal) {
+                    die("Error al obtener el sueldo: " . mysqli_error($cnn));
+                }
+                
+                $row_personal = mysqli_fetch_assoc($result_personal);
+                $sueldo = $row_personal['sueldo'];
+                
+                // 2. Obtener los minutos totales de asistencia
+                $query_asistencia = "SELECT tiempo_tardanza_dia , descuento_dia FROM asistencia WHERE dni = '$dni' AND fecha='$fecha'";
+                $result_asistencia = mysqli_query($cnn, $query_asistencia);
+                
+                if (!$result_asistencia) {
+                    die("Error al obtener los minutos de asistencia: " . mysqli_error($cnn));
+                }
+                
+                $row_asistencia = mysqli_fetch_assoc($result_asistencia);
+                $totalminutos = $row_asistencia['tiempo_tardanza_dia'] ?? 0;
+                $descuento2 = $row_asistencia['descuento_dia'] ?? 0;
+                $nuevos_minutos = $totalminutos + $minutosdecu;
+                
+                // 3. Calcular el valor por minuto trabajado
+                $valor_por_minuto = $sueldo / 14400;
+                
+                // 4. Calcular el descuento
+                $descuento = round($nuevos_minutos * $valor_por_minuto, 2);
+                $totaldescuento=round($descuento+$descuento2,2);
+                // 5. Actualizar la base de datos
+                $update_query = "UPDATE asistencia 
+                                SET tiempo_tardanza_dia = $nuevos_minutos, 
+                                    descuento_dia = $totaldescuento,
+                                    comentariot = CONCAT(IFNULL(comentariot, ''), ' Ingreso con tardanza en su salida coordinada de reingreso. $minutosdecu minutos de tardanza')
+                                WHERE dni = '$dni' AND fecha = '$fecha'";
+                
+                if (mysqli_query($cnn, $update_query)) {
+                    echo "Descuento aplicado correctamente";
+                } else {
+                    echo "Error al aplicar el descuento: " . mysqli_error($cnn);
+                }
+                
+                
+                exit();
+            }
+        if ($turno == "Mañana") {
+            $sql = "UPDATE salidas SET hora_ingreso_real = '$horaingreso',estado='Finalizado', comentario='Ingreso con tardanza en su salida coordinada de reingreso.$minutosdecu minutos de tardanza' WHERE id_sali = $id";
+            $cnn->query($sql);
+
+            $sqlDesc = "SELECT minutos_descum FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha'";
+            $resDesc = $cnn->query($sqlDesc);
+            $filaDesc = $resDesc->fetch_assoc();
+            $minutosdiurno = $filaDesc['minutos_descum'];
+            $totalminu = $minutosdecu + $minutosdiurno;
+
+            $sql2 = "UPDATE asistencia SET minutos_descum = $totalminu, comentario='Ingreso con tardanza en su salida coordinada de reingreso.$minutosdecu minutos de tardanza' WHERE dni = '$dni' AND fecha = '$fecha'";
+            $cnn->query($sql2);
+
+            echo "Tardanza registrada";
+        } else {
+            $sql3 = "UPDATE salidas SET hora_ingreso_real = '$horaingreso', estado='Finalizado', comentario='Ingreso con tardanza en su salida coordinada de reingreso.$minutosdecu minutos de tardanza' WHERE id_sali = $id";
+            $cnn->query($sql3);
+
+            $sqlDesc = "SELECT minutos_descut FROM asistencia WHERE dni = '$dni' AND fecha = '$fecha'";
+            $resDesc = $cnn->query($sqlDesc);
+            $filaDesc = $resDesc->fetch_assoc();
+            $minutostarde = $filaDesc['minutos_descut'];
+            $totalminu = $minutosdecu + $minutostarde;
+
+            $sql4 = "UPDATE asistencia SET minutos_descut = $totalminu, comentariot='Ingreso con tardanza en su salida coordinada.$minutosdecu minutos de tardanza' WHERE dni = '$dni' AND fecha = '$fecha'";
+            $cnn->query($sql4);
+
+            echo "Tardanza registrada";
+        }
+
+
+
+    break;
+
     default:
     break;
  }

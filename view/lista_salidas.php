@@ -18,9 +18,17 @@
 <?php date_default_timezone_set("America/Lima"); ?>
 <div class="container mt-5 ">
     <div class="card shadow-lg">
-        <div class="card-header  tablas-x " style="background-color: #0c0c24; color: white;">
-            <h4 class="mb-0"><i class="bi bi-people-fill"></i> Lista De Salidas - <?php echo date('d-m-Y'); ?></h4>
+        <div class="card-header tablas-x" style="background-color: #0c0c24; color: white;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-people-fill"></i> Lista De Salidas</h4>
+            
+            <?php 
+                $fd = isset($_GET['fd']) ? $_GET['fd'] : date('Y-m-d');
+            ?>
+            <input type="date" name="txtfa" id="txtfasali" value="<?php echo htmlspecialchars($fd); ?>" 
+                style="border: none; background-color: #f8f9fa; color: #000; padding: 5px 10px; border-radius: 5px; font-size: 18px; margin-left: 20px;">
         </div>
+    </div>
         <div class="card-body">
         <table class="table table-striped table-bordered table-hover" id="tsalidas" style="width:100%">
         <thead id="tabla1">
@@ -67,7 +75,7 @@
             </div>
             <div class="col-md-6">
               <label for="fecha_salida" class="form-label"><i class="bi bi-calendar-check"></i> Fecha</label>
-              <input type="date" class="form-control" id="fecha_salida" name="fecha_salida" disabled>
+              <input type="date" class="form-control" id="fecha_salida" name="fecha_salida">
             </div>
           </div>
 
@@ -107,10 +115,32 @@
             <label for="observaciones" class="form-label"><i class="bi bi-clipboard"></i> Observaciones</label>
             <textarea class="form-control" id="observaciones" name="observaciones" rows="2"></textarea>
           </div>
+          <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="mostrarCampos">
+          <label class="form-check-label" for="mostrarCampos">
+            Agregar hora de ingreso y minutos de descuento
+          </label>
+        </div>
 
+          <div id="camposAdicionales" class="row mb-3" style="display: none;">
+            <div class="col-md-6">
+              <label for="hora_ingresoreal" class="form-label"><i class="bi bi-clock"></i> Hora de ingreso real</label>
+              <input type="time" class="form-control" id="hora_ingresoreal" name="hora_reingreso">
+            </div>
+            <div class="col-md-6">
+              <label for="minutosdescu" class="form-label"><i class="bi bi-currency-dollar"></i> Minutos de descuento</label>
+              <input type="number" class="form-control" id="minutosdescu" name="minutos_descuento" disabled>
+            </div>
+          </div>
           <div class="modal-footer">
+             <button type="button" class="btn btn-danger" id="ingre_tarde">
+              <i class="bi bi-arrow-right-circle"></i> Ingreso Tarde
+            </button>
             <button type="button" class="btn btn-success" id="ingre_correcta">
               <i class="bi bi-arrow-right-circle"></i> Ingreso Correctamente
+            </button>
+             <button type="button" class="btn btn-danger" id="no_ingre">
+              <i class="bi bi-x-circle"></i> No Ingreso
             </button>
              <button type="button" class="btn btn-success" id="actualizar_salida">
               <i class="bi bi-save2"></i> Actualizar

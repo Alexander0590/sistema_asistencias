@@ -11,7 +11,16 @@
 <div class="container mt-5">
     <div class="card-header text-white tablas-x" style="padding:10px;">
         <h4 class="mb-0">Registro de Asistencias: 
-            <input type="date" name="txtfa" id="txtfa" value="<?php echo date('Y-m-d');?>" 
+            <?php 
+                if(isset($_GET['fd'])){
+                    $fd=$_GET['fd'];
+                }else{
+                    $fd=date('Y-m-d');
+                }
+                
+            
+            ?>
+            <input type="date" name="txtfa" id="txtfa" value="<?php echo $fd; ?>" 
                 style="border: none; background-color: #f8f9fa; color: #000; padding: 5px 10px; border-radius: 5px; font-size: 18px;">
         </h4>
     </div>

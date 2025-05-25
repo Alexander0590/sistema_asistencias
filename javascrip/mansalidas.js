@@ -1,3 +1,49 @@
+$("#alternativa").on("change", function() {
+let al=$(this).val();
+
+if(al==="si"){
+
+
+$('#reingre').show();
+
+}else{
+   $('#reingre').hide(); 
+}
+
+});
+
+  $('#mostrarCampos').on('change', function () {
+    if ($(this).is(':checked')) {
+      $('#camposAdicionales').css('display', 'flex');
+    } else {
+      $('#camposAdicionales').hide();
+    }
+  });
+  
+ 
+$("#hora_ingresoreal, #hora_reingreso").on("change", function () {
+    var horaIngreso = $("#hora_ingresoreal").val();
+    var horaReingreso = $("#hora_reingreso").val();
+
+    if (horaIngreso && horaReingreso && horaIngreso.includes(":") && horaReingreso.includes(":")) {
+        var [h1, m1] = horaIngreso.split(":").map(Number);
+        var [h2, m2] = horaReingreso.split(":").map(Number);
+
+        var minutosIngreso = h1 * 60 + m1;
+        var minutosReingreso = h2 * 60 + m2;
+
+        
+
+        var diferencia = minutosIngreso - minutosReingreso;
+        $("#minutosdescu").val(diferencia);
+    } else {
+        $("#minutosdescu").val("");
+    }
+});
+
+
+
+
 //GUARDAR LA SALIDA DEL FORMULARIO
 $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', function (e) {
     e.preventDefault();
@@ -8,11 +54,12 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
     var horaReingreso = $('#hora_reingreso').val().trim();
     var motivo = $('#motivo').val().trim();
     var turno = $('#sa_turno').val().trim();
+    var alterna = $('#alternativa').val().trim();
     var comentario = $('#comentario').val().trim();
 
   
 
-    if (dni === '' || fecha === '' || horaSalida === '' || horaReingreso === '' || motivo === '' || turno === '') {
+    if (dni === '' || fecha === '' || horaSalida === ''  || motivo === '' || turno === '') {
         Swal.fire({
             icon: 'warning',
             title: 'Campos incompletos',
@@ -24,7 +71,8 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
 
       // Validar formato HH:MM
     var formatoHora = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-    if (!formatoHora.test(horaSalida) || !formatoHora.test(horaReingreso)) {
+   if ((!formatoHora.test(horaSalida)) || (!formatoHora.test(horaReingreso) && alterna === "si"))
+ {
         Swal.fire({
             icon: 'error',
             title: 'Formato incorrecto',
@@ -35,7 +83,7 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
     }
 
     // Comparación directa de strings (funciona para formato HH:MM)
-    if (horaReingreso <= horaSalida) {
+    if (horaReingreso <= horaSalida && alterna==="si") {
         Swal.fire({
             icon: 'error',
             title: 'Horas inválidas',
@@ -51,13 +99,13 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
 
     switch(turno) {
         case 'Mañana':
-            if (horaSalidaNum < 6 || horaSalidaNum >= 12) {
+            if (horaSalidaNum < 6 || horaSalidaNum >= 12 && alterna==="si") {
                 errorTurno = true;
                 mensajeError = 'Para turno Mañana, la hora de salida debe ser entre 06:00 y 11:59';
             }
             break;
         case 'Tarde':
-            if (horaSalidaNum < 12 || horaSalidaNum >= 18) {
+            if (horaSalidaNum < 12 || horaSalidaNum >= 18 && alterna==="si") {
                 errorTurno = true;
                 mensajeError = 'Para turno Tarde, la hora de salida debe ser entre 12:00 y 18:59';
             }
@@ -90,6 +138,7 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
             hora_reingreso: horaReingreso,
             motivo: motivo,
             turno: turno,
+            alterna:alterna,
             comentario: comentario
         },
         success: function (response) {
@@ -102,7 +151,24 @@ $(document).off('click', '#guardar_salida').on('click', '#guardar_salida', funct
                 }).then(() => {
                     $('#formSalida')[0].reset();
                     $('#modalSalida').modal('hide');
+
+                     $("#vistas").fadeOut(200, function () {
+                                $(this).load("view/lista_salidas.php", function () {
+                                    $(this).fadeIn(200);
+
+                                    // Reinicializar DataTable correctamente
+                                    if ($.fn.DataTable.isDataTable('#tsalidas')) {
+                                        $('#tsalidas').DataTable().clear().destroy();
+                                    }
+
+                                    $('#tsalidas').DataTable({
+                                        destroy: true,
+
+                                    });
+                                });
+                            });
                 });
+                 
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -140,8 +206,14 @@ $(document).on('click', '.saleditar', function () {
       success: function (data) {
         if(data.estado==="Ingreso correctamente"){
          $('#ingre_correcta').prop('disabled',true);
+         $('#no_ingre').prop('disabled',true);
+
+        }else if(data.estado==="Finalizado"){
+         $('#ingre_correcta').prop('disabled',true);
+         $('#no_ingre').prop('disabled',true);
         }else{
          $('#ingre_correcta').prop('disabled',false);
+         $('#no_ingre').prop('disabled',false);
         }
         $('#id_salida').val(data.id_sali);
         $('#dni').val(data.dni);
@@ -320,7 +392,12 @@ $(document).on('click', '#filtrarsalida', function (e) {
                     const ampm = hora < 12 ? 'AM' : 'PM';
                     horaReingreso = `${horaReingreso} ${ampm}`;
                 }
-
+                let horareal = fsalida.hora_ingreso_real || 'No registrado';
+                if (horareal !== 'No registrado') {
+                    const hora = parseInt(horareal.split(':')[0]);
+                    const ampm = hora < 12 ? 'AM' : 'PM';
+                    horareal = `${horareal} ${ampm}`;
+                }
                 tabla.row.add([
                     index + 1,
                     fsalida.dni || 'No registrado',
@@ -330,6 +407,8 @@ $(document).on('click', '#filtrarsalida', function (e) {
                     horaSalida,
                     horaReingreso,
                     fsalida.motivo || 'Sin motivo',
+                    fsalida.tiene_reingreso,
+                    horareal,
                     fsalida.comentario || 'Sin comentarios'
                 ]);
             });
@@ -348,15 +427,64 @@ $(document).on('click', '#filtrarsalida', function (e) {
         }
     });
 });
-//registra ingreso correcto
+
+//registra no ingreso
+$(document).off('click', '#no_ingre').on('click', '#no_ingre', function (e) {
+e.preventDefault();
+    var id=$('#id_salida').val();
+    var dni=$('#dni').val();
+    var fecha=$('#fecha_salida').val();
+    var turno=$('#turno').val();
+    var reingreso=$('#hora_reingreso').val();
+
+  $.ajax({
+    url: 'proceso/mantesalidas.php?action=updatenoingre',
+    type: 'POST',
+    data: { id: id ,dni:dni,fecha:fecha,turno:turno,reingreso:reingreso},
+   success: function(response) {
+    Swal.fire({
+        icon: 'success',
+        title: response, 
+        confirmButtonText: 'Aceptar'
+    }).then(() => {
+        $('#modaleditar').modal('hide');
+
+        $("#vistas").fadeOut(200, function () {
+            $(this).load("view/lista_salidas.php", function () {
+                $(this).fadeIn(200);
+
+                if ($.fn.DataTable.isDataTable('#tsalidas')) {
+                    $('#tsalidas').DataTable().destroy();
+                }
+
+                $('#tsalidas').DataTable({
+                    destroy: true,
+                    
+                });
+            });
+        });
+    });
+},
+    error: function(response) {
+        Swal.fire({
+            icon: 'error',
+            title: '¡Error!',
+            text: 'Hubo un problema al registrar el ingreso.',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+});
+
+});
+
 $(document).off('click', '#ingre_correcta').on('click', '#ingre_correcta', function (e) {
 e.preventDefault();
 var id=$('#id_salida').val();
-
+ var reingreso=$('#hora_reingreso').val();
   $.ajax({
     url: 'proceso/mantesalidas.php?action=updateestado',
     type: 'POST',
-    data: { id: id },
+    data: { id: id,reingreso:reingreso},
    success: function(response) {
     Swal.fire({
         icon: 'success',
@@ -394,3 +522,85 @@ var id=$('#id_salida').val();
 });
 
 });
+//ingreso tarde
+$(document).off('click', '#ingre_tarde').on('click', '#ingre_tarde', function(e) {
+  e.preventDefault();
+
+  if (!$('#mostrarCampos').is(':checked')) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Campo no marcado',
+      text: 'Por favor, marca el campo de Agregar hora de ingreso y minutos de descuento antes de continuar.',
+      confirmButtonText: 'Entendido'
+    });
+    return;
+  }
+    var horaReingreso=$('#hora_reingreso').val();
+    var horaIngreso=$('#hora_ingresoreal').val();
+    var minutosdescu=$('#minutosdescu').val();
+    var turno=$('#turno').val();
+    var fecha=$('#fecha_salida').val();
+    var dni=$('#dni').val();
+    var id=$('#id_salida').val();
+
+
+
+    function horaAMinutos(horaStr) {
+    var partes = horaStr.split(':');
+    return parseInt(partes[0], 10) * 60 + parseInt(partes[1], 10);
+    }
+
+    if (horaAMinutos(horaIngreso) <= horaAMinutos(horaReingreso)) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error en las horas',
+        text: 'La hora de ingreso no puede ser menor o igual que la hora de reingreso.',
+        confirmButtonText: 'Aceptar'
+    });
+    return;
+    }
+
+
+    $.ajax({
+        url: 'proceso/mantesalidas.php?action=ingretarde',
+        type: 'POST',
+        data: { horaIngreso:horaIngreso,minutosdescu:minutosdescu,turno:turno,fecha:fecha,dni:dni,id:id},
+       success: function(response) {
+        Swal.fire({
+            icon: 'success',
+            title: response, 
+            confirmButtonText: 'Aceptar'
+        }).then(() => {
+            $('#modaleditar').modal('hide');
+    
+            $("#vistas").fadeOut(200, function () {
+                $(this).load("view/lista_salidas.php", function () {
+                    $(this).fadeIn(200);
+    
+                    if ($.fn.DataTable.isDataTable('#tsalidas')) {
+                        $('#tsalidas').DataTable().destroy();
+                    }
+    
+                    $('#tsalidas').DataTable({
+                        destroy: true,
+                        
+                    });
+                });
+            });
+        });
+    },
+    
+    
+      error: function(response) {
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'Hubo un problema al registrar el ingreso.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
+    
+
+});
+

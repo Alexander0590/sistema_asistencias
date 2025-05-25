@@ -5,10 +5,12 @@ $action = $_GET['action'] ?? '';
 
 switch ($action) {
     case 'busast':
-            if (isset($_POST['codigo'])) {
-                $codigo = $cnn->real_escape_string($_POST['codigo']);
-                
-                $sql = "SELECT 
+        
+        if (isset($_POST['codigo']) && isset($_POST['fecha'])) {
+        $codigo = $cnn->real_escape_string($_POST['codigo']);
+        $fecha = $cnn->real_escape_string($_POST['fecha']); 
+        
+        $sql = "SELECT 
                 a.fecha, 
                 a.horaim, 
                 a.horait, 
@@ -16,18 +18,21 @@ switch ($action) {
                 FROM personal p
                 INNER JOIN asistencia a ON p.dni = a.dni
                 WHERE p.dni = '$codigo' 
-                AND a.fecha = CURDATE()";
-
-            $resultado = $cnn->query($sql);
-            
-            if ($resultado && mysqli_num_rows($resultado) > 0) {
-                $pasistencia = mysqli_fetch_assoc($resultado);
-                echo json_encode($pasistencia);
-            } else {
-                http_response_code(404);
-                echo json_encode(['error' => 'Usuario no encontrado.']);
-            }
-            }
+                AND a.fecha = '$fecha'"; 
+        
+        $resultado = $cnn->query($sql);
+        
+        if ($resultado && mysqli_num_rows($resultado) > 0) {
+            $pasistencia = mysqli_fetch_assoc($resultado);
+            echo json_encode($pasistencia);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'No hay registro para este código y fecha.']);
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Faltan parámetros (código o fecha).']);
+    }
     break;
     case 'readfil':
             
@@ -110,7 +115,11 @@ switch ($action) {
             $minutos_descut = isset($_POST['minutos_descut']) && $_POST['minutos_descut'] !== '' ? floatval($_POST['minutos_descut']) : 0;
             $comentariot = isset($_POST['comentariot']) ? $_POST['comentariot'] : ''; 
             $totaldes = isset($_POST['totaldes']) && $_POST['totaldes'] !== '' ? floatval($_POST['totaldes']) : 0;
-        
+            $totalmin = isset($_POST['totalmin']) && $_POST['totalmin'] !== '' ? intval($_POST['totalmin']) : 0;
+
+
+           
+
             $estadomc = ($estadom == "1") ? "Puntual" : (($estadom == "2") ? "Tardanza" : "");
             $estadotc = ($estadot == "1") ? "Puntual" : (($estadot == "2") ? "Tardanza" : "");
         
@@ -148,10 +157,23 @@ switch ($action) {
                     exit;
                 }
             
-                $query = "INSERT INTO asistencia (dni, fecha, dia, horaim, horasm, estadom, minutos_descum, horait, horast, estadot, comentario, comentariot, minutos_descut, descuento_dia) 
-                VALUES ('$dni', '$fechare', '$nombreDia', '$horaim', '13:00:00', '$estadomc', $minutos_descum, '$horait', '$horast', '$estadotc', '$comentariom', '$comentariot', $minutos_descut, $totaldes)";
+                $query = "INSERT INTO asistencia (dni, fecha, dia, horaim, horasm, estadom, minutos_descum, horait, horast, estadot, comentario, comentariot, minutos_descut, descuento_dia,tiempo_tardanza_dia) 
+                VALUES ('$dni', '$fechare', '$nombreDia', '$horaim', '13:00:00', '$estadomc', $minutos_descum, '$horait', '$horast', '$estadotc', '$comentariom', '$comentariot', $minutos_descut, $totaldes, $totalmin)";
             
                 if (mysqli_query($cnn, $query)) {
+                     if($horast>'17:00:00'){
+                    $horaInicio = new DateTime('16:30:00');
+                    $horaTermino = new DateTime($horast);
+                    $interval = $horaInicio->diff($horaTermino);
+                    $minutos = ($interval->h * 60) + $interval->i;
+
+                    $buscar_idasis="SELECT * from asistencia where dni='$dni' and fecha='$fechare'";
+                    $rb=mysqli_query($cnn,$buscar_idasis);
+                    $rb_a=mysqli_fetch_assoc($rb);  
+                    $cod_asis=$rb_a['idasis'];
+                    $agregar_dr="INSERT INTO dias_recuperados VALUES(0,$cod_asis,$minutos)";
+                    mysqli_query($cnn,$agregar_dr);
+                    }
                     echo json_encode(["success" => true, "message" => "Asistencia registrada correctamente"]);
                 } else {
                     echo json_encode(["error" => false , "message" => "Error en la base de datos: " . mysqli_error($cnn)]);

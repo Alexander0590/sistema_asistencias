@@ -1,210 +1,310 @@
 
 //registro manualmente
 $(document).ready(function() {
-    // Asegurar que calculardecuento() se actualice SIEMPRE
-    $('#sueldo, #totalminutos, #mdesm, #mdest').on('input', calculardecuento);
+    // Constantes configurables
+    const CONFIG = {
+        TOLERANCIA_MANANA: 8 * 60 + 15,   // 8:16 am en minutos
+        TOLERANCIA_TARDE: 14 * 60 + 15,   // 2:11 pm en minutos
+        MINUTOS_LABORALES_MES: 14400       // 240 horas * 60 minutos
+    };
 
-    // Función para calcular minutos de la mañana
+    // Cache de selectores frecuentes
+    const $els = {
+        sueldo: $('#sueldopriv'),
+        mdesm: $('#mdesm'),
+        mdest: $('#mdest'),
+        totalminutos: $('#totalminutos'),
+        totaldescuento: $('#totaldescuento'),
+        hentradam: $('#hentradam'),
+        hentradat: $('#hentradat'),
+        estadom: $('#estadom'),
+        estadota: $('#estadota'),
+        divmdm: $('#divmdm'),
+        divjusm: $('#divjusm'),
+        divcomm: $('#divcomm'),
+        divmdt: $('#divmdt'),
+        divjust: $('#divjust'),
+        divcomt: $('#divcomt'),
+        justificadom: $('input[name="justificadom"]'),
+        justificadot: $('input[name="justificadot"]'),
+        form: $('#tuFormulario') // Cambiar al ID de tu formulario
+    };
+
+    // Inicialización
+    function init() {
+        hideAllSections();
+        setupEventListeners();
+        hideUnwantedOptions();
+    }
+
+    function hideUnwantedOptions() {
+        $els.estadom.find('option[value="3"], option[value="4"]').hide();
+        $els.estadota.find('option[value="3"], option[value="4"]').hide();
+        
+        $els.estadom.val($els.estadom.find('option:not([style*="display: none"]):first').val());
+        $els.estadota.val($els.estadota.find('option:not([style*="display: none"]):first').val());
+    }
+
+    function hideAllSections() {
+        $els.divjusm.add($els.divcomm).add($els.divjust).add($els.divcomt).hide();
+        $els.mdesm.add($els.mdest).add($els.totaldescuento).add($els.totalminutos).val("");
+    }
+
+    function setupEventListeners() {
+        $els.sueldo.add($els.totalminutos).add($els.mdesm).add($els.mdest).on('input', calculardecuento);
+        $els.hentradam.on('input', handleHoraManana);
+        $els.hentradat.on('input', handleHoraTarde);
+        $els.mdesm.add($els.mdest).on('input', sumarminutosdesc);
+        $els.estadom.on("change", handleEstadoManana);
+        $els.estadota.on("change", handleEstadoTarde);
+        $els.justificadom.on('change', handleJustificacionM);
+        $els.justificadot.on('change', handleJustificacionT);
+        $els.form.on('submit', validarFormulario);
+    }
+
+    function handleHoraManana() {
+        const estado = $els.estadom.val();
+        const hora = $els.hentradam.val();
+        
+        if (estado === "1") {
+            validarHoraPuntual(hora, CONFIG.TOLERANCIA_MANANA, 'mañana');
+        } else if (estado === "2" && $els.justificadom.filter(':checked').val() === "no") {
+            calcularMinutosm();
+        }
+    }
+
+    function handleHoraTarde() {
+        const estado = $els.estadota.val();
+        const hora = $els.hentradat.val();
+        
+        if (estado === "1") {
+            validarHoraPuntual(hora, CONFIG.TOLERANCIA_TARDE, 'tarde');
+        } else if (estado === "2" && $els.justificadot.filter(':checked').val() === "no") {
+            calcularMinutost();
+        }
+    }
+
+    // Nueva función para validar hora en estado Puntual
+    function validarHoraPuntual(horaInput, tolerancia, turno) {
+        if (!horaInput) return;
+        
+        const [horas, minutos] = horaInput.split(":").map(Number);
+        const minutosIngresados = horas * 60 + minutos;
+        
+        if (minutosIngresados > tolerancia) {
+            showAlert('warning', 'Advertencia', 
+                     `Has marcado como Puntual pero la hora de entrada (${horaInput}) supera el límite de tolerancia para el turno ${turno}. Considera cambiar a estado "Tardanza" si es necesario.`);
+        }
+    }
+
+    function calcularMinutos(horaInput, tolerancia) {
+        if (!horaInput) return 0;
+        
+        const [horas, minutos] = horaInput.split(":").map(Number);
+        const minutosIngresados = horas * 60 + minutos;
+        const diferencia = minutosIngresados - tolerancia;
+        
+        return diferencia > 0 ? diferencia : 0;
+    }
+
     function calcularMinutosm() {
-        let horaTolerancia = 8 * 60 + 16;
-        let inputHora = $("#hentradam").val();
-
-        if (!inputHora) {
-            $("#mdesm").val("");
-            return;
-        }
-
-        let [horas, minutos] = inputHora.split(":").map(Number);
-        let minutosIngresados = horas * 60 + minutos;
-        let diferencia = minutosIngresados - horaTolerancia;
-
-        $("#mdesm").val(diferencia > 0 ? diferencia : 0).trigger('input');
+        const minutos = calcularMinutos($els.hentradam.val(), CONFIG.TOLERANCIA_MANANA);
+        $els.mdesm.val(minutos).trigger('input');
     }
 
-// Función para validar el formulario
-function validarFormulario() {
-    let dni = $('#acodigo').val().trim();
-    let fechare = $('#fechare').val().trim();
-    let horaim = $('#hentradam').val().trim();
-    let horait = $('#hentradat').val().trim();
-
-    if (dni === "" || fechare === "") {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Campos vacíos',
-            text: 'Debe completar el DNI y la Fecha.',
-            confirmButtonText: 'Aceptar'
-        });
-        return false;
-    }
-
-
-    if (horaim === "" && horait === "") {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Falta hora de entrada',
-            text: 'Debe ingresar al menos una hora de entrada (mañana o tarde).',
-            confirmButtonText: 'Aceptar'
-        });
-        return false;
-    }
-
-    return true;
-}
-
-
-// Función para calcular minutos de la tarde
     function calcularMinutost() {
-        let horaTolerancia = 14 * 60 + 11;
-        let inputHora = $("#hentradat").val();
-
-        if (!inputHora) {
-            $("#mdest").val("");
-            return;
-        }
-
-        let [horas, minutos] = inputHora.split(":").map(Number);
-        let minutosIngresados = horas * 60 + minutos;
-        let diferencia = minutosIngresados - horaTolerancia;
-
-        $("#mdest").val(diferencia > 0 ? diferencia : 0).trigger('input');
+        const minutos = calcularMinutos($els.hentradat.val(), CONFIG.TOLERANCIA_TARDE);
+        $els.mdest.val(minutos).trigger('input');
     }
 
-    // Función para sumar minutos descontados
     function sumarminutosdesc() {
-        let num1 = parseInt($('#mdesm').val()) || 0;
-        let num2 = parseInt($('#mdest').val()) || 0;
-        $('#totalminutos').val(num1 + num2).trigger('input');
+        const num1 = parseInt($els.mdesm.val()) || 0;
+        const num2 = parseInt($els.mdest.val()) || 0;
+        $els.totalminutos.val(num1 + num2).trigger('input');
     }
 
-    // Función para calcular el descuento
     function calculardecuento() {
-        let sueldoMensual = parseFloat($('#sueldopriv').val()) || 0;
-        let gananciaPorMinuto = sueldoMensual / 14400;
-        let totalMinutos = parseInt($('#totalminutos').val()) || 0;
-        let gananciaTotal = gananciaPorMinuto * totalMinutos;
-        $('#totaldescuento').val(gananciaTotal.toFixed(2));
+        const sueldoMensual = parseFloat($els.sueldo.val()) || 0;
+        const totalMinutos = parseInt($els.totalminutos.val()) || 0;
+        const gananciaPorMinuto = sueldoMensual / CONFIG.MINUTOS_LABORALES_MES;
+        const gananciaTotal = gananciaPorMinuto * totalMinutos;
+        
+        $els.totaldescuento.val(gananciaTotal.toFixed(2));
     }
 
-    // Ocultar opciones innecesarias en estadom y estadota
-    $("#estadom option[value='3'], #estadom option[value='4']").prop("hidden", true);
-    $("#estadota option[value='3'], #estadota option[value='4']").prop("hidden", true);
+    function handleEstadoManana() {
+        const valor = $(this).val();
+        $els.divjusm.add($els.divcomm).hide();
+        $els.mdesm.val(0).trigger('input');
 
-    // Resetear valores generales
-    $("#divjusm, #divcomm, #divjust, #divcomt").hide();
-    $("#estadom, #estadota").val("");
-    $('#mdesm, #mdest, #totaldescuento, #totalminutos').val("");
-
-    // Mostrar divisiones iniciales
-    $("#divt, #divm").show();
-
-    // Manejo de estado en la mañana
-    $("#estadom").on("change", function() {
-        let valor4 = $(this).val();
-
-        if (valor4 === "1") {
-            $('#divmdm').show();
-            $('#mdesm').val(0).trigger('input');
-            $('input[name="justificadom"]').prop('checked', false);
-            $("#divjusm, #divcomm").hide();
-        } else if (valor4 === "2") {
-            $('#divmdm').show();
-            $("#divjusm, #divcomm").show();
-            $('#mdesm').val("").trigger('input');
-
-            $('input[name="justificadom"]').off('change').on('change', function() {
-                if ($(this).val() === "si") {
-                    $('#mdesm').val(0).trigger('input');
-                } else if ($(this).val() === "no") {
-                    $("#hentradam").off('input').on("input", calcularMinutosm);
-                    calcularMinutosm();
-                    $('#mdesm, #mdest').off('input').on('input', sumarminutosdesc);
-                    sumarminutosdesc();
-                }
-            });
+        if (valor === "1") {
+            $els.divmdm.show();
+            $els.justificadom.prop('checked', false);
+            // Validar hora si ya estaba ingresada
+            if ($els.hentradam.val()) {
+                validarHoraPuntual($els.hentradam.val(), CONFIG.TOLERANCIA_MANANA, 'mañana');
+            }
+        } else if (valor === "2") {
+            $els.divmdm.show();
+            $els.divjusm.add($els.divcomm).show();
+            $els.justificadom.filter('[value="no"]').prop('checked', true);
+            calcularMinutosm();
         } else {
-            $('#divmdm, #divjusm, #divcomm').hide();
-            $('#mdesm, #totaldescuento, #totalminutos').val("").trigger('input');
-            $('input[name="justificadom"]').prop('checked', false);
+            $els.divmdm.hide();
+            $els.justificadom.prop('checked', false);
         }
-        calculardecuento();
-    });
+    }
 
-    // Manejo de estado en la tarde
-    $("#estadota").on("change", function() {
-        let valor5 = $(this).val();
+    function handleEstadoTarde() {
+        const valor = $(this).val();
+        $els.divjust.add($els.divcomt).hide();
+        $els.mdest.val(0).trigger('input');
 
-        if (valor5 === "1") {
-            $('#divmdt').show();
-            $('#mdest').val(0).trigger('input');
-            $("#divjust, #divcomt").hide();
-            $('input[name="justificadot"]').prop('checked', false);
-        } else if (valor5 === "2") {
-            $('#divmdt').show();
-            $("#divjust, #divcomt").show();
-            $('#mdest').val("").trigger('input');
-
-            $('input[name="justificadot"]').off('change').on('change', function() {
-                if ($(this).val() === "si") {
-                    $('#mdest').val(0).trigger('input');
-                } else if ($(this).val() === "no") {
-                    $("#hentradat").off('input').on("input", calcularMinutost);
-                    calcularMinutost();
-                    $('#mdesm, #mdest').off('input').on('input', sumarminutosdesc);
-                    sumarminutosdesc();
-                }
-            });
+        if (valor === "1") {
+            $els.divmdt.show();
+            $els.justificadot.prop('checked', false);
+            // Validar hora si ya estaba ingresada
+            if ($els.hentradat.val()) {
+                validarHoraPuntual($els.hentradat.val(), CONFIG.TOLERANCIA_TARDE, 'tarde');
+            }
+        } else if (valor === "2") {
+            $els.divmdt.show();
+            $els.divjust.add($els.divcomt).show();
+            $els.justificadot.filter('[value="no"]').prop('checked', true);
+            calcularMinutost();
         } else {
-            $('#divmdt, #divjust, #divcomt').hide();
-            $('#mdest').val("").trigger('input');
-            $('input[name="justificadot"]').prop('checked', false);
+            $els.divmdt.hide();
+            $els.justificadot.prop('checked', false);
         }
-        calculardecuento();
-    });
+    }
+
+    function handleJustificacionM() {
+        if ($(this).val() === "si") {
+            $els.mdesm.val(0).trigger('input');
+        } else {
+            calcularMinutosm();
+        }
+    }
+
+    function handleJustificacionT() {
+        if ($(this).val() === "si") {
+            $els.mdest.val(0).trigger('input');
+        } else {
+            calcularMinutost();
+        }
+    }
+
+    function validarFormulario(e) {
+        let isValid = true;
+        const errorMessages = [];
+
+        if (!$('#acodigo').val().trim()) {
+            errorMessages.push('Debe completar el DNI');
+            isValid = false;
+        }
+
+        if (!$('#fechare').val().trim()) {
+            errorMessages.push('Debe completar la Fecha');
+            isValid = false;
+        }
+
+        if (!$els.hentradam.val().trim() && !$els.hentradat.val().trim()) {
+            errorMessages.push('Debe ingresar al menos una hora de entrada');
+            isValid = false;
+        }
+
+        // Validar consistencia entre estado y hora
+        if ($els.estadom.val() === "1" && $els.hentradam.val()) {
+            const [horas, minutos] = $els.hentradam.val().split(":").map(Number);
+            const minutosIngresados = horas * 60 + minutos;
+            if (minutosIngresados > CONFIG.TOLERANCIA_MANANA) {
+                errorMessages.push('La hora de la mañana supera el límite para estado "Puntual"');
+                isValid = false;
+            }
+        }
+
+        if ($els.estadota.val() === "1" && $els.hentradat.val()) {
+            const [horas, minutos] = $els.hentradat.val().split(":").map(Number);
+            const minutosIngresados = horas * 60 + minutos;
+            if (minutosIngresados > CONFIG.TOLERANCIA_TARDE) {
+                errorMessages.push('La hora de la tarde supera el límite para estado "Puntual"');
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            showAlert('error', 'Error en el formulario', errorMessages.join('<br>'));
+        }
+
+        return isValid;
+    }
+
+    function showAlert(icon, title, html) {
+        Swal.fire({
+            icon,
+            title,
+            html,
+            confirmButtonText: 'Aceptar'
+        });
+    }
+
+    init();
 });
-
-
-       
 //busqueda de asistencia en la tarjeta
-$(document).on('input', '#acodigo', function () {
-    let codigo = $(this).val();
-    
-    if (codigo.length > 0) {
+function verificarAsistencia() {
+    const codigo = $('#acodigo').val();
+    const fecha = $('#fechare').val();
+
+    if (codigo.length > 0 && fecha.length > 0) {  // Verificar que ambos campos tengan datos
         $.ajax({
             url: "proceso/asistenciaman.php?action=busast",
             method: "POST",
-            data: { codigo: codigo },
-            dataType:'json',
+            data: { codigo, fecha },
+            dataType: 'json',
             success: function(data) {
-
+                if (data.error) {
+                    // Usuario no registrado en esa fecha
+                    $('#btnregistraras').prop('disabled', false);
+                    $('#fecha2').text(" No registrado");
+                    $('#entradamd, #entradatd, #salidad').text("No registrado");
+                } else {
+                    // Usuario ya registrado
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Persona ya fue registrada hoy',
-                        text: 'Modificaciones y alteraciones del registro se realizan en listado de asistencia',
+                        title: 'Persona ya registrada en esta fecha',
+                        text: 'Modificaciones en listado de asistencia',
                         confirmButtonText: 'Aceptar'
                     });
                     $('#btnregistraras').prop('disabled', true);
-                document.getElementById("fecha2").innerText = " " + String(data.fecha);
-
-                document.getElementById("entradamd").innerText = 
-                    data.horaim === "00:00:00" ? "No registrado" : String(data.horaim + " AM");
-                
-                document.getElementById("entradatd").innerText = 
-                    data.horait === "00:00:00" ? "No registrado" : String(data.horait + " PM");
-                
-                document.getElementById("salidad").innerText = 
-                    data.horast === "00:00:00" ? "No registrado" : String(data.horast + " PM");
+                    $('#fecha2').text(" " + data.fecha);
+                    $('#entradamd').text(data.horaim === "00:00:00" ? "No registrado" : data.horaim + " AM");
+                    $('#entradatd').text(data.horait === "00:00:00" ? "No registrado" : data.horait + " PM");
+                    $('#salidad').text(data.horast === "00:00:00" ? "No registrado" : data.horast + " PM");
+                }
             },
-            error: function () {
+            error: function(xhr, status, error) {
+                console.error("Error en AJAX:", error);
                 $('#btnregistraras').prop('disabled', false);
-                $("#adatos").val(""); 
-                document.getElementById("fecha2").innerText = String(" No registrado");   
-                document.getElementById("entradamd").innerText = String("No registrado");
-                document.getElementById("entradatd").innerText =String("No registrado");
-                document.getElementById("salidad").innerText = String("No registrado");
+                $('#fecha2, #entradamd, #entradatd, #salidad').text("No registrado");
             }
         });
-    } else {    
+    } else {
+        // Limpiar campos si falta código o fecha
+        $('#btnregistraras').prop('disabled', false);
+        $('#fecha2, #entradamd, #entradatd, #salidad').text("No registrado");
+    }
+}
+
+// Eventos para ejecutar la función
+$(document)
+    .on('input', '#acodigo', verificarAsistencia)
+    .on('change input', '#fechare', verificarAsistencia);
+
+// Ejecutar al cargar si hay datos
+$(document).ready(function() {
+    if ($('#acodigo').val().length > 0 && $('#fechare').val().length > 0) {
+        verificarAsistencia();
     }
 });
 
@@ -361,7 +461,7 @@ $(document).on('click', '#btnregistraras', function (e) {
         let horaMinimaM = "07:30:00";
         let horaMaximaM = "13:00:00";
 
-        if (horaim <= horaMinimaM || horaim >= horaMaximaM) {
+        if (horaim < horaMinimaM || horaim > horaMaximaM) {
             Swal.fire({
                 title: "Error",
                 text: "La hora de entrada en la mañana debe estar entre 07:30 y 13:00.",
@@ -372,15 +472,14 @@ $(document).on('click', '#btnregistraras', function (e) {
         }
     }
 
-
     if (horait !== "") {
         let horaMinimaT = "13:35:00";
-        let horaMaximaT = "18:00:00";
+        let horaMaximaT = "16:00:00";
 
-        if (horait <= horaMinimaT || horait >= horaMaximaT) {
+        if (horait < horaMinimaT || horait > horaMaximaT) {
             Swal.fire({
                 title: "Error",
-                text: "La hora de entrada en la tarde debe estar entre 13:35 y 18:00.",
+                text: "La hora de entrada en la tarde debe estar entre 13:35 y 16:00.",
                 icon: "warning",
                 confirmButtonText: "OK"
             });
@@ -388,16 +487,23 @@ $(document).on('click', '#btnregistraras', function (e) {
         }
     }
 
-    if (horast !== "" && horast  >= "18:00:00") {
-        Swal.fire({
-            title: "Error",
-            text: "La hora de salida debe ser mayor a 18:00.",
-            icon: "warning",
-            confirmButtonText: "OK"
-        });
-        return;
+function normalizarHora(hora) {
+    const partes = hora.split(":");
+    if (partes.length === 2) {
+        return hora + ":00"; 
     }
+    return hora;
+}
 
+if (horast !== "" && normalizarHora(horast) < "16:30:00") {
+    Swal.fire({
+        title: "Error",
+        text: "La hora de salida debe ser mayor o igual a 16:30.",
+        icon: "warning",
+        confirmButtonText: "OK"
+    });
+    return;
+}
 
 
     $('#btnregistraras').prop('disabled', true);
@@ -409,6 +515,19 @@ $(document).on('click', '#btnregistraras', function (e) {
     let minutos_descut = $('#mdest').val();
     let comentariot = $('#coment').val();
     let totaldes = $('#totaldescuento').val();
+     let totalmin = $('#totalminutos').val();
+
+    if (estadom.trim() === "") {  
+        Swal.fire({
+            icon: 'error',
+            title: 'Campo vacío',
+            text: 'El campo Estado Turno mañana no puede estar vacío',
+            confirmButtonText: 'Entendido',
+            allowOutsideClick: false
+        });
+        $('#btnregistraras').prop('disabled', false);
+        return;
+    }
 
     $.ajax({
         url: 'proceso/asistenciaman.php?action=create',
@@ -425,7 +544,8 @@ $(document).on('click', '#btnregistraras', function (e) {
             estadot: estadot,
             minutos_descut: minutos_descut,
             comentariot: comentariot,
-            totaldes: totaldes
+            totaldes: totaldes,
+            totalmin:totalmin
         },
         dataType: 'json',
         success: function (response) {

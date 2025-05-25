@@ -67,6 +67,8 @@
                     <th>Hora de Salida</th>
                     <th>Hora de Reingreso</th>
                     <th>Motivo</th>
+                    <th>¿Tiene Reingreso?</th>
+                    <th>Hora Ingreso Real</th>
                     <th>Comentario</th>
                 </tr>
                 </thead>
