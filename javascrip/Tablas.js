@@ -217,8 +217,8 @@ $('#rpgene').DataTable({
             title: 'reporte_de_Asistencia', 
             customize: function (doc) {
                 // Personalización del PDF
-                doc.defaultStyle.fontSize = 10;
-                doc.styles.tableHeader.fontSize = 10;
+                doc.defaultStyle.fontSize = 14;
+                doc.styles.tableHeader.fontSize = 14;
                 doc.styles.title.fontSize = 14;
                 doc.pageOrientation = 'landscape';  
             }
@@ -581,20 +581,28 @@ function obtenerUsuarios() {
     }
 
     //reporte general
-    function obtenerrpgene() {
+    function obtenerrpgene(fi,ff) {
     
         $.ajax({
-            url: 'proceso/reportegeneral.php?action=read',
+            url: 'proceso/reportegeneral.php?action=read&fi='+fi+'&ff='+ff,
             type: 'GET',
             dataType: 'json',
             success: function (data) {
                 // Limpiar la tabla de usuarios
                 $('#rpgene').DataTable().clear().draw();
-
+               
                 data.forEach(function (asistencia, index) {
                     let minutosTarde = parseInt(asistencia.minutos_descut) || 0;
                     let minutosManana = parseInt(asistencia.minutos_descum) || 0;
                     let totalMinutos = minutosTarde + minutosManana;
+                    //para sacar horas 
+                    let n_horasr=parseInt(asistencia.totalminrec)/60;
+                    //para sacar pago por hora
+                    let p_hora=(parseFloat(asistencia.sueldo)/30)/8;
+                    //
+                    let p_minuto=((parseFloat(asistencia.sueldo)/30)/8)/60;
+                    if(asistencia.totalminrec>0){p_recuperados=n_horasr*p_hora;}else{p_recuperados=0;}
+                    
     
                     let minutosdes = totalMinutos === 0 
                         ? "No hay descuento" 
@@ -606,11 +614,15 @@ function obtenerUsuarios() {
                         asistencia.dni,
                         asistencia.apellidos+' ' +asistencia.nombres,
                         asistencia.nombre,
+                        asistencia.sueldo,
                         asistencia.dias_trabajo+ ' dias',
-                        asistencia.total_tardanza_mes+ ' min',
-                        "S/. "+asistencia.STotaldesdia,
                         asistencia.suma_tardanza_diurno,
                         asistencia.suma_tardanza_tarde,
+                        asistencia.total_tardanza_mes+ ' min',
+                        "S/. "+asistencia.STotaldesdia,
+                        asistencia.sueldocondscto,
+                        asistencia.totalminrec||'0',
+                        p_recuperados.toFixed(2)||"0.00",
                     `
                         <button  class="btn btn-primary perverificar" data-id="${asistencia.dni}">
                             <i class="bi bi-patch-check"></i> Verificar
@@ -624,7 +636,6 @@ function obtenerUsuarios() {
             }
         });
     }
-
 
     //reporte de serenazgo
     function obtenerreporsere() {
@@ -792,7 +803,13 @@ function obtenerUsuarios() {
         });
     }
     
-    
+      //para el filtro de general
+    $(document).on('click', '#filtrageneral', function (e) {
+        let fechai=$('#fechain').val();
+        let fechaf=$('#fechafi').val();
+        obtenerrpgene(fechai,fechaf);
+    });
+
     $(document).on('click', '#limpiarfil', function (e) {
         setTimeout(() => {
             obtenerlistadoasis(); 
@@ -818,7 +835,7 @@ function obtenerUsuarios() {
     obtenerlistadoasis();
     obtenervacaciones();
     obtenerpersonalvaca();
-    obtenerrpgene();
+   // obtenerrpgene();
 // }, 1000); 
 });
 

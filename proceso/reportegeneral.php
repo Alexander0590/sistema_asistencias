@@ -42,19 +42,48 @@ switch ($action) {
     break;
   
     case 'read':
-        $query = "SELECT a.dni, p.apellidos,p.nombres,c.nombre,
-COUNT(idasis)as dias_trabajo, sum(tiempo_tardanza_dia) as total_tardanza_mes, sum(descuento_dia) as STotaldesdia, sum(minutos_descum) as suma_tardanza_diurno,sum(minutos_descut) as suma_tardanza_tarde
 
+    $fechai=$_GET['fi'];
+    $fechaf=$_GET['ff'];
+        $query = "SELECT a.dni, p.apellidos,p.nombres,c.nombre,
+COUNT(idasis)as dias_trabajo, sum(tiempo_tardanza_dia) as total_tardanza_mes, round(sum(descuento_dia),2) as STotaldesdia, sum(minutos_descum) as suma_tardanza_diurno,sum(minutos_descut) as suma_tardanza_tarde,
+p.sueldo,
+round((p.sueldo-sum(descuento_dia)),2)as sueldocondscto
 from asistencia a, personal p, cargos c
 where a.dni=p.dni
 and p.idcargo=c.idcargo
+and (a.fecha >='$fechai' and a.fecha<='$fechaf')
 GROUP BY dni";
             $result = mysqli_query($cnn, $query);
             
             $asistencia = [];
             if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $asistencia[] = $row;
+                while ($row = mysqli_fetch_array($result)) {
+                    $dnibdr=$row['dni'];
+                    //mkz
+                    $buscar_dr="SELECT a.dni,sum(minutos_recuperados)as totalminrec
+                    FROM dias_recuperados dr, asistencia a
+                    WHERE dr.idasis=a.idasis
+                    AND a.dni='$dnibdr' ";
+                    $resdr=mysqli_query($cnn,$buscar_dr);
+                    $resdr_a=mysqli_fetch_assoc($resdr);
+                    $num_dr=$resdr_a['totalminrec'];
+                    //mkz
+                    $asistencia[]=array(
+                        "dni"=>$row['dni'],
+                        "apellidos"=>$row['apellidos'],
+                        "nombres"=>$row['nombres'],
+                        "nombre"=>$row['nombre'],
+                        "dias_trabajo"=>$row['dias_trabajo'],
+                        "total_tardanza_mes"=>$row['total_tardanza_mes'],
+                        "STotaldesdia"=>$row['STotaldesdia'],
+                        "suma_tardanza_diurno"=>$row['suma_tardanza_diurno'],
+                        "suma_tardanza_tarde"=>$row['suma_tardanza_tarde'],
+                        "sueldo"=>$row['sueldo'],
+                        "sueldocondscto"=>$row['sueldocondscto'],
+                        "totalminrec"=>$num_dr
+                        );
+                  // $asistencia[] = $row;
                 }
             }
             echo json_encode($asistencia);

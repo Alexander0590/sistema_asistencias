@@ -17,12 +17,7 @@
     <div class="card-body">
         <form id="filtroForm" class="row g-3">
 
-            <div class="col-md-4">
-                <label for="dni" class="form-label">
-                    <i class="bi bi-person-badge"></i> DNI
-                </label>
-                <input type="number" class="form-control" id="dnire" placeholder="Ingrese DNI" min="10000000" max="99999999">
-            </div>
+          
 
             <div class="col-md-4">
                 <label for="fechain" class="form-label">
@@ -39,7 +34,7 @@
             </div>
 
             <div class="col-12 text-center">
-                <button type="submit" class="btn btn-primary" id="filtrageneral">
+                <button type="button" class="btn btn-primary" id="filtrageneral">
                     <i class="bi bi-search"></i> Filtrar
                 </button>
                 <button type="reset" class="btn btn-secondary" id="limpiarfil">
@@ -65,11 +60,15 @@
                         <th>Dni</th>
                         <th>Personal</th>
                         <th>Cargo</th>
+                        <th>Sueldo</th>
                         <th>Dias de trabajo</th>
+                        <th>Min. Tardanza-Diurno</th>
+                        <th>Min. Tardanza-Tarde</th>
                         <th>Min. Total Dscto</th>
                         <th>S/. Total Dscto</th>
-                        <th>Minutos de Tardanza-Diurno</th>
-                        <th>Minutos de Tardanza-Tarde</th>
+                        <th>Sueldo con Dscto</th>
+                        <th>Min. Recuperados</th>
+                        <th>S/. Min. Recuperados</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>

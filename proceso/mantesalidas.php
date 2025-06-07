@@ -363,7 +363,9 @@ break;
         $id = $_POST['id'];
         $hoy=date('Y-m-d');
 
-            if ($hoy < $fecha) {
+            if ( $fecha<$hoy ) {
+                $sql3 = "UPDATE salidas SET  estado='Finalizado', comentario='Ingreso con tardanza en su salida coordinada de reingreso' WHERE id_sali = $id";
+                $cnn->query($sql3);
                 // 1. Obtener el sueldo del empleado y los minutos totales de asistencia
                 $query_personal = "SELECT sueldo FROM personal WHERE dni = '$dni'";
                 $result_personal = mysqli_query($cnn, $query_personal);

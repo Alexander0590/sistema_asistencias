@@ -43,150 +43,302 @@ function calculardecuento2() {
 }
 
 
+
 $(document).ready(function () {
     const fechaInput = $('#txtfa');
-    
-    // Función para actualizar ambas listas
+    const estadoAnterior = {
+        asistenciasData: [],
+        faltasData: []
+    };
+
+    let cargandoAsistencias = false;
+    let cargandoFaltas = false;
+
+    function datosSonIguales(arr1, arr2) {
+        return JSON.stringify(arr1) === JSON.stringify(arr2);
+    }
+
     function actualizarListas() {
         const fecha = fechaInput.val();
+        estadoAnterior.asistenciasData = [];
+        estadoAnterior.faltasData = [];
         listar_asistencias(fecha);
         listar_faltas(fecha);
     }
-    
-    // Ejecutar al cargar y configurar el intervalo
+
     actualizarListas();
-    const intervalo = setInterval(actualizarListas, 1000); 
-    
-    // También actualizar cuando cambia la fecha
-    fechaInput.on('change', actualizarListas);
-    
-    $(window).on('beforeunload', function() {
-        clearInterval(intervalo);
+
+    fechaInput.on('change', () => {
+        actualizarListas();
     });
 
-    // Función para listar faltas (sin cambios)
     function listar_faltas(fechax) {
+        if (cargandoFaltas) return;
+        cargandoFaltas = true;
+
         $.ajax({
             url: 'proceso/proceso_asistencia_diaria.php',
             type: 'GET',
             data: { accion: 'listar_faltas', fecha: fechax },
             success: function (response) {
-                const registro = JSON.parse(response);
-                let template = '';
-
-                if (registro === 'sin_data') {
-                    $('#cuerpo_tabla_fd').empty();
-                    return;
+                let registro;
+                try {
+                    registro = JSON.parse(response);
+                } catch (e) {
+                    console.error("Error al parsear JSON faltas:", e, response);
+                    registro = [];
                 }
 
-                registro.forEach((item, index) => {
-                    template += `
-                        <tr class="fila-falta">
-                            <td class="text-center align-middle">${index + 1}</td>
-                            <td>${item.dni}</td>
-                            <td>${item.apellidos}</td>
-                            <td>${item.nombres}</td>
-                            <td class="text-center align-middle" style="white-space: nowrap; width: 100px;">
-                                <div class="d-flex justify-content-center gap-1">
-                                    <button class="btn btn-danger btn-sm registrarf" style="padding: 3px 6px;" data-id="${item.dni}">
-                                        <i class="bi bi-x-circle"></i> Registrar falta
-                                    </button>
-                                    <button class="btn btn-success btn-sm registrartc" style="padding: 3px 6px;" data-id="${item.dni}">
-                                        <i class="bi bi-check-circle"></i> Registrar Trabajo en Campo
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>`;
-                });
+                if (registro === 'sin_data') registro = [];
 
-                $('#cuerpo_tabla_fd').html(template);
+                if (!datosSonIguales(registro, estadoAnterior.faltasData)) {
+                    estadoAnterior.faltasData = registro;
+
+                    let template = '';
+                    if (registro.length === 0) {
+                        template = `<tr><td colspan="5" class="text-center text-muted">No hay faltas hoy</td></tr>`;
+                    } else {
+                        registro.forEach((item, index) => {
+                            template += `
+                                <tr class="fila-falta">
+                                    <td class="text-center align-middle">${index + 1}</td>
+                                    <td>${item.dni}</td>
+                                    <td>${item.apellidos}</td>
+                                    <td>${item.nombres}</td>
+                                    <td class="text-center align-middle" style="white-space: nowrap; width: 100px;">
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <button class="btn btn-danger btn-sm registrarf" data-id="${item.dni}">
+                                                <i class="bi bi-x-circle"></i> Registrar falta
+                                            </button>
+                                            <button class="btn btn-success btn-sm registrartc" data-id="${item.dni}">
+                                                <i class="bi bi-check-circle"></i> Trabajo en Campo
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>`;
+                        });
+                    }
+                    $('#cuerpo_tabla_fd').html(template);
+                }
+            },
+            complete: function () {
+                cargandoFaltas = false;
+            },
+            error: function () {
+                console.error('Error en listar_faltas AJAX');
             }
         });
     }
 
-    // Función para listar asistencias (sin cambios)
     function listar_asistencias(fechax) {
+        if (cargandoAsistencias) return;
+        cargandoAsistencias = true;
+
         $.ajax({
             url: 'proceso/proceso_asistencia_diaria.php',
             type: 'GET',
             data: { accion: 'listar_registrados', fecha: fechax },
             success: function (response) {
-                const registro2 = JSON.parse(response);
-                let template2 = '';
-
-                if (registro2 === 'sin_data') {
-                    template2 = `
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">No hay asistencias hoy</td>
-                        </tr>`;
-                } else {
-                    registro2.forEach((item, index) => {
-                        let clase = '';
-
-                        if (item.estadom === 'Falta' || item.estadot === 'Falta') {
-                            clase = 'fila-falta';
-                        } else {
-                            clase = 'fila-asistencia';
-                        }
-
-                        template2 += `<tr class="${clase}">
-                            <td class="text-center align-middle">${index + 1}</td>
-                            <td>${item.dni}</td>
-                            <td>${item.apellidos}</td>
-                            <td>${item.nombres}</td>
-                            <td>`;
-
-                        if (item.estadom === 'Vacaciones' || item.estadot === 'Vacaciones') {
-                            template2 += `<span class="text-dark">Personal de Vacaciones</span>`;
-                        } else {
-                            template2 += `
-                                <button class="btn btn-primary btn-sm bg-primary registrara" data-id="${item.dni}">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </button>`;
-                        }
-
-                        template2 += `</td></tr>`;
-                    });
+                let registro;
+                try {
+                    registro = JSON.parse(response);
+                } catch (e) {
+                    console.error("Error al parsear JSON asistencias:", e, response);
+                    registro = [];
                 }
 
-                $('#cuerpo_tabla_ad').html(template2);
+                if (registro === 'sin_data') registro = [];
+
+                if (!datosSonIguales(registro, estadoAnterior.asistenciasData)) {
+                    estadoAnterior.asistenciasData = registro;
+
+                    let template = '';
+                    if (registro.length === 0) {
+                        template = `<tr><td colspan="5" class="text-center text-muted">No hay asistencias hoy</td></tr>`;
+                    } else {
+                        registro.forEach((item, index) => {
+                            const clase = (item.estadom === 'Falta' || item.estadot === 'Falta') ? 'fila-falta' : 'fila-asistencia';
+                            template += `
+                                <tr class="${clase}">
+                                    <td class="text-center align-middle">${index + 1}</td>
+                                    <td>${item.dni}</td>
+                                    <td>${item.apellidos}</td>
+                                    <td>${item.nombres}</td>
+                                    <td>`;
+                            if (item.estadom === 'Vacaciones' || item.estadot === 'Vacaciones') {
+                                template += `<span class="text-dark">Personal de Vacaciones</span>`;
+                            } else {
+                                template += `
+                                    <button class="btn btn-primary btn-sm registrara" data-id="${item.dni}">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>`;
+                            }
+                            template += `</td></tr>`;
+                        });
+                    }
+                    $('#cuerpo_tabla_ad').html(template);
+                }
+            },
+            complete: function () {
+                cargandoAsistencias = false;
+            },
+            error: function () {
+                console.error('Error en listar_asistencias AJAX');
             }
         });
     }
-});
 
+    // Actualización en tiempo real cada 5 segundos (si no está cargando)
+    setInterval(() => {
+        const fecha = $('#txtfa').val();
+        if (fecha) {
+            listar_asistencias(fecha);
+            listar_faltas(fecha);
+        }
+    }, 5000);
 
-$(document).on('click', '.registrara', function (e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
+    // ------------------------ EVENTOS ----------------------------
 
-    let id = $(this).data('id');
-    let fecha = $('#txtfa').val();
+    $(document).on('click', '.registrarf', function (e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        let fecha = $('#txtfa').val();
 
-    $("#vistas").fadeOut(200, function () {
-        $(this).load("view/editar_asistencia.php", function () {
-            $(this).fadeIn(200);
+        $("#vistas").fadeOut(200, function () {
+            $(this).load("view/asistencia.html", function () {
+                $(this).fadeIn(200);
 
-            $.ajax({
-                url: 'proceso/proceso_asistencia_diaria.php?accion=readOne',
-                type: 'GET',
-                data: { id: id, fecha: fecha },
-                dataType: 'json',
-                success: function (data) {
-                    if ($('#editasistenciaform').length) {
-                        inicializarFormulario(data);
-                        manejarEventosFormulario();
-                    } else {
-                        console.error("No se encontró el formulario");
+                $.ajax({
+                    url: 'proceso/proceso_asistencia_diaria.php?accion=readonef',
+                    type: 'GET',
+                    data: { id: id },
+                    dataType: 'json',
+                    success: function (data) {
+                        if ($('#asistenciaform').length) {
+                            $('#btnfal, #divcomf, #divminf, #divestadof, #divfjus').show();
+                            $('#btnregistraras, #divm, #divt, #divturno').hide();
+                            $('#acodigo').prop('disabled', true).val(data.dni);
+                            $('#adatos').val(data.nombres + " " + data.apellidos);
+                            $('#fechare').val(fecha);
+                            $('#estadof').val("3");
+
+                            $(document).off('change', 'input[name=justificadof]').on('change', 'input[name=justificadof]', function () {
+                                const sueldo = parseFloat(data.sueldo) || 0;
+
+                                if ($(this).val() === "si") {
+                                    $('#mdesf, #totaldescuento, #totalminutos, #neto').val(0).prop('disabled', true);
+                                } else {
+                                    const minutos = 450;
+                                    const descuento = sueldo / 14400 * minutos;
+                                    $('#mdesf').val(minutos).prop('disabled', true);
+                                    $('#totaldescuento').val(descuento.toFixed(2)).prop('disabled', true);
+                                    $('#totalminutos').val(minutos).prop('disabled', true);
+                                    $('#neto').val((sueldo - descuento).toFixed(2)).prop('disabled', true);
+                                }
+                            });
+                        } else {
+                            console.error("No se encontró el formulario");
+                        }
+                    },
+                    error: function () {
+                        console.error('Error al obtener los datos del usuario');
                     }
-                },
-                error: function (error) {
-                    console.error('Error al obtener datos:', error);
-                }
+                });
+            });
+        });
+    });
+
+    $(document).on('click', '.registrartc', function (e) {
+        e.preventDefault();
+
+        const $btn = $(this);
+        if ($btn.data('enviando')) return;
+        $btn.data('enviando', true);
+
+        const id = $btn.data('id');
+        const fecha = $('#txtfa').val();
+        const data = {
+            id,
+            fecha,
+            estador: "Trabajo en Campo",
+            horaim: '8:00:00',
+            horait: '14:00:00',
+            horasm: '13:00:00',
+            horast: '16:30:00',
+            descuento: 0,
+            minutos: 0
+        };
+
+        $.ajax({
+            url: 'proceso/proceso_asistencia_diaria.php?accion=createtc',
+            type: 'POST',
+            data,
+            dataType: 'json',
+            success: function (response) {
+                Swal.fire({
+                    title: response.success ? "¡Éxito!" : "¡Error!",
+                    text: response.success
+                        ? "Trabajo en campo ha sido registrado correctamente."
+                        : "Error al registrar asistencia: " + response.message,
+                    icon: response.success ? "success" : "error",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    if (response.success) {
+                        $("#vistas").fadeOut(200, function () {
+                            $(this).load("view/asistencia_diaria.php?fd=" + fecha, function () {
+                                $(this).fadeIn(200);
+                                actualizarListas();
+                            });
+                        });
+                    }
+                });
+            },
+            complete: function () {
+                $btn.data('enviando', false);
+            },
+            error: function () {
+                alert('Ocurrió un error en la solicitud.');
+            }
+        });
+    });
+
+    $(document).on('click', '.registrara', function (e) {
+        e.preventDefault();
+
+        const id = $(this).data('id');
+        const fecha = $('#txtfa').val();
+
+        $("#vistas").fadeOut(200, function () {
+            $(this).load("view/editar_asistencia.php", function () {
+                $(this).fadeIn(200);
+
+                $.ajax({
+                    url: 'proceso/proceso_asistencia_diaria.php?accion=readOne',
+                    type: 'GET',
+                    data: { id, fecha },
+                    dataType: 'json',
+                    success: function (data) {
+                        if ($('#editasistenciaform').length) {
+                            inicializarFormulario(data);
+                            manejarEventosFormulario();
+                        }
+                    },
+                    error: function () {
+                        console.error('Error al obtener datos');
+                    }
+                });
             });
         });
     });
 });
+
+
+
+
+
+
+
+
 
 function obtenerEstado(estado) {
     const estados = {
@@ -448,60 +600,7 @@ function manejarEventosFormulario() {
         }
     });
 }
-//traer falta
-$(document).on('click', '.registrarf', function (e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    let id = $(this).data('id');
-    let fecha=$('#txtfa').val();
 
-    $("#vistas").fadeOut(200, function () {
-        $(this).load("view/asistencia.html", function () {
-            $(this).fadeIn(200); 
-            $.ajax({
-                url: 'proceso/proceso_asistencia_diaria.php?accion=readonef', 
-                type: 'GET',
-                data: { id: id },
-                dataType: 'json',
-                success: function (data) {
-                    if ($('#asistenciaform').length) {
-                        $('#btnfal, #divcomf, #divminf, #divestadof, #divfjus').show();
-                        $('#btnregistraras, #divm, #divt, #divturno').hide();
-                        $('#acodigo').prop('disabled',true);
-                        $('#estadof').val("3");
-                        $('#acodigo').val(data.dni);
-                        $('#adatos').val(data.nombres + " " + data.apellidos);
-                       
-                        $('#fechare').val(fecha);
-
-                        $(document).off('change', 'input[name=justificadof]').on('change', 'input[name=justificadof]', function () {
-                            if ($(this).val() === "si") {
-                                let sueldoMensual = parseFloat(data.sueldo) || 0;
-                                $('#mdesf ,#totaldescuento').val(0).prop('disabled', true);
-                                $('#neto').val(sueldoMensual).prop('disabled', true);
-                                $('#totalminutos').val(0).prop('disabled', true);
-
-                            } else if ($(this).val() === "no") {
-                                $('#mdesf').val(450).prop('disabled', true); 
-                                let sueldoMensual = parseFloat(data.sueldo) || 0;
-                                let pagoPorMinuto = sueldoMensual / 14400; 
-                                let descuento = 450 * pagoPorMinuto;
-                                $('#totaldescuento').val(descuento.toFixed(2)).prop('disabled', true);
-                                $('#totalminutos').val(450).prop('disabled', true);
-                                $('#neto').val((sueldoMensual - descuento).toFixed(2)).prop('disabled', true);
-                            }
-                        });
-                    } else {
-                        console.error("No se encontró el formulario ");
-                    }
-                },
-                error: function ( textStatus, errorThrown) {
-                    console.error('Error al obtener los datos del usuario:', textStatus, errorThrown);
-                }
-            });
-        });
-    });
-});
 //REGISTRAR LAS FALTAS
 $(document).off('click', '#btnfal').on('click', '#btnfal', function (e) {
     let btn = $(this);
@@ -572,71 +671,7 @@ $(document).off('click', '#btnfal').on('click', '#btnfal', function (e) {
 });
 
 //registrar trabajo de campo
-$(document).off('click', '.registrartc').on('click', '.registrartc', function (e) {
-    e.preventDefault();
 
-    let $btn = $(this); 
-    if ($btn.data('enviando')) {
-        return; 
-    }
-    $btn.data('enviando', true); 
-
-    let id = $btn.data('id');
-    let fecha=$('#txtfa').val();
-    let estador = "Trabajo en Campo";
-    let horaim = '8:00:00';
-    let horait = '14:00:00';
-    let horasm = '13:00:00';
-    let horast = '16:30:00';
-    let descuento = 0;
-    let minutos = 0;
-
-    $.ajax({
-        url: 'proceso/proceso_asistencia_diaria.php?accion=createtc',
-        type: 'POST',
-        data: {
-            id: id,
-            fecha:fecha,
-            estador: estador,
-            horaim: horaim,
-            horait: horait,
-            horasm: horasm,
-            horast: horast,
-            descuento: descuento,
-            minutos: minutos
-        },
-        dataType: 'json',
-        success: function (response) {
-            if (response.success) {
-                Swal.fire({
-                    title: "¡Éxito!",
-                    text: "Trabajo en campo ha sido registrado correctamente.",
-                    icon: "success",
-                    confirmButtonText: "OK"
-                }).then(() => {
-                    $("#vistas").fadeOut(200, function () {
-                        $(this).load("view/asistencia_diaria.php?fd="+fecha, function () {
-                            $(this).fadeIn(200);
-                        });
-                    });
-                });
-            } else {
-                Swal.fire({
-                    title: "¡Error!",
-                    text: "Error al registrar asistencia: " + response.message,
-                    icon: "error",
-                    confirmButtonText: "OK"
-                });
-            }
-        },
-        error: function () {
-            alert('Ocurrió un error en la solicitud.');
-        },
-        complete: function () {
-            $btn.data('enviando', false); 
-        }
-    });
-});
 
 
 $(document).off('click', '#cerrardia').on('click', '#cerrardia', function (e) {
